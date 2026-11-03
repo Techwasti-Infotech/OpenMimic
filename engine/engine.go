@@ -195,7 +195,32 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64) any 
 
 	case *pb.FunctionGenerator_EntityPool:
 		if f.EntityPool != nil {
-			return generator.GenerateEntityPool(e.state.RNG, f.EntityPool)
+			// Check if dynamic foreign key binding is active
+			if fk := f.EntityPool.GetForeignKey(); fk != nil {
+				targetPool := fk.GetParentPoolName()
+				if targetPool == "" {
+					targetPool = f.EntityPool.GetPoolName()
+				}
+
+				// Check deliberate orphan corruption injection
+				if fk.GetAllowOrphans() && fk.GetOrphanRate() > 0 && e.state.RNG.Float64() < fk.GetOrphanRate() {
+					return fmt.Sprintf("orphan_%08x", e.state.RNG.Uint32())
+				}
+
+				// Sample from live parent entity registry
+				if entityID, found := state.GetDefaultRegistry().SampleEntity(targetPool, e.state.RNG); found {
+					return entityID
+				}
+			}
+
+			// Generate static deterministic entity pool ID
+			entityID := generator.GenerateEntityPool(e.state.RNG, f.EntityPool)
+
+			// Register into live entity registry so downstream generators can reference it
+			if f.EntityPool.GetPoolName() != "" {
+				state.GetDefaultRegistry().RegisterEntity(f.EntityPool.GetPoolName(), entityID)
+			}
+			return entityID
 		}
 
 	case *pb.FunctionGenerator_NestedObject:
