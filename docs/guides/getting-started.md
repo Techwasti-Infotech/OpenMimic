@@ -4,17 +4,34 @@ This guide will walk you through setting up and running the complete OpenMimic s
 
 ---
 
-## 📋 Prerequisites
+## ⚡ Option 1: One-Click Local Launcher (Fastest)
 
-Depending on your preferred setup method:
-- **Docker & Docker Compose** (recommended for all-in-one local setup), OR:
-- **Go 1.23+**
-- **Python 3.11+**
-- **Node.js 18+** & npm
+OpenMimic provides automated one-click launcher scripts that check your dependencies, compile the Go binaries, and launch **Mimic Studio**, **Engine**, and **Copilot** simultaneously.
+
+### On Windows:
+```powershell
+# In PowerShell:
+.\run-local.ps1
+
+# Or in Command Prompt (CMD):
+run-local.bat
+```
+
+### On macOS / Linux:
+```bash
+chmod +x run-local.sh
+./run-local.sh
+```
+
+Once launched, the services will be running at:
+- 🎨 **Mimic Studio (Web UI):** [http://localhost:3000](http://localhost:3000)
+- 🔌 **Engine HTTP/REST Bridge:** [http://localhost:8080](http://localhost:8080)
+- ⚡ **Engine gRPC:** `localhost:50051`
+- 🤖 **Mimic Copilot Service:** [http://localhost:8000](http://localhost:8000)
 
 ---
 
-## 🐳 Option 1: Fast Start with Docker Compose (Recommended)
+## 🐳 Option 2: Docker Compose Setup
 
 OpenMimic provides a preconfigured multi-container stack with the Go Engine, Python Copilot, and an embedded Redpanda/Kafka broker.
 
@@ -47,7 +64,7 @@ OpenMimic provides a preconfigured multi-container stack with the Go Engine, Pyt
 
 ---
 
-## 💻 Option 2: Running Directly from Source (Local Development)
+## 💻 Option 3: Running Components Individually from Source
 
 ### 1. Build and Run the OpenMimic Go Engine
 ```powershell
@@ -55,8 +72,9 @@ cd engine
 # Run unit tests to verify
 go test -v -count=1 ./...
 
-# Build the binary
+# Build the binaries
 go build -o bin\mimic.exe .\cmd\mimic
+go build -o bin\mimic-cli.exe .\cmd\mimic-cli
 
 # Start the engine with gRPC and HTTP bridges
 .\bin\mimic.exe -grpc-port 50051 -http-port 8080
@@ -69,7 +87,6 @@ go build -o bin\mimic.exe .\cmd\mimic
 ### 2. Start the Mimic Copilot Service (Python FastAPI)
 ```powershell
 # In the repository root
-# If using the provided python venv:
 .\.venv\Scripts\activate
 uvicorn copilot.main:app --host 0.0.0.0 --port 8000 --reload
 ```
@@ -88,12 +105,30 @@ npm run dev
 
 ---
 
-### 4. Optional: Start the Product Documentation & Landing Website
-```powershell
-cd website
-npx serve -p 3333 .
-```
-- Landing page will be available at **http://localhost:3333**.
+## 🛠️ Using the GitOps CLI (`mimic-cli`)
+
+For CI/CD pipelines and headless terminal execution:
+
+- **Validate Config & Constraints:**
+  ```powershell
+  .\engine\bin\mimic-cli.exe validate --config sample_order_flow.json --constraints
+  ```
+- **Stream Event Preview to Terminal:**
+  ```powershell
+  .\engine\bin\mimic-cli.exe preview --config sample_order_flow.json --count 5
+  ```
+- **Dry-Run Event Generation (Null Sink):**
+  ```powershell
+  .\engine\bin\mimic-cli.exe run --config sample_order_flow.json --dry-run
+  ```
+- **Export Config as Template:**
+  ```powershell
+  .\engine\bin\mimic-cli.exe export --config sample_order_flow.json --to-template
+  ```
+- **Auto-Discover from SQL DDL:**
+  ```powershell
+  .\engine\bin\mimic-cli.exe discover --sql "CREATE TABLE users (id UUID, email VARCHAR, amount DECIMAL);"
+  ```
 
 ---
 
@@ -105,7 +140,7 @@ npx serve -p 3333 .
    ```text
    Generate a stream of 500 transaction events with a 2% failure rate and normal distribution amount
    ```
-4. View the validated configuration auto-populated in the Designer and start streaming!
+4. Explore **Constraints & Solvers**, **Quality & Fidelity**, **Privacy & PII Scanner**, and **Stream Topology & DAG**!
 
 ---
 
