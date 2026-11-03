@@ -52,6 +52,7 @@ import {
   IconChecklist,
   IconServer,
   IconCpu,
+  IconMathFunction,
 } from '@tabler/icons-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
@@ -111,7 +112,7 @@ const COPILOT_API_BASE = 'http://localhost:8000';
 export default function App() {
   const [opened, { toggle }] = useDisclosure();
   const [activeTab, setActiveTab] = useState<
-    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'settings' | 'dashboard'
+    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'expressions' | 'settings' | 'dashboard'
   >('designer');
   const [config, setConfig] = useState<GeneratorConfig>(DEFAULT_CONFIG);
 
@@ -506,6 +507,12 @@ export default function App() {
             leftSection={<IconBinaryTree size={18} />}
             active={activeTab === 'topology'}
             onClick={() => setActiveTab('topology')}
+          />
+          <NavLink
+            label="Calculated Expressions"
+            leftSection={<IconMathFunction size={18} />}
+            active={activeTab === 'expressions'}
+            onClick={() => setActiveTab('expressions')}
           />
           <NavLink
             label="Settings & Governance"
@@ -1195,6 +1202,110 @@ export default function App() {
                   </Card>
                 </Grid.Col>
               ))}
+            </Grid>
+          </Stack>
+        )}
+
+        {/* TAB: CALCULATED EXPRESSIONS & CEL FORMULAS */}
+        {activeTab === 'expressions' && (
+          <Stack gap="md">
+            <div>
+              <Title order={2}>Calculated Expressions &amp; Dynamic Formulas</Title>
+              <Text c="dimmed" size="sm">
+                Define in-flight row computations referencing existing fields, math expressions, string operations, and tax/discount calculations.
+              </Text>
+            </div>
+
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Title order={4} mb="xs">Expression Formula Playground</Title>
+                  <Text size="xs" c="dimmed" mb="md">
+                    Test expression evaluation directly against mock row data.
+                  </Text>
+
+                  <Stack gap="sm">
+                    <TextInput
+                      label="Output Field Name"
+                      defaultValue="net_revenue"
+                      placeholder="e.g. total_amount, full_name"
+                    />
+                    <TextInput
+                      label="Formula Expression"
+                      defaultValue="quantity * unit_price * (1.0 - discount)"
+                      placeholder="e.g. quantity * price * (1 - discount)"
+                      style={{ fontFamily: 'monospace' }}
+                    />
+                    <Select
+                      label="Return Type"
+                      defaultValue="double"
+                      data={[
+                        { value: 'double', label: 'Double / Float (Decimal)' },
+                        { value: 'int64', label: 'Int64 (Integer)' },
+                        { value: 'string', label: 'String (Text concatenation)' },
+                        { value: 'bool', label: 'Boolean (Flag)' },
+                      ]}
+                    />
+
+                    <Card withBorder p="sm" bg="#1A1B1E" radius="md">
+                      <Text size="xs" fw={700} c="dimmed" tt="uppercase" mb="xs">Sample Evaluated Record</Text>
+                      <pre style={{ margin: 0, fontSize: '12px', color: '#69db7c' }}>
+{JSON.stringify({
+  quantity: 5,
+  unit_price: 24.50,
+  discount: 0.10,
+  net_revenue: 110.25
+}, null, 2)}
+                      </pre>
+                    </Card>
+
+                    <Button color="teal" variant="light" onClick={() => setExecMessage('Expression formula verified and attached to active generator.')}>
+                      Apply Expression to Generator
+                    </Button>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Title order={4} mb="xs">Supported Formula Operators &amp; CEL Syntax</Title>
+                  <Text size="xs" c="dimmed" mb="md">
+                    Mathematical, string, and categorical operations supported in OpenMimic streaming runtime.
+                  </Text>
+
+                  <Table striped highlightOnHover>
+                    <Table.Thead>
+                      <Table.Tr>
+                        <Table.Th>Pattern</Table.Th>
+                        <Table.Th>Example Formula</Table.Th>
+                        <Table.Th>Output</Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      <Table.Tr>
+                        <Table.Td><Badge color="blue">Arithmetic</Badge></Table.Td>
+                        <Table.Td><code>quantity * unit_price</code></Table.Td>
+                        <Table.Td><Text size="xs">122.50</Text></Table.Td>
+                      </Table.Tr>
+                      <Table.Tr>
+                        <Table.Td><Badge color="indigo">Parentheses</Badge></Table.Td>
+                        <Table.Td><code>(price + tax) * (1 - disc)</code></Table.Td>
+                        <Table.Td><Text size="xs">104.20</Text></Table.Td>
+                      </Table.Tr>
+                      <Table.Tr>
+                        <Table.Td><Badge color="teal">String Concat</Badge></Table.Td>
+                        <Table.Td><code>first_name + ' ' + last_name</code></Table.Td>
+                        <Table.Td><Text size="xs">"Jane Doe"</Text></Table.Td>
+                      </Table.Tr>
+                      <Table.Tr>
+                        <Table.Td><Badge color="orange">Comparison</Badge></Table.Td>
+                        <Table.Td><code>score &gt; 80</code></Table.Td>
+                        <Table.Td><Text size="xs">true</Text></Table.Td>
+                      </Table.Tr>
+                    </Table.Tbody>
+                  </Table>
+                </Card>
+              </Grid.Col>
             </Grid>
           </Stack>
         )}

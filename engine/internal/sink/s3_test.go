@@ -74,3 +74,4 @@ func TestS3StorageSinkParquet(t *testing.T) {
 		}
 	}
 }
+

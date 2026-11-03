@@ -241,7 +241,7 @@ message Field {
 
 // FunctionGenerator defines how a field value is generated.
 message FunctionGenerator {
-  reserved 15 to 20; // Reserved slots
+  reserved 16 to 20; // Reserved slots
   oneof func {
     UuidFunction uuid = 1;
     DistributionFunction distribution = 2;
@@ -257,7 +257,15 @@ message FunctionGenerator {
     MediaMetaFunction media_meta = 12;        // Audio/image/video synthetic metadata
     DifferentialPrivacyFunction differential_privacy = 13; // Calibrated Laplace or Gaussian noise
     PseudonymizeFunction pseudonymize = 14;   // Format-Preserving Encryption & deterministic hashing
+    CalculatedExpressionFunction expression = 15; // In-flight computed formula / CEL expression
   }
+}
+
+// CalculatedExpressionFunction evaluates mathematical or string expressions
+// dynamically referencing other fields in the current event payload.
+message CalculatedExpressionFunction {
+  string expression = 1; // e.g. "quantity * unit_price * (1.0 - discount)" or "first_name + ' ' + last_name"
+  string return_type = 2; // "double", "int64", "string", "bool"
 }
 
 // PseudonymizeFunction protects PII while preserving join integrity across tables

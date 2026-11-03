@@ -61,3 +61,4 @@ func TestPseudonymizeMaskChars(t *testing.T) {
 		t.Errorf("expected middle characters masked with *, got %s", res)
 	}
 }
+

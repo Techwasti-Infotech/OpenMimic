@@ -10,6 +10,7 @@ import (
 
 	"openmimic/engine/internal/cdc"
 	"openmimic/engine/internal/dlq"
+	"openmimic/engine/internal/expression"
 	"openmimic/engine/internal/generator"
 	"openmimic/engine/internal/metrics"
 	"openmimic/engine/internal/privacy"
@@ -102,7 +103,7 @@ func (e *Engine) GenerateEvent(index int64) (map[string]any, error) {
 		record := make(map[string]any)
 
 		for _, field := range e.config.GetFields() {
-			val := e.generateFieldValue(field.GetGenerator(), index)
+			val := e.generateFieldValue(field.GetGenerator(), index, record)
 			record[field.GetName()] = val
 		}
 
@@ -133,7 +134,7 @@ func (e *Engine) GenerateEvent(index int64) (map[string]any, error) {
 	return nil, err
 }
 
-func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64) any {
+func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64, currentRecord map[string]any) any {
 	if gen == nil {
 		return nil
 	}
@@ -244,7 +245,7 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64) any 
 		if f.NestedObject != nil {
 			nestedRecord := make(map[string]any)
 			for _, subField := range f.NestedObject.GetFields() {
-				nestedRecord[subField.GetName()] = e.generateFieldValue(subField.GetGenerator(), index)
+				nestedRecord[subField.GetName()] = e.generateFieldValue(subField.GetGenerator(), index, nestedRecord)
 			}
 			return nestedRecord
 		}
@@ -262,7 +263,7 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64) any 
 			}
 			items := make([]any, 0, count)
 			for j := 0; j < count; j++ {
-				itemVal := e.generateFieldValue(f.Array.GetItemGenerator(), int64(j))
+				itemVal := e.generateFieldValue(f.Array.GetItemGenerator(), int64(j), currentRecord)
 				items = append(items, itemVal)
 			}
 			return items
@@ -315,6 +316,12 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64) any 
 		if f.Pseudonymize != nil {
 			p := pseudonym.NewPseudonymizer(f.Pseudonymize)
 			return p.Pseudonymize(e.state.RNG)
+		}
+
+	case *pb.FunctionGenerator_Expression:
+		if f.Expression != nil {
+			eval := expression.NewEvaluator(f.Expression)
+			return eval.Evaluate(currentRecord)
 		}
 	}
 
