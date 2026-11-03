@@ -50,6 +50,8 @@ import {
   IconBuildingSkyscraper,
   IconShield,
   IconChecklist,
+  IconServer,
+  IconCpu,
 } from '@tabler/icons-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
@@ -1364,6 +1366,61 @@ export default function App() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+            </Card>
+
+            {/* Distributed Cluster Workers Status */}
+            <Card withBorder shadow="sm" radius="md">
+              <Group justify="space-between" mb="xs">
+                <div>
+                  <Title order={4}>Distributed Cluster Workers (Scale-Out Mode)</Title>
+                  <Text size="xs" c="dimmed">
+                    Partitioned generation nodes coordinated by OpenMimic Coordinator.
+                  </Text>
+                </div>
+                <Badge color="violet" leftSection={<IconCpu size={14} />}>Cluster Active</Badge>
+              </Group>
+
+              <Table striped highlightOnHover mt="sm">
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Worker ID</Table.Th>
+                    <Table.Th>Address</Table.Th>
+                    <Table.Th>Partition Range</Table.Th>
+                    <Table.Th>Partition Rate</Table.Th>
+                    <Table.Th>Status</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  <Table.Tr>
+                    <Table.Td><Text fw={500} size="sm">worker-node-01</Text></Table.Td>
+                    <Table.Td><Text size="xs" c="dimmed">10.0.1.14:50051</Text></Table.Td>
+                    <Table.Td><Badge variant="outline" color="blue">0 - 249,999</Badge></Table.Td>
+                    <Table.Td><Text size="sm">25,000 evt/s</Text></Table.Td>
+                    <Table.Td><Badge color="green">ONLINE</Badge></Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td><Text fw={500} size="sm">worker-node-02</Text></Table.Td>
+                    <Table.Td><Text size="xs" c="dimmed">10.0.1.15:50051</Text></Table.Td>
+                    <Table.Td><Badge variant="outline" color="blue">250,000 - 499,999</Badge></Table.Td>
+                    <Table.Td><Text size="sm">25,000 evt/s</Text></Table.Td>
+                    <Table.Td><Badge color="green">ONLINE</Badge></Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td><Text fw={500} size="sm">worker-node-03</Text></Table.Td>
+                    <Table.Td><Text size="xs" c="dimmed">10.0.1.16:50051</Text></Table.Td>
+                    <Table.Td><Badge variant="outline" color="blue">500,000 - 749,999</Badge></Table.Td>
+                    <Table.Td><Text size="sm">25,000 evt/s</Text></Table.Td>
+                    <Table.Td><Badge color="green">ONLINE</Badge></Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td><Text fw={500} size="sm">worker-node-04</Text></Table.Td>
+                    <Table.Td><Text size="xs" c="dimmed">10.0.1.17:50051</Text></Table.Td>
+                    <Table.Td><Badge variant="outline" color="blue">750,000 - 999,999</Badge></Table.Td>
+                    <Table.Td><Text size="sm">25,000 evt/s</Text></Table.Td>
+                    <Table.Td><Badge color="green">ONLINE</Badge></Table.Td>
+                  </Table.Tr>
+                </Table.Tbody>
+              </Table>
             </Card>
           </Stack>
         )}

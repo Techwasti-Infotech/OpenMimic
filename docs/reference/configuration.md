@@ -20,6 +20,20 @@
       "client_id": "openmimic-engine"
     }
   },
+  "conventions": {
+    "tenant_id": "tenant-corp-a",
+    "topic_namespace": "prod.us-east",
+    "inject_audit_columns": true
+  },
+  "telemetry": {
+    "enable_w3c_traceparent": true,
+    "metrics_port": 8080
+  },
+  "dlq": {
+    "sink_type": "DLQ_SINK_BUFFER",
+    "dlq_topic": "dlq.invalid_events",
+    "max_buffer_size": 1000
+  },
   "fields": [
     {
       "name": "user_id",
@@ -109,7 +123,31 @@ The `sink` object accepts one of the following definitions:
 }
 ```
 
-### 4. Stdout Sink
+### 4. Redis Sink
+```json
+"sink": {
+  "redis": {
+    "address": "localhost:6379",
+    "key_prefix": "events:order:",
+    "key_field": "order_id",
+    "ttl_seconds": 3600
+  }
+}
+```
+
+### 5. ClickHouse Sink
+```json
+"sink": {
+  "clickhouse": {
+    "address": "localhost:9000",
+    "database": "default",
+    "table": "events_stream",
+    "batch_size": 1000
+  }
+}
+```
+
+### 6. Stdout Sink
 ```json
 "sink": {
   "stdout": {
@@ -118,4 +156,30 @@ The `sink` object accepts one of the following definitions:
 }
 ```
 Outputs NDJSON (newline-delimited JSON) to standard output.
+
+---
+
+## ⚡ Scale-Out Cluster & CLI Capabilities
+
+### 1. Distributed Partitioned Generation
+Run across $N$ parallel worker agents partitioned deterministically:
+```bash
+mimic-cli cluster --config mimic.json --workers 4 --total 1000000 --rate 5000
+```
+
+### 2. Reverse-Engineering from Sample DB Records
+Profile existing JSON database records to automatically produce generator definitions:
+```bash
+mimic-cli profile --table orders --sample sample_db_rows.json
+```
+
+### 3. Prometheus & OpenTelemetry Telemetry
+Scrape standard Prometheus metrics and propagate W3C distributed trace context:
+```bash
+curl http://localhost:8080/metrics
+```
+Headers injected into outgoing messages:
+- `traceparent`: `00-<trace_id>-<span_id>-01`
+- `tracestate`: vendor tracing metadata
+
 
