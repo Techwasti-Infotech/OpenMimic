@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"openmimic/engine/internal/generator"
@@ -188,6 +189,67 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64) any 
 	case *pb.FunctionGenerator_EntityPool:
 		if f.EntityPool != nil {
 			return generator.GenerateEntityPool(e.state.RNG, f.EntityPool)
+		}
+
+	case *pb.FunctionGenerator_NestedObject:
+		if f.NestedObject != nil {
+			nestedRecord := make(map[string]any)
+			for _, subField := range f.NestedObject.GetFields() {
+				nestedRecord[subField.GetName()] = e.generateFieldValue(subField.GetGenerator(), index)
+			}
+			return nestedRecord
+		}
+
+	case *pb.FunctionGenerator_Array:
+		if f.Array != nil {
+			minItems := int(f.Array.GetMinItems())
+			maxItems := int(f.Array.GetMaxItems())
+			if maxItems < minItems {
+				maxItems = minItems
+			}
+			count := minItems
+			if maxItems > minItems {
+				count = minItems + e.state.RNG.Intn(maxItems-minItems+1)
+			}
+			items := make([]any, 0, count)
+			for j := 0; j < count; j++ {
+				itemVal := e.generateFieldValue(f.Array.GetItemGenerator(), int64(j))
+				items = append(items, itemVal)
+			}
+			return items
+		}
+
+	case *pb.FunctionGenerator_MediaMeta:
+		if f.MediaMeta != nil {
+			mediaType := f.MediaMeta.GetMediaType()
+			if mediaType == "" {
+				mediaType = "image"
+			}
+			mime := f.MediaMeta.GetMimeType()
+			if mime == "" {
+				mime = "image/jpeg"
+			}
+			w := f.MediaMeta.GetWidth()
+			if w == 0 {
+				w = 1920
+			}
+			h := f.MediaMeta.GetHeight()
+			if h == 0 {
+				h = 1080
+			}
+			size := f.MediaMeta.GetMaxBytes()
+			if size == 0 {
+				size = int64(1024 * 1024 * 2)
+			}
+			return map[string]any{
+				"media_type":   mediaType,
+				"mime_type":    mime,
+				"width":        w,
+				"height":       h,
+				"size_bytes":   int64(float64(size) * (0.8 + e.state.RNG.Float64()*0.4)),
+				"storage_uri":  fmt.Sprintf("s3://mimic-media/%s/%08x.%s", mediaType, e.state.RNG.Uint32(), strings.TrimPrefix(mime, mediaType+"/")),
+				"checksum_sha": fmt.Sprintf("%016x%016x", e.state.RNG.Uint64(), e.state.RNG.Uint64()),
+			}
 		}
 	}
 

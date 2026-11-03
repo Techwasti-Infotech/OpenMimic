@@ -60,6 +60,20 @@ message AuditEvent {
   string details = 6;
 }
 
+// MultiGeneratorTopology defines correlated multi-stream orchestration (Point 4)
+message TopologyNode {
+  string generator_id = 1;
+  GeneratorConfig config = 2;
+  repeated string depends_on = 3; // IDs of generators that must run or emit entities first
+  int64 delay_after_parent_ms = 4;
+}
+
+message MultiGeneratorTopology {
+  string id = 1;
+  string name = 2;
+  repeated TopologyNode nodes = 3;
+}
+
 // TrafficProfile shapes production rate dynamics
 message TrafficProfile {
   oneof profile_type {
@@ -98,7 +112,26 @@ message SinkConfig {
     PostgresSink postgres = 2;
     S3Sink s3 = 3;
     StdoutSink stdout = 4;
+    RedisSink redis = 5;
+    ClickHouseSink clickhouse = 6;
   }
+}
+
+message RedisSink {
+  string addr = 1; // e.g. "localhost:6379"
+  string password = 2;
+  int32 db = 3;
+  string key_pattern = 4; // e.g. "mimic:event:{id}" or "stream:orders"
+  string mode = 5; // "set", "lpush", "rpush", "publish", "xadd"
+  string stream_or_channel = 6; // for pubsub or redis stream
+}
+
+message ClickHouseSink {
+  string addr = 1; // e.g. "localhost:9000" or "localhost:8123"
+  string database = 2;
+  string table = 3;
+  string username = 4;
+  string password = 5;
 }
 
 message KafkaSink {
@@ -132,7 +165,7 @@ message Field {
 
 // FunctionGenerator defines how a field value is generated.
 message FunctionGenerator {
-  reserved 10 to 20; // Reserved slots for Phase 6 constraints, Phase 8 PII masking & multimodal
+  reserved 13 to 20; // Reserved slots
   oneof func {
     UuidFunction uuid = 1;
     DistributionFunction distribution = 2;
@@ -143,7 +176,28 @@ message FunctionGenerator {
     WeightedChoiceFunction weighted_choice = 7;
     MarkovChainFunction markov_chain = 8;     // State-machine transitions
     EntityPoolFunction entity_pool = 9;       // Shared relational foreign-key references
+    NestedObjectFunction nested_object = 10;  // Multimodal/nested structured JSON
+    ArrayFunction array = 11;                 // Repeating arrays of values/objects
+    MediaMetaFunction media_meta = 12;        // Audio/image/video synthetic metadata
   }
+}
+
+message NestedObjectFunction {
+  repeated Field fields = 1;
+}
+
+message ArrayFunction {
+  int32 min_items = 1;
+  int32 max_items = 2;
+  FunctionGenerator item_generator = 3;
+}
+
+message MediaMetaFunction {
+  string media_type = 1; // "image", "audio", "video"
+  string mime_type = 2; // "image/jpeg", "image/png", "audio/mp3", "video/mp4"
+  int32 width = 3;
+  int32 height = 4;
+  int64 max_bytes = 5;
 }
 
 message MarkovTransition {
