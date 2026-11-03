@@ -19,7 +19,9 @@ message GeneratorConfig {
   CDCEnvelope cdc_envelope = 11; // CDC (Change Data Capture) configuration (Debezium envelope)
   DLQConfig dlq = 12; // Dead Letter Queue configuration for quarantined failures
   OTelTracingConfig otel = 13; // OpenTelemetry trace header injection
-  reserved 14 to 20; // Reserved slots for Phase 8-9 (PII rules, fidelity thresholds, audit tags)
+  SchemaEvolutionConfig schema_evolution = 14; // Mid-stream schema evolution / drift
+  LogReplayerConfig log_replayer = 15; // Historical log file replay with time inflation
+  reserved 16 to 20; // Reserved slots for Phase 8-9 (PII rules, fidelity thresholds, audit tags)
 }
 
 // DLQConfig configures quarantine destinations for events failing constraints or validation
@@ -239,9 +241,26 @@ message Field {
   FunctionGenerator generator = 2;
 }
 
+// SchemaEvolutionConfig specifies backward/forward schema changes occurring at a given event index
+message SchemaEvolutionConfig {
+  bool enabled = 1;
+  int64 evolve_at_event = 2; // Event threshold when new schema rules kick in
+  repeated Field added_fields = 3; // New fields introduced
+  repeated string removed_fields = 4; // Deprecated fields removed from payload
+}
+
+// LogReplayerConfig specifies ingestion and real-time playback parameters for historical log files
+message LogReplayerConfig {
+  bool enabled = 1;
+  string log_format = 2; // "nginx_combined", "apache_common", "jsonl_audit"
+  string file_path = 3;
+  double speed_multiplier = 4; // e.g. 1.0 (realtime), 10.0 (10x acceleration)
+  bool loop_replay = 5;
+}
+
 // FunctionGenerator defines how a field value is generated.
 message FunctionGenerator {
-  reserved 16 to 20; // Reserved slots
+  reserved 18 to 20; // Reserved slots
   oneof func {
     UuidFunction uuid = 1;
     DistributionFunction distribution = 2;
@@ -258,7 +277,25 @@ message FunctionGenerator {
     DifferentialPrivacyFunction differential_privacy = 13; // Calibrated Laplace or Gaussian noise
     PseudonymizeFunction pseudonymize = 14;   // Format-Preserving Encryption & deterministic hashing
     CalculatedExpressionFunction expression = 15; // In-flight computed formula / CEL expression
+    TimeSeriesDriftFunction time_series_drift = 16; // Sinusoidal trends and sensor drift
+    SessionWindowFunction session_window = 17;     // Stateful user/device session timeouts
   }
+}
+
+// TimeSeriesDriftFunction simulates seasonal cycles, gradual trend drift, and noise
+message TimeSeriesDriftFunction {
+  double base_value = 1;
+  double trend_slope = 2; // Linear drift per event (e.g. +0.05 per event)
+  double seasonality_amplitude = 3; // Sinusoidal amplitude (e.g. 10.0)
+  int64 seasonality_period = 4; // Period length in events (e.g. 100 events per cycle)
+  double noise_std_dev = 5; // Gaussian jitter
+}
+
+// SessionWindowFunction manages stateful session IDs with inactivity expiration
+message SessionWindowFunction {
+  string user_id_field = 1; // Field to group sessions by
+  int64 inactivity_timeout_seconds = 2; // Inactivity cutoff (e.g. 1800s for 30m)
+  string session_prefix = 3; // e.g. "sess_"
 }
 
 // CalculatedExpressionFunction evaluates mathematical or string expressions

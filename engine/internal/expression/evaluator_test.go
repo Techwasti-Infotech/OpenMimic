@@ -42,3 +42,4 @@ func TestStringConcatenation(t *testing.T) {
 		t.Errorf("expected 'Alice Smith', got '%s'", result)
 	}
 }
+

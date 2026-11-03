@@ -19,6 +19,7 @@ import (
 	"openmimic/engine/internal/solver"
 	"openmimic/engine/internal/state"
 	"openmimic/engine/internal/telemetry"
+	"openmimic/engine/internal/timeseries"
 	"openmimic/engine/internal/traffic"
 	pb "openmimic/engine/pkg/proto/v1"
 )
@@ -35,6 +36,7 @@ type Engine struct {
 	cdcEnv     *cdc.DebeziumEnvelope
 	dlqRouter  *dlq.Router
 	otelInj    *telemetry.OTelInjector
+	sessions   map[string]*timeseries.SessionTracker
 }
 
 // NewEngine creates a new Engine instance.
@@ -72,6 +74,7 @@ func NewEngine(cfg *pb.GeneratorConfig, w io.Writer) *Engine {
 		cdcEnv:    cdcEnv,
 		dlqRouter: dlqRouter,
 		otelInj:   otelInj,
+		sessions:  make(map[string]*timeseries.SessionTracker),
 	}
 }
 
@@ -105,6 +108,16 @@ func (e *Engine) GenerateEvent(index int64) (map[string]any, error) {
 		for _, field := range e.config.GetFields() {
 			val := e.generateFieldValue(field.GetGenerator(), index, record)
 			record[field.GetName()] = val
+		}
+
+		// Apply mid-stream schema evolution if active
+		if evo := e.config.GetSchemaEvolution(); evo != nil && evo.GetEnabled() && index >= evo.GetEvolveAtEvent() {
+			for _, addField := range evo.GetAddedFields() {
+				record[addField.GetName()] = e.generateFieldValue(addField.GetGenerator(), index, record)
+			}
+			for _, remField := range evo.GetRemovedFields() {
+				delete(record, remField)
+			}
 		}
 
 		// Evaluate candidate against constraints
@@ -322,6 +335,27 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64, curr
 		if f.Expression != nil {
 			eval := expression.NewEvaluator(f.Expression)
 			return eval.Evaluate(currentRecord)
+		}
+
+	case *pb.FunctionGenerator_TimeSeriesDrift:
+		if f.TimeSeriesDrift != nil {
+			driftGen := timeseries.NewDriftGenerator(f.TimeSeriesDrift)
+			return driftGen.Generate(index, e.state.RNG)
+		}
+
+	case *pb.FunctionGenerator_SessionWindow:
+		if f.SessionWindow != nil {
+			userField := f.SessionWindow.GetUserIdField()
+			userID := fmt.Sprintf("%v", currentRecord[userField])
+			if userID == "<nil>" || userID == "" {
+				userID = "default_user"
+			}
+			tracker, exists := e.sessions[userField]
+			if !exists {
+				tracker = timeseries.NewSessionTracker(f.SessionWindow)
+				e.sessions[userField] = tracker
+			}
+			return tracker.GetOrCreateSession(userID, e.state.Clock.Now())
 		}
 	}
 

@@ -60,3 +60,4 @@ func TestSchemaRegistryAutoRegistration(t *testing.T) {
 		t.Errorf("expected schema ID byte 42, got %d", data[4])
 	}
 }
+

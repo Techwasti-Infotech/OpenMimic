@@ -122,3 +122,4 @@ func (s *AutoRegisterWireSerializer) AutoRegisterIfNecessary(ctx context.Context
 	s.cfg.SchemaId = int32(id)
 	return uint32(id), nil
 }
+
