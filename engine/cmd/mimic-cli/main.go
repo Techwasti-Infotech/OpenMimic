@@ -9,6 +9,7 @@ import (
 
 	"openmimic/engine"
 	"openmimic/engine/internal/importer"
+	"openmimic/engine/internal/profiler"
 	pb "openmimic/engine/pkg/proto/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -21,6 +22,7 @@ func printUsage() {
 	fmt.Println("  run      --config <file> [--dry-run]       Execute generation pipeline")
 	fmt.Println("  export   --to-template <name>              Generate a starter template (e.g. order-flow, user-signup)")
 	fmt.Println("  discover --sql <file>                      Generate mimic.json from SQL DDL table definition")
+	fmt.Println("  profile  --table <name> --sample <file>    Reverse-engineer mimic.json from sample JSON records")
 }
 
 func main() {
@@ -168,6 +170,43 @@ func main() {
 		cfg, err := importer.SQLDDLToGeneratorConfig(string(sqlContent))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error parsing DDL: %v\n", err)
+			os.Exit(1)
+		}
+
+		bytes, _ := protojson.MarshalOptions{Indent: "  "}.Marshal(cfg)
+		fmt.Println(string(bytes))
+
+	case "profile":
+		profileCmd := flag.NewFlagSet("profile", flag.ExitOnError)
+		tableName := profileCmd.String("table", "profiled_data", "Table or entity name")
+		sampleFile := profileCmd.String("sample", "", "Path to JSON file containing sample rows array")
+		_ = profileCmd.Parse(os.Args[2:])
+
+		if *sampleFile == "" {
+			fmt.Fprintln(os.Stderr, "Error: --sample argument is required")
+			os.Exit(1)
+		}
+
+		sampleBytes, err := os.ReadFile(*sampleFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading sample file: %v\n", err)
+			os.Exit(1)
+		}
+
+		if len(sampleBytes) >= 3 && sampleBytes[0] == 0xEF && sampleBytes[1] == 0xBB && sampleBytes[2] == 0xBF {
+			sampleBytes = sampleBytes[3:]
+		}
+
+		var rows []map[string]any
+		if err := json.Unmarshal(sampleBytes, &rows); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing sample JSON array: %v\n", err)
+			os.Exit(1)
+		}
+
+		p := profiler.NewDatabaseProfiler(*tableName, rows)
+		cfg, err := p.Profile()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Profiling failed: %v\n", err)
 			os.Exit(1)
 		}
 

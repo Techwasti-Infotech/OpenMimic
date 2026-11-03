@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/segmentio/kafka-go"
+	"openmimic/engine/internal/serializer"
 	pb "openmimic/engine/pkg/proto/v1"
 )
 
@@ -25,8 +26,9 @@ type KafkaProducer interface {
 
 // KafkaSink implements the Sink interface for Kafka topics.
 type KafkaSink struct {
-	writer KafkaProducer
-	topic  string
+	writer     KafkaProducer
+	topic      string
+	serializer *serializer.WireSerializer
 }
 
 // NewKafkaSink creates a KafkaSink with segmentio/kafka-go.
@@ -37,23 +39,25 @@ func NewKafkaSink(cfg *pb.KafkaSink) *KafkaSink {
 		Balancer: &kafka.LeastBytes{},
 	}
 	return &KafkaSink{
-		writer: w,
-		topic:  cfg.GetTopic(),
+		writer:     w,
+		topic:      cfg.GetTopic(),
+		serializer: serializer.NewWireSerializer(cfg.GetSchemaRegistry()),
 	}
 }
 
 // NewKafkaSinkWithProducer creates a KafkaSink with a custom KafkaProducer (e.g. for mock testing).
 func NewKafkaSinkWithProducer(p KafkaProducer, topic string) *KafkaSink {
 	return &KafkaSink{
-		writer: p,
-		topic:  topic,
+		writer:     p,
+		topic:      topic,
+		serializer: serializer.NewWireSerializer(nil),
 	}
 }
 
 func (s *KafkaSink) WriteEvent(ctx context.Context, key []byte, payload map[string]any) error {
-	data, err := json.Marshal(payload)
+	data, err := s.serializer.Serialize(payload)
 	if err != nil {
-		return fmt.Errorf("failed to marshal payload: %w", err)
+		return fmt.Errorf("failed to serialize payload: %w", err)
 	}
 
 	msg := kafka.Message{

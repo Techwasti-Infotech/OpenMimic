@@ -176,6 +176,15 @@ message KafkaSink {
   repeated string brokers = 1;
   string topic = 2;
   string client_id = 3;
+  SchemaRegistryConfig schema_registry = 4; // Native Schema Registry & wire format support
+}
+
+message SchemaRegistryConfig {
+  bool enabled = 1;
+  string url = 2; // e.g. "http://localhost:8081"
+  string format = 3; // "avro", "protobuf", "json_schema"
+  int32 schema_id = 4; // Explicit ID or 0 for auto-discovered/auto-registered
+  string subject = 5; // e.g. "orders-value"
 }
 
 message PostgresSink {
