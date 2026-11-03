@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 
+	"openmimic/engine/internal/conventions"
 	"openmimic/engine/internal/importer"
 	"openmimic/engine/internal/orchestrator"
 	"openmimic/engine/internal/service"
@@ -120,6 +121,11 @@ func main() {
 			http.Error(w, fmt.Sprintf("invalid JSON body: %v", err), http.StatusBadRequest)
 			return
 		}
+
+		// Apply Convention Over Configuration resolution
+		resolver := conventions.NewResolver(platformStore.GetGlobalSettings(), platformStore.GetTenantSettings("tenant_default"))
+		resolvedConfig := resolver.ApplyConventions(req.GetConfig())
+		req.Config = resolvedConfig
 
 		resp, err := srv.StartGenerator(r.Context(), &req)
 		if err != nil {
@@ -242,6 +248,44 @@ func main() {
 			"topology": topology.GetId(),
 			"nodes":    len(topology.GetNodes()),
 		})
+	}))
+
+	// Convention Over Configuration Settings endpoints
+	mux.HandleFunc("/api/settings/global", enableCORS(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			bodyBytes, err := io.ReadAll(r.Body)
+			if err == nil {
+				var g pb.GlobalSettings
+				if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(bodyBytes, &g); err == nil {
+					platformStore.UpdateGlobalSettings(&g)
+					platformStore.LogAudit("UPDATE_GLOBAL_SETTINGS", "global", "super_admin", "Updated global governance settings")
+				}
+			}
+		}
+		gBytes, _ := protojson.Marshal(platformStore.GetGlobalSettings())
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(gBytes)
+	}))
+
+	mux.HandleFunc("/api/settings/tenant", enableCORS(func(w http.ResponseWriter, r *http.Request) {
+		tenantID := r.URL.Query().Get("tenant_id")
+		if tenantID == "" {
+			tenantID = "tenant_default"
+		}
+
+		if r.Method == http.MethodPost {
+			bodyBytes, err := io.ReadAll(r.Body)
+			if err == nil {
+				var ts pb.TenantSettings
+				if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(bodyBytes, &ts); err == nil {
+					platformStore.UpdateTenantSettings(&ts)
+					platformStore.LogAudit("UPDATE_TENANT_SETTINGS", ts.GetTenantId(), "tenant_admin", "Updated tenant convention settings")
+				}
+			}
+		}
+		tsBytes, _ := protojson.Marshal(platformStore.GetTenantSettings(tenantID))
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(tsBytes)
 	}))
 
 	log.Printf("OpenMimic REST/HTTP bridge listening on :%d", *httpPort)

@@ -377,20 +377,237 @@ func (x *AnomalyPlaybook) GetInjectionType() string {
 	return ""
 }
 
-// Phase 9: Workspace, Template & Audit Event messages
+// Phase 9: Multi-tenancy, Workspaces, Settings & Governance
+type GlobalSettings struct {
+	state                    protoimpl.MessageState `protogen:"open.v1"`
+	Environment              string                 `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`                                                                    // "development", "staging", "production"
+	MaxEventsPerGeneratorCap int32                  `protobuf:"varint,2,opt,name=max_events_per_generator_cap,json=maxEventsPerGeneratorCap,proto3" json:"max_events_per_generator_cap,omitempty"`   // e.g. 1,000,000 (Super Admin enforced hard ceiling)
+	MaxRateLimitPerSecondCap int32                  `protobuf:"varint,3,opt,name=max_rate_limit_per_second_cap,json=maxRateLimitPerSecondCap,proto3" json:"max_rate_limit_per_second_cap,omitempty"` // e.g. 5,000 evt/s
+	EnforcePiiMasking        bool                   `protobuf:"varint,4,opt,name=enforce_pii_masking,json=enforcePiiMasking,proto3" json:"enforce_pii_masking,omitempty"`                            // True to reject unmasked PII
+	AllowedSinks             []string               `protobuf:"bytes,5,rep,name=allowed_sinks,json=allowedSinks,proto3" json:"allowed_sinks,omitempty"`                                              // e.g. ["kafka", "postgres", "redis", "clickhouse", "stdout"]
+	DefaultKafkaCluster      string                 `protobuf:"bytes,6,opt,name=default_kafka_cluster,json=defaultKafkaCluster,proto3" json:"default_kafka_cluster,omitempty"`
+	AuditRetentionDays       string                 `protobuf:"bytes,7,opt,name=audit_retention_days,json=auditRetentionDays,proto3" json:"audit_retention_days,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *GlobalSettings) Reset() {
+	*x = GlobalSettings{}
+	mi := &file_mimic_config_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GlobalSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GlobalSettings) ProtoMessage() {}
+
+func (x *GlobalSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_mimic_config_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GlobalSettings.ProtoReflect.Descriptor instead.
+func (*GlobalSettings) Descriptor() ([]byte, []int) {
+	return file_mimic_config_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GlobalSettings) GetEnvironment() string {
+	if x != nil {
+		return x.Environment
+	}
+	return ""
+}
+
+func (x *GlobalSettings) GetMaxEventsPerGeneratorCap() int32 {
+	if x != nil {
+		return x.MaxEventsPerGeneratorCap
+	}
+	return 0
+}
+
+func (x *GlobalSettings) GetMaxRateLimitPerSecondCap() int32 {
+	if x != nil {
+		return x.MaxRateLimitPerSecondCap
+	}
+	return 0
+}
+
+func (x *GlobalSettings) GetEnforcePiiMasking() bool {
+	if x != nil {
+		return x.EnforcePiiMasking
+	}
+	return false
+}
+
+func (x *GlobalSettings) GetAllowedSinks() []string {
+	if x != nil {
+		return x.AllowedSinks
+	}
+	return nil
+}
+
+func (x *GlobalSettings) GetDefaultKafkaCluster() string {
+	if x != nil {
+		return x.DefaultKafkaCluster
+	}
+	return ""
+}
+
+func (x *GlobalSettings) GetAuditRetentionDays() string {
+	if x != nil {
+		return x.AuditRetentionDays
+	}
+	return ""
+}
+
+type TenantSettings struct {
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	TenantId              string                 `protobuf:"bytes,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	TenantName            string                 `protobuf:"bytes,2,opt,name=tenant_name,json=tenantName,proto3" json:"tenant_name,omitempty"`
+	DefaultEventLimit     int32                  `protobuf:"varint,3,opt,name=default_event_limit,json=defaultEventLimit,proto3" json:"default_event_limit,omitempty"`            // Convention default: e.g. 1,000
+	DefaultRateLimit      int32                  `protobuf:"varint,4,opt,name=default_rate_limit,json=defaultRateLimit,proto3" json:"default_rate_limit,omitempty"`               // Convention default: e.g. 25 eps
+	DefaultTopicPrefix    string                 `protobuf:"bytes,5,opt,name=default_topic_prefix,json=defaultTopicPrefix,proto3" json:"default_topic_prefix,omitempty"`          // Convention: e.g. "tenant.production."
+	DefaultPostgresSchema string                 `protobuf:"bytes,6,opt,name=default_postgres_schema,json=defaultPostgresSchema,proto3" json:"default_postgres_schema,omitempty"` // Convention: e.g. "mimic_data"
+	AutoInjectTimestamps  bool                   `protobuf:"varint,7,opt,name=auto_inject_timestamps,json=autoInjectTimestamps,proto3" json:"auto_inject_timestamps,omitempty"`   // Convention: auto-add "created_at" if missing
+	AutoInjectEventId     bool                   `protobuf:"varint,8,opt,name=auto_inject_event_id,json=autoInjectEventId,proto3" json:"auto_inject_event_id,omitempty"`          // Convention: auto-add UUID "id" if missing
+	DefaultCurrency       string                 `protobuf:"bytes,9,opt,name=default_currency,json=defaultCurrency,proto3" json:"default_currency,omitempty"`                     // e.g. "USD"
+	DefaultTimezone       string                 `protobuf:"bytes,10,opt,name=default_timezone,json=defaultTimezone,proto3" json:"default_timezone,omitempty"`                    // e.g. "UTC"
+	CustomEntityPools     []string               `protobuf:"bytes,11,rep,name=custom_entity_pools,json=customEntityPools,proto3" json:"custom_entity_pools,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *TenantSettings) Reset() {
+	*x = TenantSettings{}
+	mi := &file_mimic_config_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TenantSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TenantSettings) ProtoMessage() {}
+
+func (x *TenantSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_mimic_config_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TenantSettings.ProtoReflect.Descriptor instead.
+func (*TenantSettings) Descriptor() ([]byte, []int) {
+	return file_mimic_config_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *TenantSettings) GetTenantId() string {
+	if x != nil {
+		return x.TenantId
+	}
+	return ""
+}
+
+func (x *TenantSettings) GetTenantName() string {
+	if x != nil {
+		return x.TenantName
+	}
+	return ""
+}
+
+func (x *TenantSettings) GetDefaultEventLimit() int32 {
+	if x != nil {
+		return x.DefaultEventLimit
+	}
+	return 0
+}
+
+func (x *TenantSettings) GetDefaultRateLimit() int32 {
+	if x != nil {
+		return x.DefaultRateLimit
+	}
+	return 0
+}
+
+func (x *TenantSettings) GetDefaultTopicPrefix() string {
+	if x != nil {
+		return x.DefaultTopicPrefix
+	}
+	return ""
+}
+
+func (x *TenantSettings) GetDefaultPostgresSchema() string {
+	if x != nil {
+		return x.DefaultPostgresSchema
+	}
+	return ""
+}
+
+func (x *TenantSettings) GetAutoInjectTimestamps() bool {
+	if x != nil {
+		return x.AutoInjectTimestamps
+	}
+	return false
+}
+
+func (x *TenantSettings) GetAutoInjectEventId() bool {
+	if x != nil {
+		return x.AutoInjectEventId
+	}
+	return false
+}
+
+func (x *TenantSettings) GetDefaultCurrency() string {
+	if x != nil {
+		return x.DefaultCurrency
+	}
+	return ""
+}
+
+func (x *TenantSettings) GetDefaultTimezone() string {
+	if x != nil {
+		return x.DefaultTimezone
+	}
+	return ""
+}
+
+func (x *TenantSettings) GetCustomEntityPools() []string {
+	if x != nil {
+		return x.CustomEntityPools
+	}
+	return nil
+}
+
 type Workspace struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	OwnerId       string                 `protobuf:"bytes,3,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
 	MemberIds     []string               `protobuf:"bytes,4,rep,name=member_ids,json=memberIds,proto3" json:"member_ids,omitempty"`
+	TenantId      string                 `protobuf:"bytes,5,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Workspace) Reset() {
 	*x = Workspace{}
-	mi := &file_mimic_config_proto_msgTypes[4]
+	mi := &file_mimic_config_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -402,7 +619,7 @@ func (x *Workspace) String() string {
 func (*Workspace) ProtoMessage() {}
 
 func (x *Workspace) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[4]
+	mi := &file_mimic_config_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -415,7 +632,7 @@ func (x *Workspace) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Workspace.ProtoReflect.Descriptor instead.
 func (*Workspace) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{4}
+	return file_mimic_config_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Workspace) GetId() string {
@@ -446,6 +663,13 @@ func (x *Workspace) GetMemberIds() []string {
 	return nil
 }
 
+func (x *Workspace) GetTenantId() string {
+	if x != nil {
+		return x.TenantId
+	}
+	return ""
+}
+
 type Template struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -458,7 +682,7 @@ type Template struct {
 
 func (x *Template) Reset() {
 	*x = Template{}
-	mi := &file_mimic_config_proto_msgTypes[5]
+	mi := &file_mimic_config_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -470,7 +694,7 @@ func (x *Template) String() string {
 func (*Template) ProtoMessage() {}
 
 func (x *Template) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[5]
+	mi := &file_mimic_config_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -483,7 +707,7 @@ func (x *Template) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Template.ProtoReflect.Descriptor instead.
 func (*Template) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{5}
+	return file_mimic_config_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Template) GetId() string {
@@ -528,7 +752,7 @@ type AuditEvent struct {
 
 func (x *AuditEvent) Reset() {
 	*x = AuditEvent{}
-	mi := &file_mimic_config_proto_msgTypes[6]
+	mi := &file_mimic_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -540,7 +764,7 @@ func (x *AuditEvent) String() string {
 func (*AuditEvent) ProtoMessage() {}
 
 func (x *AuditEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[6]
+	mi := &file_mimic_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -553,7 +777,7 @@ func (x *AuditEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuditEvent.ProtoReflect.Descriptor instead.
 func (*AuditEvent) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{6}
+	return file_mimic_config_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *AuditEvent) GetId() string {
@@ -611,7 +835,7 @@ type TopologyNode struct {
 
 func (x *TopologyNode) Reset() {
 	*x = TopologyNode{}
-	mi := &file_mimic_config_proto_msgTypes[7]
+	mi := &file_mimic_config_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -623,7 +847,7 @@ func (x *TopologyNode) String() string {
 func (*TopologyNode) ProtoMessage() {}
 
 func (x *TopologyNode) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[7]
+	mi := &file_mimic_config_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -636,7 +860,7 @@ func (x *TopologyNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyNode.ProtoReflect.Descriptor instead.
 func (*TopologyNode) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{7}
+	return file_mimic_config_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *TopologyNode) GetGeneratorId() string {
@@ -678,7 +902,7 @@ type MultiGeneratorTopology struct {
 
 func (x *MultiGeneratorTopology) Reset() {
 	*x = MultiGeneratorTopology{}
-	mi := &file_mimic_config_proto_msgTypes[8]
+	mi := &file_mimic_config_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -690,7 +914,7 @@ func (x *MultiGeneratorTopology) String() string {
 func (*MultiGeneratorTopology) ProtoMessage() {}
 
 func (x *MultiGeneratorTopology) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[8]
+	mi := &file_mimic_config_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -703,7 +927,7 @@ func (x *MultiGeneratorTopology) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MultiGeneratorTopology.ProtoReflect.Descriptor instead.
 func (*MultiGeneratorTopology) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{8}
+	return file_mimic_config_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *MultiGeneratorTopology) GetId() string {
@@ -743,7 +967,7 @@ type TrafficProfile struct {
 
 func (x *TrafficProfile) Reset() {
 	*x = TrafficProfile{}
-	mi := &file_mimic_config_proto_msgTypes[9]
+	mi := &file_mimic_config_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -755,7 +979,7 @@ func (x *TrafficProfile) String() string {
 func (*TrafficProfile) ProtoMessage() {}
 
 func (x *TrafficProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[9]
+	mi := &file_mimic_config_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -768,7 +992,7 @@ func (x *TrafficProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TrafficProfile.ProtoReflect.Descriptor instead.
 func (*TrafficProfile) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{9}
+	return file_mimic_config_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *TrafficProfile) GetProfileType() isTrafficProfile_ProfileType {
@@ -851,7 +1075,7 @@ type ConstantRate struct {
 
 func (x *ConstantRate) Reset() {
 	*x = ConstantRate{}
-	mi := &file_mimic_config_proto_msgTypes[10]
+	mi := &file_mimic_config_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -863,7 +1087,7 @@ func (x *ConstantRate) String() string {
 func (*ConstantRate) ProtoMessage() {}
 
 func (x *ConstantRate) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[10]
+	mi := &file_mimic_config_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -876,7 +1100,7 @@ func (x *ConstantRate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConstantRate.ProtoReflect.Descriptor instead.
 func (*ConstantRate) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{10}
+	return file_mimic_config_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ConstantRate) GetRatePerSecond() int32 {
@@ -897,7 +1121,7 @@ type DiurnalRate struct {
 
 func (x *DiurnalRate) Reset() {
 	*x = DiurnalRate{}
-	mi := &file_mimic_config_proto_msgTypes[11]
+	mi := &file_mimic_config_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -909,7 +1133,7 @@ func (x *DiurnalRate) String() string {
 func (*DiurnalRate) ProtoMessage() {}
 
 func (x *DiurnalRate) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[11]
+	mi := &file_mimic_config_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -922,7 +1146,7 @@ func (x *DiurnalRate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiurnalRate.ProtoReflect.Descriptor instead.
 func (*DiurnalRate) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{11}
+	return file_mimic_config_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DiurnalRate) GetBaseRate() int32 {
@@ -955,7 +1179,7 @@ type PoissonArrival struct {
 
 func (x *PoissonArrival) Reset() {
 	*x = PoissonArrival{}
-	mi := &file_mimic_config_proto_msgTypes[12]
+	mi := &file_mimic_config_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -967,7 +1191,7 @@ func (x *PoissonArrival) String() string {
 func (*PoissonArrival) ProtoMessage() {}
 
 func (x *PoissonArrival) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[12]
+	mi := &file_mimic_config_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -980,7 +1204,7 @@ func (x *PoissonArrival) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PoissonArrival.ProtoReflect.Descriptor instead.
 func (*PoissonArrival) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{12}
+	return file_mimic_config_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PoissonArrival) GetLambdaRate() float64 {
@@ -1002,7 +1226,7 @@ type BurstSpikeRate struct {
 
 func (x *BurstSpikeRate) Reset() {
 	*x = BurstSpikeRate{}
-	mi := &file_mimic_config_proto_msgTypes[13]
+	mi := &file_mimic_config_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1014,7 +1238,7 @@ func (x *BurstSpikeRate) String() string {
 func (*BurstSpikeRate) ProtoMessage() {}
 
 func (x *BurstSpikeRate) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[13]
+	mi := &file_mimic_config_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1027,7 +1251,7 @@ func (x *BurstSpikeRate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BurstSpikeRate.ProtoReflect.Descriptor instead.
 func (*BurstSpikeRate) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{13}
+	return file_mimic_config_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *BurstSpikeRate) GetNormalRate() int32 {
@@ -1076,7 +1300,7 @@ type SinkConfig struct {
 
 func (x *SinkConfig) Reset() {
 	*x = SinkConfig{}
-	mi := &file_mimic_config_proto_msgTypes[14]
+	mi := &file_mimic_config_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1088,7 +1312,7 @@ func (x *SinkConfig) String() string {
 func (*SinkConfig) ProtoMessage() {}
 
 func (x *SinkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[14]
+	mi := &file_mimic_config_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1101,7 +1325,7 @@ func (x *SinkConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SinkConfig.ProtoReflect.Descriptor instead.
 func (*SinkConfig) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{14}
+	return file_mimic_config_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *SinkConfig) GetSinkType() isSinkConfig_SinkType {
@@ -1219,7 +1443,7 @@ type RedisSink struct {
 
 func (x *RedisSink) Reset() {
 	*x = RedisSink{}
-	mi := &file_mimic_config_proto_msgTypes[15]
+	mi := &file_mimic_config_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1231,7 +1455,7 @@ func (x *RedisSink) String() string {
 func (*RedisSink) ProtoMessage() {}
 
 func (x *RedisSink) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[15]
+	mi := &file_mimic_config_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1244,7 +1468,7 @@ func (x *RedisSink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RedisSink.ProtoReflect.Descriptor instead.
 func (*RedisSink) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{15}
+	return file_mimic_config_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *RedisSink) GetAddr() string {
@@ -1302,7 +1526,7 @@ type ClickHouseSink struct {
 
 func (x *ClickHouseSink) Reset() {
 	*x = ClickHouseSink{}
-	mi := &file_mimic_config_proto_msgTypes[16]
+	mi := &file_mimic_config_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1314,7 +1538,7 @@ func (x *ClickHouseSink) String() string {
 func (*ClickHouseSink) ProtoMessage() {}
 
 func (x *ClickHouseSink) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[16]
+	mi := &file_mimic_config_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1327,7 +1551,7 @@ func (x *ClickHouseSink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClickHouseSink.ProtoReflect.Descriptor instead.
 func (*ClickHouseSink) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{16}
+	return file_mimic_config_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ClickHouseSink) GetAddr() string {
@@ -1376,7 +1600,7 @@ type KafkaSink struct {
 
 func (x *KafkaSink) Reset() {
 	*x = KafkaSink{}
-	mi := &file_mimic_config_proto_msgTypes[17]
+	mi := &file_mimic_config_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1388,7 +1612,7 @@ func (x *KafkaSink) String() string {
 func (*KafkaSink) ProtoMessage() {}
 
 func (x *KafkaSink) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[17]
+	mi := &file_mimic_config_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1401,7 +1625,7 @@ func (x *KafkaSink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KafkaSink.ProtoReflect.Descriptor instead.
 func (*KafkaSink) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{17}
+	return file_mimic_config_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *KafkaSink) GetBrokers() []string {
@@ -1436,7 +1660,7 @@ type PostgresSink struct {
 
 func (x *PostgresSink) Reset() {
 	*x = PostgresSink{}
-	mi := &file_mimic_config_proto_msgTypes[18]
+	mi := &file_mimic_config_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1448,7 +1672,7 @@ func (x *PostgresSink) String() string {
 func (*PostgresSink) ProtoMessage() {}
 
 func (x *PostgresSink) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[18]
+	mi := &file_mimic_config_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1461,7 +1685,7 @@ func (x *PostgresSink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostgresSink.ProtoReflect.Descriptor instead.
 func (*PostgresSink) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{18}
+	return file_mimic_config_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *PostgresSink) GetConnectionString() string {
@@ -1497,7 +1721,7 @@ type S3Sink struct {
 
 func (x *S3Sink) Reset() {
 	*x = S3Sink{}
-	mi := &file_mimic_config_proto_msgTypes[19]
+	mi := &file_mimic_config_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1509,7 +1733,7 @@ func (x *S3Sink) String() string {
 func (*S3Sink) ProtoMessage() {}
 
 func (x *S3Sink) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[19]
+	mi := &file_mimic_config_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1522,7 +1746,7 @@ func (x *S3Sink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use S3Sink.ProtoReflect.Descriptor instead.
 func (*S3Sink) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{19}
+	return file_mimic_config_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *S3Sink) GetBucket() string {
@@ -1562,7 +1786,7 @@ type StdoutSink struct {
 
 func (x *StdoutSink) Reset() {
 	*x = StdoutSink{}
-	mi := &file_mimic_config_proto_msgTypes[20]
+	mi := &file_mimic_config_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1574,7 +1798,7 @@ func (x *StdoutSink) String() string {
 func (*StdoutSink) ProtoMessage() {}
 
 func (x *StdoutSink) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[20]
+	mi := &file_mimic_config_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1587,7 +1811,7 @@ func (x *StdoutSink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StdoutSink.ProtoReflect.Descriptor instead.
 func (*StdoutSink) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{20}
+	return file_mimic_config_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *StdoutSink) GetPretty() bool {
@@ -1608,7 +1832,7 @@ type Field struct {
 
 func (x *Field) Reset() {
 	*x = Field{}
-	mi := &file_mimic_config_proto_msgTypes[21]
+	mi := &file_mimic_config_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1620,7 +1844,7 @@ func (x *Field) String() string {
 func (*Field) ProtoMessage() {}
 
 func (x *Field) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[21]
+	mi := &file_mimic_config_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1633,7 +1857,7 @@ func (x *Field) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Field.ProtoReflect.Descriptor instead.
 func (*Field) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{21}
+	return file_mimic_config_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *Field) GetName() string {
@@ -1674,7 +1898,7 @@ type FunctionGenerator struct {
 
 func (x *FunctionGenerator) Reset() {
 	*x = FunctionGenerator{}
-	mi := &file_mimic_config_proto_msgTypes[22]
+	mi := &file_mimic_config_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1686,7 +1910,7 @@ func (x *FunctionGenerator) String() string {
 func (*FunctionGenerator) ProtoMessage() {}
 
 func (x *FunctionGenerator) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[22]
+	mi := &file_mimic_config_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1699,7 +1923,7 @@ func (x *FunctionGenerator) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FunctionGenerator.ProtoReflect.Descriptor instead.
 func (*FunctionGenerator) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{22}
+	return file_mimic_config_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *FunctionGenerator) GetFunc() isFunctionGenerator_Func {
@@ -1902,7 +2126,7 @@ type NestedObjectFunction struct {
 
 func (x *NestedObjectFunction) Reset() {
 	*x = NestedObjectFunction{}
-	mi := &file_mimic_config_proto_msgTypes[23]
+	mi := &file_mimic_config_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1914,7 +2138,7 @@ func (x *NestedObjectFunction) String() string {
 func (*NestedObjectFunction) ProtoMessage() {}
 
 func (x *NestedObjectFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[23]
+	mi := &file_mimic_config_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1927,7 +2151,7 @@ func (x *NestedObjectFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NestedObjectFunction.ProtoReflect.Descriptor instead.
 func (*NestedObjectFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{23}
+	return file_mimic_config_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *NestedObjectFunction) GetFields() []*Field {
@@ -1948,7 +2172,7 @@ type ArrayFunction struct {
 
 func (x *ArrayFunction) Reset() {
 	*x = ArrayFunction{}
-	mi := &file_mimic_config_proto_msgTypes[24]
+	mi := &file_mimic_config_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1960,7 +2184,7 @@ func (x *ArrayFunction) String() string {
 func (*ArrayFunction) ProtoMessage() {}
 
 func (x *ArrayFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[24]
+	mi := &file_mimic_config_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1973,7 +2197,7 @@ func (x *ArrayFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArrayFunction.ProtoReflect.Descriptor instead.
 func (*ArrayFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{24}
+	return file_mimic_config_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ArrayFunction) GetMinItems() int32 {
@@ -2010,7 +2234,7 @@ type MediaMetaFunction struct {
 
 func (x *MediaMetaFunction) Reset() {
 	*x = MediaMetaFunction{}
-	mi := &file_mimic_config_proto_msgTypes[25]
+	mi := &file_mimic_config_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2022,7 +2246,7 @@ func (x *MediaMetaFunction) String() string {
 func (*MediaMetaFunction) ProtoMessage() {}
 
 func (x *MediaMetaFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[25]
+	mi := &file_mimic_config_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2035,7 +2259,7 @@ func (x *MediaMetaFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MediaMetaFunction.ProtoReflect.Descriptor instead.
 func (*MediaMetaFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{25}
+	return file_mimic_config_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *MediaMetaFunction) GetMediaType() string {
@@ -2083,7 +2307,7 @@ type MarkovTransition struct {
 
 func (x *MarkovTransition) Reset() {
 	*x = MarkovTransition{}
-	mi := &file_mimic_config_proto_msgTypes[26]
+	mi := &file_mimic_config_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2095,7 +2319,7 @@ func (x *MarkovTransition) String() string {
 func (*MarkovTransition) ProtoMessage() {}
 
 func (x *MarkovTransition) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[26]
+	mi := &file_mimic_config_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2108,7 +2332,7 @@ func (x *MarkovTransition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkovTransition.ProtoReflect.Descriptor instead.
 func (*MarkovTransition) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{26}
+	return file_mimic_config_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *MarkovTransition) GetToState() string {
@@ -2135,7 +2359,7 @@ type MarkovState struct {
 
 func (x *MarkovState) Reset() {
 	*x = MarkovState{}
-	mi := &file_mimic_config_proto_msgTypes[27]
+	mi := &file_mimic_config_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2147,7 +2371,7 @@ func (x *MarkovState) String() string {
 func (*MarkovState) ProtoMessage() {}
 
 func (x *MarkovState) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[27]
+	mi := &file_mimic_config_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2160,7 +2384,7 @@ func (x *MarkovState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkovState.ProtoReflect.Descriptor instead.
 func (*MarkovState) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{27}
+	return file_mimic_config_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *MarkovState) GetStateName() string {
@@ -2187,7 +2411,7 @@ type MarkovChainFunction struct {
 
 func (x *MarkovChainFunction) Reset() {
 	*x = MarkovChainFunction{}
-	mi := &file_mimic_config_proto_msgTypes[28]
+	mi := &file_mimic_config_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2199,7 +2423,7 @@ func (x *MarkovChainFunction) String() string {
 func (*MarkovChainFunction) ProtoMessage() {}
 
 func (x *MarkovChainFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[28]
+	mi := &file_mimic_config_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2212,7 +2436,7 @@ func (x *MarkovChainFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkovChainFunction.ProtoReflect.Descriptor instead.
 func (*MarkovChainFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{28}
+	return file_mimic_config_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *MarkovChainFunction) GetInitialState() string {
@@ -2240,7 +2464,7 @@ type EntityPoolFunction struct {
 
 func (x *EntityPoolFunction) Reset() {
 	*x = EntityPoolFunction{}
-	mi := &file_mimic_config_proto_msgTypes[29]
+	mi := &file_mimic_config_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2252,7 +2476,7 @@ func (x *EntityPoolFunction) String() string {
 func (*EntityPoolFunction) ProtoMessage() {}
 
 func (x *EntityPoolFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[29]
+	mi := &file_mimic_config_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2265,7 +2489,7 @@ func (x *EntityPoolFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EntityPoolFunction.ProtoReflect.Descriptor instead.
 func (*EntityPoolFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{29}
+	return file_mimic_config_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *EntityPoolFunction) GetPoolName() string {
@@ -2298,7 +2522,7 @@ type UuidFunction struct {
 
 func (x *UuidFunction) Reset() {
 	*x = UuidFunction{}
-	mi := &file_mimic_config_proto_msgTypes[30]
+	mi := &file_mimic_config_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2310,7 +2534,7 @@ func (x *UuidFunction) String() string {
 func (*UuidFunction) ProtoMessage() {}
 
 func (x *UuidFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[30]
+	mi := &file_mimic_config_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2323,7 +2547,7 @@ func (x *UuidFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UuidFunction.ProtoReflect.Descriptor instead.
 func (*UuidFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{30}
+	return file_mimic_config_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *UuidFunction) GetUppercase() bool {
@@ -2346,7 +2570,7 @@ type DistributionFunction struct {
 
 func (x *DistributionFunction) Reset() {
 	*x = DistributionFunction{}
-	mi := &file_mimic_config_proto_msgTypes[31]
+	mi := &file_mimic_config_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2358,7 +2582,7 @@ func (x *DistributionFunction) String() string {
 func (*DistributionFunction) ProtoMessage() {}
 
 func (x *DistributionFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[31]
+	mi := &file_mimic_config_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2371,7 +2595,7 @@ func (x *DistributionFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DistributionFunction.ProtoReflect.Descriptor instead.
 func (*DistributionFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{31}
+	return file_mimic_config_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *DistributionFunction) GetDistributionType() isDistributionFunction_DistributionType {
@@ -2425,7 +2649,7 @@ type NormalDistribution struct {
 
 func (x *NormalDistribution) Reset() {
 	*x = NormalDistribution{}
-	mi := &file_mimic_config_proto_msgTypes[32]
+	mi := &file_mimic_config_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2437,7 +2661,7 @@ func (x *NormalDistribution) String() string {
 func (*NormalDistribution) ProtoMessage() {}
 
 func (x *NormalDistribution) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[32]
+	mi := &file_mimic_config_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2450,7 +2674,7 @@ func (x *NormalDistribution) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NormalDistribution.ProtoReflect.Descriptor instead.
 func (*NormalDistribution) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{32}
+	return file_mimic_config_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *NormalDistribution) GetMean() float64 {
@@ -2477,7 +2701,7 @@ type UniformDistribution struct {
 
 func (x *UniformDistribution) Reset() {
 	*x = UniformDistribution{}
-	mi := &file_mimic_config_proto_msgTypes[33]
+	mi := &file_mimic_config_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2489,7 +2713,7 @@ func (x *UniformDistribution) String() string {
 func (*UniformDistribution) ProtoMessage() {}
 
 func (x *UniformDistribution) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[33]
+	mi := &file_mimic_config_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2502,7 +2726,7 @@ func (x *UniformDistribution) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UniformDistribution.ProtoReflect.Descriptor instead.
 func (*UniformDistribution) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{33}
+	return file_mimic_config_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *UniformDistribution) GetMin() float64 {
@@ -2528,7 +2752,7 @@ type NowFunction struct {
 
 func (x *NowFunction) Reset() {
 	*x = NowFunction{}
-	mi := &file_mimic_config_proto_msgTypes[34]
+	mi := &file_mimic_config_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2540,7 +2764,7 @@ func (x *NowFunction) String() string {
 func (*NowFunction) ProtoMessage() {}
 
 func (x *NowFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[34]
+	mi := &file_mimic_config_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2553,7 +2777,7 @@ func (x *NowFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NowFunction.ProtoReflect.Descriptor instead.
 func (*NowFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{34}
+	return file_mimic_config_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *NowFunction) GetFormat() string {
@@ -2573,7 +2797,7 @@ type SequentialIntegerFunction struct {
 
 func (x *SequentialIntegerFunction) Reset() {
 	*x = SequentialIntegerFunction{}
-	mi := &file_mimic_config_proto_msgTypes[35]
+	mi := &file_mimic_config_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2585,7 +2809,7 @@ func (x *SequentialIntegerFunction) String() string {
 func (*SequentialIntegerFunction) ProtoMessage() {}
 
 func (x *SequentialIntegerFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[35]
+	mi := &file_mimic_config_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2598,7 +2822,7 @@ func (x *SequentialIntegerFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SequentialIntegerFunction.ProtoReflect.Descriptor instead.
 func (*SequentialIntegerFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{35}
+	return file_mimic_config_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *SequentialIntegerFunction) GetStart() int64 {
@@ -2625,7 +2849,7 @@ type StringFakerFunction struct {
 
 func (x *StringFakerFunction) Reset() {
 	*x = StringFakerFunction{}
-	mi := &file_mimic_config_proto_msgTypes[36]
+	mi := &file_mimic_config_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2637,7 +2861,7 @@ func (x *StringFakerFunction) String() string {
 func (*StringFakerFunction) ProtoMessage() {}
 
 func (x *StringFakerFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[36]
+	mi := &file_mimic_config_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2650,7 +2874,7 @@ func (x *StringFakerFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StringFakerFunction.ProtoReflect.Descriptor instead.
 func (*StringFakerFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{36}
+	return file_mimic_config_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *StringFakerFunction) GetCategory() string {
@@ -2682,7 +2906,7 @@ type ConstantFunction struct {
 
 func (x *ConstantFunction) Reset() {
 	*x = ConstantFunction{}
-	mi := &file_mimic_config_proto_msgTypes[37]
+	mi := &file_mimic_config_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2694,7 +2918,7 @@ func (x *ConstantFunction) String() string {
 func (*ConstantFunction) ProtoMessage() {}
 
 func (x *ConstantFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[37]
+	mi := &file_mimic_config_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2707,7 +2931,7 @@ func (x *ConstantFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConstantFunction.ProtoReflect.Descriptor instead.
 func (*ConstantFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{37}
+	return file_mimic_config_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *ConstantFunction) GetValue() isConstantFunction_Value {
@@ -2791,7 +3015,7 @@ type WeightedChoiceOption struct {
 
 func (x *WeightedChoiceOption) Reset() {
 	*x = WeightedChoiceOption{}
-	mi := &file_mimic_config_proto_msgTypes[38]
+	mi := &file_mimic_config_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2803,7 +3027,7 @@ func (x *WeightedChoiceOption) String() string {
 func (*WeightedChoiceOption) ProtoMessage() {}
 
 func (x *WeightedChoiceOption) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[38]
+	mi := &file_mimic_config_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2816,7 +3040,7 @@ func (x *WeightedChoiceOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WeightedChoiceOption.ProtoReflect.Descriptor instead.
 func (*WeightedChoiceOption) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{38}
+	return file_mimic_config_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *WeightedChoiceOption) GetValue() string {
@@ -2842,7 +3066,7 @@ type WeightedChoiceFunction struct {
 
 func (x *WeightedChoiceFunction) Reset() {
 	*x = WeightedChoiceFunction{}
-	mi := &file_mimic_config_proto_msgTypes[39]
+	mi := &file_mimic_config_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2854,7 +3078,7 @@ func (x *WeightedChoiceFunction) String() string {
 func (*WeightedChoiceFunction) ProtoMessage() {}
 
 func (x *WeightedChoiceFunction) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[39]
+	mi := &file_mimic_config_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2867,7 +3091,7 @@ func (x *WeightedChoiceFunction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WeightedChoiceFunction.ProtoReflect.Descriptor instead.
 func (*WeightedChoiceFunction) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{39}
+	return file_mimic_config_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *WeightedChoiceFunction) GetOptions() []*WeightedChoiceOption {
@@ -2886,7 +3110,7 @@ type StartGeneratorRequest struct {
 
 func (x *StartGeneratorRequest) Reset() {
 	*x = StartGeneratorRequest{}
-	mi := &file_mimic_config_proto_msgTypes[40]
+	mi := &file_mimic_config_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2898,7 +3122,7 @@ func (x *StartGeneratorRequest) String() string {
 func (*StartGeneratorRequest) ProtoMessage() {}
 
 func (x *StartGeneratorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[40]
+	mi := &file_mimic_config_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2911,7 +3135,7 @@ func (x *StartGeneratorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGeneratorRequest.ProtoReflect.Descriptor instead.
 func (*StartGeneratorRequest) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{40}
+	return file_mimic_config_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *StartGeneratorRequest) GetConfig() *GeneratorConfig {
@@ -2931,7 +3155,7 @@ type StartGeneratorResponse struct {
 
 func (x *StartGeneratorResponse) Reset() {
 	*x = StartGeneratorResponse{}
-	mi := &file_mimic_config_proto_msgTypes[41]
+	mi := &file_mimic_config_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2943,7 +3167,7 @@ func (x *StartGeneratorResponse) String() string {
 func (*StartGeneratorResponse) ProtoMessage() {}
 
 func (x *StartGeneratorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[41]
+	mi := &file_mimic_config_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2956,7 +3180,7 @@ func (x *StartGeneratorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGeneratorResponse.ProtoReflect.Descriptor instead.
 func (*StartGeneratorResponse) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{41}
+	return file_mimic_config_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *StartGeneratorResponse) GetGeneratorId() string {
@@ -2982,7 +3206,7 @@ type StopGeneratorRequest struct {
 
 func (x *StopGeneratorRequest) Reset() {
 	*x = StopGeneratorRequest{}
-	mi := &file_mimic_config_proto_msgTypes[42]
+	mi := &file_mimic_config_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2994,7 +3218,7 @@ func (x *StopGeneratorRequest) String() string {
 func (*StopGeneratorRequest) ProtoMessage() {}
 
 func (x *StopGeneratorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[42]
+	mi := &file_mimic_config_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3007,7 +3231,7 @@ func (x *StopGeneratorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopGeneratorRequest.ProtoReflect.Descriptor instead.
 func (*StopGeneratorRequest) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{42}
+	return file_mimic_config_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *StopGeneratorRequest) GetGeneratorId() string {
@@ -3027,7 +3251,7 @@ type StopGeneratorResponse struct {
 
 func (x *StopGeneratorResponse) Reset() {
 	*x = StopGeneratorResponse{}
-	mi := &file_mimic_config_proto_msgTypes[43]
+	mi := &file_mimic_config_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3039,7 +3263,7 @@ func (x *StopGeneratorResponse) String() string {
 func (*StopGeneratorResponse) ProtoMessage() {}
 
 func (x *StopGeneratorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[43]
+	mi := &file_mimic_config_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3052,7 +3276,7 @@ func (x *StopGeneratorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopGeneratorResponse.ProtoReflect.Descriptor instead.
 func (*StopGeneratorResponse) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{43}
+	return file_mimic_config_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *StopGeneratorResponse) GetGeneratorId() string {
@@ -3079,7 +3303,7 @@ type StreamPreviewRequest struct {
 
 func (x *StreamPreviewRequest) Reset() {
 	*x = StreamPreviewRequest{}
-	mi := &file_mimic_config_proto_msgTypes[44]
+	mi := &file_mimic_config_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3091,7 +3315,7 @@ func (x *StreamPreviewRequest) String() string {
 func (*StreamPreviewRequest) ProtoMessage() {}
 
 func (x *StreamPreviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[44]
+	mi := &file_mimic_config_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3104,7 +3328,7 @@ func (x *StreamPreviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamPreviewRequest.ProtoReflect.Descriptor instead.
 func (*StreamPreviewRequest) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{44}
+	return file_mimic_config_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *StreamPreviewRequest) GetConfig() *GeneratorConfig {
@@ -3132,7 +3356,7 @@ type StreamPreviewResponse struct {
 
 func (x *StreamPreviewResponse) Reset() {
 	*x = StreamPreviewResponse{}
-	mi := &file_mimic_config_proto_msgTypes[45]
+	mi := &file_mimic_config_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3144,7 +3368,7 @@ func (x *StreamPreviewResponse) String() string {
 func (*StreamPreviewResponse) ProtoMessage() {}
 
 func (x *StreamPreviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[45]
+	mi := &file_mimic_config_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3157,7 +3381,7 @@ func (x *StreamPreviewResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamPreviewResponse.ProtoReflect.Descriptor instead.
 func (*StreamPreviewResponse) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{45}
+	return file_mimic_config_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *StreamPreviewResponse) GetIndex() int64 {
@@ -3190,7 +3414,7 @@ type StreamMetricsRequest struct {
 
 func (x *StreamMetricsRequest) Reset() {
 	*x = StreamMetricsRequest{}
-	mi := &file_mimic_config_proto_msgTypes[46]
+	mi := &file_mimic_config_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3202,7 +3426,7 @@ func (x *StreamMetricsRequest) String() string {
 func (*StreamMetricsRequest) ProtoMessage() {}
 
 func (x *StreamMetricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[46]
+	mi := &file_mimic_config_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3215,7 +3439,7 @@ func (x *StreamMetricsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamMetricsRequest.ProtoReflect.Descriptor instead.
 func (*StreamMetricsRequest) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{46}
+	return file_mimic_config_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *StreamMetricsRequest) GetGeneratorId() string {
@@ -3240,7 +3464,7 @@ type StreamMetricsResponse struct {
 
 func (x *StreamMetricsResponse) Reset() {
 	*x = StreamMetricsResponse{}
-	mi := &file_mimic_config_proto_msgTypes[47]
+	mi := &file_mimic_config_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3252,7 +3476,7 @@ func (x *StreamMetricsResponse) String() string {
 func (*StreamMetricsResponse) ProtoMessage() {}
 
 func (x *StreamMetricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[47]
+	mi := &file_mimic_config_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3265,7 +3489,7 @@ func (x *StreamMetricsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamMetricsResponse.ProtoReflect.Descriptor instead.
 func (*StreamMetricsResponse) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{47}
+	return file_mimic_config_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *StreamMetricsResponse) GetGeneratorId() string {
@@ -3358,13 +3582,36 @@ const file_mimic_config_proto_rawDesc = "" +
 	"\x0fAnomalyPlaybook\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fanomaly_rate\x18\x02 \x01(\x01R\vanomalyRate\x12%\n" +
-	"\x0einjection_type\x18\x03 \x01(\tR\rinjectionTypeJ\x04\b\x04\x10\v\"i\n" +
+	"\x0einjection_type\x18\x03 \x01(\tR\rinjectionTypeJ\x04\b\x04\x10\v\"\xee\x02\n" +
+	"\x0eGlobalSettings\x12 \n" +
+	"\venvironment\x18\x01 \x01(\tR\venvironment\x12>\n" +
+	"\x1cmax_events_per_generator_cap\x18\x02 \x01(\x05R\x18maxEventsPerGeneratorCap\x12?\n" +
+	"\x1dmax_rate_limit_per_second_cap\x18\x03 \x01(\x05R\x18maxRateLimitPerSecondCap\x12.\n" +
+	"\x13enforce_pii_masking\x18\x04 \x01(\bR\x11enforcePiiMasking\x12#\n" +
+	"\rallowed_sinks\x18\x05 \x03(\tR\fallowedSinks\x122\n" +
+	"\x15default_kafka_cluster\x18\x06 \x01(\tR\x13defaultKafkaCluster\x120\n" +
+	"\x14audit_retention_days\x18\a \x01(\tR\x12auditRetentionDays\"\x83\x04\n" +
+	"\x0eTenantSettings\x12\x1b\n" +
+	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12\x1f\n" +
+	"\vtenant_name\x18\x02 \x01(\tR\n" +
+	"tenantName\x12.\n" +
+	"\x13default_event_limit\x18\x03 \x01(\x05R\x11defaultEventLimit\x12,\n" +
+	"\x12default_rate_limit\x18\x04 \x01(\x05R\x10defaultRateLimit\x120\n" +
+	"\x14default_topic_prefix\x18\x05 \x01(\tR\x12defaultTopicPrefix\x126\n" +
+	"\x17default_postgres_schema\x18\x06 \x01(\tR\x15defaultPostgresSchema\x124\n" +
+	"\x16auto_inject_timestamps\x18\a \x01(\bR\x14autoInjectTimestamps\x12/\n" +
+	"\x14auto_inject_event_id\x18\b \x01(\bR\x11autoInjectEventId\x12)\n" +
+	"\x10default_currency\x18\t \x01(\tR\x0fdefaultCurrency\x12)\n" +
+	"\x10default_timezone\x18\n" +
+	" \x01(\tR\x0fdefaultTimezone\x12.\n" +
+	"\x13custom_entity_pools\x18\v \x03(\tR\x11customEntityPools\"\x86\x01\n" +
 	"\tWorkspace\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
 	"\bowner_id\x18\x03 \x01(\tR\aownerId\x12\x1d\n" +
 	"\n" +
-	"member_ids\x18\x04 \x03(\tR\tmemberIds\"\x83\x01\n" +
+	"member_ids\x18\x04 \x03(\tR\tmemberIds\x12\x1b\n" +
+	"\ttenant_id\x18\x05 \x01(\tR\btenantId\"\x83\x01\n" +
 	"\bTemplate\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1a\n" +
@@ -3577,107 +3824,109 @@ func file_mimic_config_proto_rawDescGZIP() []byte {
 	return file_mimic_config_proto_rawDescData
 }
 
-var file_mimic_config_proto_msgTypes = make([]protoimpl.MessageInfo, 48)
+var file_mimic_config_proto_msgTypes = make([]protoimpl.MessageInfo, 50)
 var file_mimic_config_proto_goTypes = []any{
 	(*GeneratorConfig)(nil),           // 0: openmimic.v1.GeneratorConfig
 	(*CDCEnvelope)(nil),               // 1: openmimic.v1.CDCEnvelope
 	(*Constraint)(nil),                // 2: openmimic.v1.Constraint
 	(*AnomalyPlaybook)(nil),           // 3: openmimic.v1.AnomalyPlaybook
-	(*Workspace)(nil),                 // 4: openmimic.v1.Workspace
-	(*Template)(nil),                  // 5: openmimic.v1.Template
-	(*AuditEvent)(nil),                // 6: openmimic.v1.AuditEvent
-	(*TopologyNode)(nil),              // 7: openmimic.v1.TopologyNode
-	(*MultiGeneratorTopology)(nil),    // 8: openmimic.v1.MultiGeneratorTopology
-	(*TrafficProfile)(nil),            // 9: openmimic.v1.TrafficProfile
-	(*ConstantRate)(nil),              // 10: openmimic.v1.ConstantRate
-	(*DiurnalRate)(nil),               // 11: openmimic.v1.DiurnalRate
-	(*PoissonArrival)(nil),            // 12: openmimic.v1.PoissonArrival
-	(*BurstSpikeRate)(nil),            // 13: openmimic.v1.BurstSpikeRate
-	(*SinkConfig)(nil),                // 14: openmimic.v1.SinkConfig
-	(*RedisSink)(nil),                 // 15: openmimic.v1.RedisSink
-	(*ClickHouseSink)(nil),            // 16: openmimic.v1.ClickHouseSink
-	(*KafkaSink)(nil),                 // 17: openmimic.v1.KafkaSink
-	(*PostgresSink)(nil),              // 18: openmimic.v1.PostgresSink
-	(*S3Sink)(nil),                    // 19: openmimic.v1.S3Sink
-	(*StdoutSink)(nil),                // 20: openmimic.v1.StdoutSink
-	(*Field)(nil),                     // 21: openmimic.v1.Field
-	(*FunctionGenerator)(nil),         // 22: openmimic.v1.FunctionGenerator
-	(*NestedObjectFunction)(nil),      // 23: openmimic.v1.NestedObjectFunction
-	(*ArrayFunction)(nil),             // 24: openmimic.v1.ArrayFunction
-	(*MediaMetaFunction)(nil),         // 25: openmimic.v1.MediaMetaFunction
-	(*MarkovTransition)(nil),          // 26: openmimic.v1.MarkovTransition
-	(*MarkovState)(nil),               // 27: openmimic.v1.MarkovState
-	(*MarkovChainFunction)(nil),       // 28: openmimic.v1.MarkovChainFunction
-	(*EntityPoolFunction)(nil),        // 29: openmimic.v1.EntityPoolFunction
-	(*UuidFunction)(nil),              // 30: openmimic.v1.UuidFunction
-	(*DistributionFunction)(nil),      // 31: openmimic.v1.DistributionFunction
-	(*NormalDistribution)(nil),        // 32: openmimic.v1.NormalDistribution
-	(*UniformDistribution)(nil),       // 33: openmimic.v1.UniformDistribution
-	(*NowFunction)(nil),               // 34: openmimic.v1.NowFunction
-	(*SequentialIntegerFunction)(nil), // 35: openmimic.v1.SequentialIntegerFunction
-	(*StringFakerFunction)(nil),       // 36: openmimic.v1.StringFakerFunction
-	(*ConstantFunction)(nil),          // 37: openmimic.v1.ConstantFunction
-	(*WeightedChoiceOption)(nil),      // 38: openmimic.v1.WeightedChoiceOption
-	(*WeightedChoiceFunction)(nil),    // 39: openmimic.v1.WeightedChoiceFunction
-	(*StartGeneratorRequest)(nil),     // 40: openmimic.v1.StartGeneratorRequest
-	(*StartGeneratorResponse)(nil),    // 41: openmimic.v1.StartGeneratorResponse
-	(*StopGeneratorRequest)(nil),      // 42: openmimic.v1.StopGeneratorRequest
-	(*StopGeneratorResponse)(nil),     // 43: openmimic.v1.StopGeneratorResponse
-	(*StreamPreviewRequest)(nil),      // 44: openmimic.v1.StreamPreviewRequest
-	(*StreamPreviewResponse)(nil),     // 45: openmimic.v1.StreamPreviewResponse
-	(*StreamMetricsRequest)(nil),      // 46: openmimic.v1.StreamMetricsRequest
-	(*StreamMetricsResponse)(nil),     // 47: openmimic.v1.StreamMetricsResponse
+	(*GlobalSettings)(nil),            // 4: openmimic.v1.GlobalSettings
+	(*TenantSettings)(nil),            // 5: openmimic.v1.TenantSettings
+	(*Workspace)(nil),                 // 6: openmimic.v1.Workspace
+	(*Template)(nil),                  // 7: openmimic.v1.Template
+	(*AuditEvent)(nil),                // 8: openmimic.v1.AuditEvent
+	(*TopologyNode)(nil),              // 9: openmimic.v1.TopologyNode
+	(*MultiGeneratorTopology)(nil),    // 10: openmimic.v1.MultiGeneratorTopology
+	(*TrafficProfile)(nil),            // 11: openmimic.v1.TrafficProfile
+	(*ConstantRate)(nil),              // 12: openmimic.v1.ConstantRate
+	(*DiurnalRate)(nil),               // 13: openmimic.v1.DiurnalRate
+	(*PoissonArrival)(nil),            // 14: openmimic.v1.PoissonArrival
+	(*BurstSpikeRate)(nil),            // 15: openmimic.v1.BurstSpikeRate
+	(*SinkConfig)(nil),                // 16: openmimic.v1.SinkConfig
+	(*RedisSink)(nil),                 // 17: openmimic.v1.RedisSink
+	(*ClickHouseSink)(nil),            // 18: openmimic.v1.ClickHouseSink
+	(*KafkaSink)(nil),                 // 19: openmimic.v1.KafkaSink
+	(*PostgresSink)(nil),              // 20: openmimic.v1.PostgresSink
+	(*S3Sink)(nil),                    // 21: openmimic.v1.S3Sink
+	(*StdoutSink)(nil),                // 22: openmimic.v1.StdoutSink
+	(*Field)(nil),                     // 23: openmimic.v1.Field
+	(*FunctionGenerator)(nil),         // 24: openmimic.v1.FunctionGenerator
+	(*NestedObjectFunction)(nil),      // 25: openmimic.v1.NestedObjectFunction
+	(*ArrayFunction)(nil),             // 26: openmimic.v1.ArrayFunction
+	(*MediaMetaFunction)(nil),         // 27: openmimic.v1.MediaMetaFunction
+	(*MarkovTransition)(nil),          // 28: openmimic.v1.MarkovTransition
+	(*MarkovState)(nil),               // 29: openmimic.v1.MarkovState
+	(*MarkovChainFunction)(nil),       // 30: openmimic.v1.MarkovChainFunction
+	(*EntityPoolFunction)(nil),        // 31: openmimic.v1.EntityPoolFunction
+	(*UuidFunction)(nil),              // 32: openmimic.v1.UuidFunction
+	(*DistributionFunction)(nil),      // 33: openmimic.v1.DistributionFunction
+	(*NormalDistribution)(nil),        // 34: openmimic.v1.NormalDistribution
+	(*UniformDistribution)(nil),       // 35: openmimic.v1.UniformDistribution
+	(*NowFunction)(nil),               // 36: openmimic.v1.NowFunction
+	(*SequentialIntegerFunction)(nil), // 37: openmimic.v1.SequentialIntegerFunction
+	(*StringFakerFunction)(nil),       // 38: openmimic.v1.StringFakerFunction
+	(*ConstantFunction)(nil),          // 39: openmimic.v1.ConstantFunction
+	(*WeightedChoiceOption)(nil),      // 40: openmimic.v1.WeightedChoiceOption
+	(*WeightedChoiceFunction)(nil),    // 41: openmimic.v1.WeightedChoiceFunction
+	(*StartGeneratorRequest)(nil),     // 42: openmimic.v1.StartGeneratorRequest
+	(*StartGeneratorResponse)(nil),    // 43: openmimic.v1.StartGeneratorResponse
+	(*StopGeneratorRequest)(nil),      // 44: openmimic.v1.StopGeneratorRequest
+	(*StopGeneratorResponse)(nil),     // 45: openmimic.v1.StopGeneratorResponse
+	(*StreamPreviewRequest)(nil),      // 46: openmimic.v1.StreamPreviewRequest
+	(*StreamPreviewResponse)(nil),     // 47: openmimic.v1.StreamPreviewResponse
+	(*StreamMetricsRequest)(nil),      // 48: openmimic.v1.StreamMetricsRequest
+	(*StreamMetricsResponse)(nil),     // 49: openmimic.v1.StreamMetricsResponse
 }
 var file_mimic_config_proto_depIdxs = []int32{
-	14, // 0: openmimic.v1.GeneratorConfig.sink:type_name -> openmimic.v1.SinkConfig
-	21, // 1: openmimic.v1.GeneratorConfig.fields:type_name -> openmimic.v1.Field
-	9,  // 2: openmimic.v1.GeneratorConfig.traffic_profile:type_name -> openmimic.v1.TrafficProfile
+	16, // 0: openmimic.v1.GeneratorConfig.sink:type_name -> openmimic.v1.SinkConfig
+	23, // 1: openmimic.v1.GeneratorConfig.fields:type_name -> openmimic.v1.Field
+	11, // 2: openmimic.v1.GeneratorConfig.traffic_profile:type_name -> openmimic.v1.TrafficProfile
 	2,  // 3: openmimic.v1.GeneratorConfig.constraints:type_name -> openmimic.v1.Constraint
 	3,  // 4: openmimic.v1.GeneratorConfig.playbooks:type_name -> openmimic.v1.AnomalyPlaybook
 	1,  // 5: openmimic.v1.GeneratorConfig.cdc_envelope:type_name -> openmimic.v1.CDCEnvelope
 	0,  // 6: openmimic.v1.Template.config:type_name -> openmimic.v1.GeneratorConfig
 	0,  // 7: openmimic.v1.TopologyNode.config:type_name -> openmimic.v1.GeneratorConfig
-	7,  // 8: openmimic.v1.MultiGeneratorTopology.nodes:type_name -> openmimic.v1.TopologyNode
-	10, // 9: openmimic.v1.TrafficProfile.constant:type_name -> openmimic.v1.ConstantRate
-	11, // 10: openmimic.v1.TrafficProfile.diurnal:type_name -> openmimic.v1.DiurnalRate
-	12, // 11: openmimic.v1.TrafficProfile.poisson:type_name -> openmimic.v1.PoissonArrival
-	13, // 12: openmimic.v1.TrafficProfile.burst:type_name -> openmimic.v1.BurstSpikeRate
-	17, // 13: openmimic.v1.SinkConfig.kafka:type_name -> openmimic.v1.KafkaSink
-	18, // 14: openmimic.v1.SinkConfig.postgres:type_name -> openmimic.v1.PostgresSink
-	19, // 15: openmimic.v1.SinkConfig.s3:type_name -> openmimic.v1.S3Sink
-	20, // 16: openmimic.v1.SinkConfig.stdout:type_name -> openmimic.v1.StdoutSink
-	15, // 17: openmimic.v1.SinkConfig.redis:type_name -> openmimic.v1.RedisSink
-	16, // 18: openmimic.v1.SinkConfig.clickhouse:type_name -> openmimic.v1.ClickHouseSink
-	22, // 19: openmimic.v1.Field.generator:type_name -> openmimic.v1.FunctionGenerator
-	30, // 20: openmimic.v1.FunctionGenerator.uuid:type_name -> openmimic.v1.UuidFunction
-	31, // 21: openmimic.v1.FunctionGenerator.distribution:type_name -> openmimic.v1.DistributionFunction
-	34, // 22: openmimic.v1.FunctionGenerator.now:type_name -> openmimic.v1.NowFunction
-	35, // 23: openmimic.v1.FunctionGenerator.sequential_integer:type_name -> openmimic.v1.SequentialIntegerFunction
-	36, // 24: openmimic.v1.FunctionGenerator.string_faker:type_name -> openmimic.v1.StringFakerFunction
-	37, // 25: openmimic.v1.FunctionGenerator.constant:type_name -> openmimic.v1.ConstantFunction
-	39, // 26: openmimic.v1.FunctionGenerator.weighted_choice:type_name -> openmimic.v1.WeightedChoiceFunction
-	28, // 27: openmimic.v1.FunctionGenerator.markov_chain:type_name -> openmimic.v1.MarkovChainFunction
-	29, // 28: openmimic.v1.FunctionGenerator.entity_pool:type_name -> openmimic.v1.EntityPoolFunction
-	23, // 29: openmimic.v1.FunctionGenerator.nested_object:type_name -> openmimic.v1.NestedObjectFunction
-	24, // 30: openmimic.v1.FunctionGenerator.array:type_name -> openmimic.v1.ArrayFunction
-	25, // 31: openmimic.v1.FunctionGenerator.media_meta:type_name -> openmimic.v1.MediaMetaFunction
-	21, // 32: openmimic.v1.NestedObjectFunction.fields:type_name -> openmimic.v1.Field
-	22, // 33: openmimic.v1.ArrayFunction.item_generator:type_name -> openmimic.v1.FunctionGenerator
-	26, // 34: openmimic.v1.MarkovState.transitions:type_name -> openmimic.v1.MarkovTransition
-	27, // 35: openmimic.v1.MarkovChainFunction.states:type_name -> openmimic.v1.MarkovState
-	32, // 36: openmimic.v1.DistributionFunction.normal:type_name -> openmimic.v1.NormalDistribution
-	33, // 37: openmimic.v1.DistributionFunction.uniform:type_name -> openmimic.v1.UniformDistribution
-	38, // 38: openmimic.v1.WeightedChoiceFunction.options:type_name -> openmimic.v1.WeightedChoiceOption
+	9,  // 8: openmimic.v1.MultiGeneratorTopology.nodes:type_name -> openmimic.v1.TopologyNode
+	12, // 9: openmimic.v1.TrafficProfile.constant:type_name -> openmimic.v1.ConstantRate
+	13, // 10: openmimic.v1.TrafficProfile.diurnal:type_name -> openmimic.v1.DiurnalRate
+	14, // 11: openmimic.v1.TrafficProfile.poisson:type_name -> openmimic.v1.PoissonArrival
+	15, // 12: openmimic.v1.TrafficProfile.burst:type_name -> openmimic.v1.BurstSpikeRate
+	19, // 13: openmimic.v1.SinkConfig.kafka:type_name -> openmimic.v1.KafkaSink
+	20, // 14: openmimic.v1.SinkConfig.postgres:type_name -> openmimic.v1.PostgresSink
+	21, // 15: openmimic.v1.SinkConfig.s3:type_name -> openmimic.v1.S3Sink
+	22, // 16: openmimic.v1.SinkConfig.stdout:type_name -> openmimic.v1.StdoutSink
+	17, // 17: openmimic.v1.SinkConfig.redis:type_name -> openmimic.v1.RedisSink
+	18, // 18: openmimic.v1.SinkConfig.clickhouse:type_name -> openmimic.v1.ClickHouseSink
+	24, // 19: openmimic.v1.Field.generator:type_name -> openmimic.v1.FunctionGenerator
+	32, // 20: openmimic.v1.FunctionGenerator.uuid:type_name -> openmimic.v1.UuidFunction
+	33, // 21: openmimic.v1.FunctionGenerator.distribution:type_name -> openmimic.v1.DistributionFunction
+	36, // 22: openmimic.v1.FunctionGenerator.now:type_name -> openmimic.v1.NowFunction
+	37, // 23: openmimic.v1.FunctionGenerator.sequential_integer:type_name -> openmimic.v1.SequentialIntegerFunction
+	38, // 24: openmimic.v1.FunctionGenerator.string_faker:type_name -> openmimic.v1.StringFakerFunction
+	39, // 25: openmimic.v1.FunctionGenerator.constant:type_name -> openmimic.v1.ConstantFunction
+	41, // 26: openmimic.v1.FunctionGenerator.weighted_choice:type_name -> openmimic.v1.WeightedChoiceFunction
+	30, // 27: openmimic.v1.FunctionGenerator.markov_chain:type_name -> openmimic.v1.MarkovChainFunction
+	31, // 28: openmimic.v1.FunctionGenerator.entity_pool:type_name -> openmimic.v1.EntityPoolFunction
+	25, // 29: openmimic.v1.FunctionGenerator.nested_object:type_name -> openmimic.v1.NestedObjectFunction
+	26, // 30: openmimic.v1.FunctionGenerator.array:type_name -> openmimic.v1.ArrayFunction
+	27, // 31: openmimic.v1.FunctionGenerator.media_meta:type_name -> openmimic.v1.MediaMetaFunction
+	23, // 32: openmimic.v1.NestedObjectFunction.fields:type_name -> openmimic.v1.Field
+	24, // 33: openmimic.v1.ArrayFunction.item_generator:type_name -> openmimic.v1.FunctionGenerator
+	28, // 34: openmimic.v1.MarkovState.transitions:type_name -> openmimic.v1.MarkovTransition
+	29, // 35: openmimic.v1.MarkovChainFunction.states:type_name -> openmimic.v1.MarkovState
+	34, // 36: openmimic.v1.DistributionFunction.normal:type_name -> openmimic.v1.NormalDistribution
+	35, // 37: openmimic.v1.DistributionFunction.uniform:type_name -> openmimic.v1.UniformDistribution
+	40, // 38: openmimic.v1.WeightedChoiceFunction.options:type_name -> openmimic.v1.WeightedChoiceOption
 	0,  // 39: openmimic.v1.StartGeneratorRequest.config:type_name -> openmimic.v1.GeneratorConfig
 	0,  // 40: openmimic.v1.StreamPreviewRequest.config:type_name -> openmimic.v1.GeneratorConfig
-	40, // 41: openmimic.v1.GeneratorService.StartGenerator:input_type -> openmimic.v1.StartGeneratorRequest
-	42, // 42: openmimic.v1.GeneratorService.StopGenerator:input_type -> openmimic.v1.StopGeneratorRequest
-	44, // 43: openmimic.v1.GeneratorService.StreamPreview:input_type -> openmimic.v1.StreamPreviewRequest
-	46, // 44: openmimic.v1.GeneratorService.StreamMetrics:input_type -> openmimic.v1.StreamMetricsRequest
-	41, // 45: openmimic.v1.GeneratorService.StartGenerator:output_type -> openmimic.v1.StartGeneratorResponse
-	43, // 46: openmimic.v1.GeneratorService.StopGenerator:output_type -> openmimic.v1.StopGeneratorResponse
-	45, // 47: openmimic.v1.GeneratorService.StreamPreview:output_type -> openmimic.v1.StreamPreviewResponse
-	47, // 48: openmimic.v1.GeneratorService.StreamMetrics:output_type -> openmimic.v1.StreamMetricsResponse
+	42, // 41: openmimic.v1.GeneratorService.StartGenerator:input_type -> openmimic.v1.StartGeneratorRequest
+	44, // 42: openmimic.v1.GeneratorService.StopGenerator:input_type -> openmimic.v1.StopGeneratorRequest
+	46, // 43: openmimic.v1.GeneratorService.StreamPreview:input_type -> openmimic.v1.StreamPreviewRequest
+	48, // 44: openmimic.v1.GeneratorService.StreamMetrics:input_type -> openmimic.v1.StreamMetricsRequest
+	43, // 45: openmimic.v1.GeneratorService.StartGenerator:output_type -> openmimic.v1.StartGeneratorResponse
+	45, // 46: openmimic.v1.GeneratorService.StopGenerator:output_type -> openmimic.v1.StopGeneratorResponse
+	47, // 47: openmimic.v1.GeneratorService.StreamPreview:output_type -> openmimic.v1.StreamPreviewResponse
+	49, // 48: openmimic.v1.GeneratorService.StreamMetrics:output_type -> openmimic.v1.StreamMetricsResponse
 	45, // [45:49] is the sub-list for method output_type
 	41, // [41:45] is the sub-list for method input_type
 	41, // [41:41] is the sub-list for extension type_name
@@ -3690,13 +3939,13 @@ func file_mimic_config_proto_init() {
 	if File_mimic_config_proto != nil {
 		return
 	}
-	file_mimic_config_proto_msgTypes[9].OneofWrappers = []any{
+	file_mimic_config_proto_msgTypes[11].OneofWrappers = []any{
 		(*TrafficProfile_Constant)(nil),
 		(*TrafficProfile_Diurnal)(nil),
 		(*TrafficProfile_Poisson)(nil),
 		(*TrafficProfile_Burst)(nil),
 	}
-	file_mimic_config_proto_msgTypes[14].OneofWrappers = []any{
+	file_mimic_config_proto_msgTypes[16].OneofWrappers = []any{
 		(*SinkConfig_Kafka)(nil),
 		(*SinkConfig_Postgres)(nil),
 		(*SinkConfig_S3)(nil),
@@ -3704,7 +3953,7 @@ func file_mimic_config_proto_init() {
 		(*SinkConfig_Redis)(nil),
 		(*SinkConfig_Clickhouse)(nil),
 	}
-	file_mimic_config_proto_msgTypes[22].OneofWrappers = []any{
+	file_mimic_config_proto_msgTypes[24].OneofWrappers = []any{
 		(*FunctionGenerator_Uuid)(nil),
 		(*FunctionGenerator_Distribution)(nil),
 		(*FunctionGenerator_Now)(nil),
@@ -3718,11 +3967,11 @@ func file_mimic_config_proto_init() {
 		(*FunctionGenerator_Array)(nil),
 		(*FunctionGenerator_MediaMeta)(nil),
 	}
-	file_mimic_config_proto_msgTypes[31].OneofWrappers = []any{
+	file_mimic_config_proto_msgTypes[33].OneofWrappers = []any{
 		(*DistributionFunction_Normal)(nil),
 		(*DistributionFunction_Uniform)(nil),
 	}
-	file_mimic_config_proto_msgTypes[37].OneofWrappers = []any{
+	file_mimic_config_proto_msgTypes[39].OneofWrappers = []any{
 		(*ConstantFunction_StringVal)(nil),
 		(*ConstantFunction_IntVal)(nil),
 		(*ConstantFunction_DoubleVal)(nil),
@@ -3734,7 +3983,7 @@ func file_mimic_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mimic_config_proto_rawDesc), len(file_mimic_config_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   48,
+			NumMessages:   50,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

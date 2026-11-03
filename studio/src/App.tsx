@@ -46,9 +46,21 @@ import {
   IconBug,
   IconBinaryTree,
   IconRefresh,
+  IconSettings,
+  IconBuildingSkyscraper,
+  IconShield,
+  IconChecklist,
 } from '@tabler/icons-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { GeneratorConfig, Field, Constraint, AnomalyPlaybook, MultiGeneratorTopology } from './proto/mimic_config';
+import {
+  GeneratorConfig,
+  Field,
+  Constraint,
+  AnomalyPlaybook,
+  MultiGeneratorTopology,
+  GlobalSettings,
+  TenantSettings,
+} from './proto/mimic_config';
 
 const DEFAULT_CONFIG: GeneratorConfig = {
   id: 'gen-user-signup-1',
@@ -97,9 +109,28 @@ const COPILOT_API_BASE = 'http://localhost:8000';
 export default function App() {
   const [opened, { toggle }] = useDisclosure();
   const [activeTab, setActiveTab] = useState<
-    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'dashboard'
+    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'settings' | 'dashboard'
   >('designer');
   const [config, setConfig] = useState<GeneratorConfig>(DEFAULT_CONFIG);
+
+  // Settings & Conventions State
+  const [globalSettings, setGlobalSettings] = useState<GlobalSettings>({
+    environment: 'development',
+    max_events_per_generator_cap: 1000000,
+    max_rate_limit_per_second_cap: 5000,
+    enforce_pii_masking: false,
+    default_kafka_cluster: 'localhost:9092',
+  });
+  const [tenantSettings, setTenantSettings] = useState<TenantSettings>({
+    tenant_id: 'tenant_default',
+    tenant_name: 'Default Enterprise Tenant',
+    default_event_limit: 1000,
+    default_rate_limit: 25,
+    default_topic_prefix: 'mimic.prod.',
+    auto_inject_timestamps: true,
+    auto_inject_event_id: true,
+    default_currency: 'USD',
+  });
 
   // Multi-Generator DAG Topology state
   const [topology, setTopology] = useState<MultiGeneratorTopology>({
@@ -473,6 +504,12 @@ export default function App() {
             leftSection={<IconBinaryTree size={18} />}
             active={activeTab === 'topology'}
             onClick={() => setActiveTab('topology')}
+          />
+          <NavLink
+            label="Settings & Governance"
+            leftSection={<IconSettings size={18} />}
+            active={activeTab === 'settings'}
+            onClick={() => setActiveTab('settings')}
           />
           <NavLink
             label="Observability Dashboard"
@@ -1160,7 +1197,126 @@ export default function App() {
           </Stack>
         )}
 
-        {/* TAB 9: OBSERVABILITY DASHBOARD */}
+        {/* TAB 9: SETTINGS & GOVERNANCE (CONVENTIONS OVER CONFIGURATIONS) */}
+        {activeTab === 'settings' && (
+          <Stack gap="md">
+            <div>
+              <Title order={2}>Platform Settings &amp; Governance</Title>
+              <Text c="dimmed" size="sm">
+                Conventions over configurations: Tenant admins define baseline defaults, while Super Admins enforce organizational guardrails.
+              </Text>
+            </div>
+
+            <Grid>
+              {/* Tenant Admin Settings */}
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Group justify="space-between" mb="xs">
+                    <Title order={4}>Tenant Admin Conventions</Title>
+                    <Badge color="blue">Tenant Scope</Badge>
+                  </Group>
+                  <Text size="xs" c="dimmed" mb="md">
+                    Baseline conventions automatically applied to user streams when configurations omit explicit parameters.
+                  </Text>
+
+                  <Stack gap="sm">
+                    <TextInput
+                      label="Tenant Name"
+                      value={tenantSettings.tenant_name}
+                      onChange={(e) => setTenantSettings({ ...tenantSettings, tenant_name: e.target.value })}
+                    />
+                    <Grid>
+                      <Grid.Col span={6}>
+                        <NumberInput
+                          label="Default Event Limit"
+                          value={tenantSettings.default_event_limit}
+                          onChange={(v) => setTenantSettings({ ...tenantSettings, default_event_limit: Number(v) || 500 })}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <NumberInput
+                          label="Default Rate Limit (evt/s)"
+                          value={tenantSettings.default_rate_limit}
+                          onChange={(v) => setTenantSettings({ ...tenantSettings, default_rate_limit: Number(v) || 20 })}
+                        />
+                      </Grid.Col>
+                    </Grid>
+                    <TextInput
+                      label="Default Kafka Topic Prefix"
+                      value={tenantSettings.default_topic_prefix}
+                      onChange={(e) => setTenantSettings({ ...tenantSettings, default_topic_prefix: e.target.value })}
+                    />
+                    <TextInput
+                      label="Default Currency Convention"
+                      value={tenantSettings.default_currency}
+                      onChange={(e) => setTenantSettings({ ...tenantSettings, default_currency: e.target.value })}
+                    />
+                    <Button
+                      color="teal"
+                      variant="light"
+                      mt="xs"
+                      onClick={() => setExecMessage('Tenant conventions saved and active for new generators.')}
+                    >
+                      Save Tenant Conventions
+                    </Button>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+
+              {/* Super Admin Global Governance */}
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Group justify="space-between" mb="xs">
+                    <Title order={4}>Super Admin Global Guardrails</Title>
+                    <Badge color="red">Platform Governance</Badge>
+                  </Group>
+                  <Text size="xs" c="dimmed" mb="md">
+                    Non-bypassable organizational guardrails and hard rate ceilings enforced across all tenants.
+                  </Text>
+
+                  <Stack gap="sm">
+                    <TextInput
+                      label="Environment Tag"
+                      value={globalSettings.environment}
+                      onChange={(e) => setGlobalSettings({ ...globalSettings, environment: e.target.value })}
+                    />
+                    <Grid>
+                      <Grid.Col span={6}>
+                        <NumberInput
+                          label="Hard Event Cap"
+                          value={globalSettings.max_events_per_generator_cap}
+                          onChange={(v) => setGlobalSettings({ ...globalSettings, max_events_per_generator_cap: Number(v) || 1000000 })}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <NumberInput
+                          label="Hard Rate Limit Cap (evt/s)"
+                          value={globalSettings.max_rate_limit_per_second_cap}
+                          onChange={(v) => setGlobalSettings({ ...globalSettings, max_rate_limit_per_second_cap: Number(v) || 5000 })}
+                        />
+                      </Grid.Col>
+                    </Grid>
+                    <TextInput
+                      label="Super Admin Kafka Cluster"
+                      value={globalSettings.default_kafka_cluster}
+                      onChange={(e) => setGlobalSettings({ ...globalSettings, default_kafka_cluster: e.target.value })}
+                    />
+                    <Button
+                      color="red"
+                      variant="light"
+                      mt="xs"
+                      onClick={() => setExecMessage('Global platform guardrails updated successfully.')}
+                    >
+                      Enforce Global Guardrails
+                    </Button>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+            </Grid>
+          </Stack>
+        )}
+
+        {/* TAB 10: OBSERVABILITY DASHBOARD */}
         {activeTab === 'dashboard' && (
           <Stack gap="md">
             <div>

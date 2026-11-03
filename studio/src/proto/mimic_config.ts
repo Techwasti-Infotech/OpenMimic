@@ -15,6 +15,30 @@ export interface GeneratorConfig {
   cdc_envelope?: CDCEnvelope;
 }
 
+export interface GlobalSettings {
+  environment?: string;
+  max_events_per_generator_cap?: number;
+  max_rate_limit_per_second_cap?: number;
+  enforce_pii_masking?: boolean;
+  allowed_sinks?: string[];
+  default_kafka_cluster?: string;
+  audit_retention_days?: string;
+}
+
+export interface TenantSettings {
+  tenant_id: string;
+  tenant_name: string;
+  default_event_limit?: number;
+  default_rate_limit?: number;
+  default_topic_prefix?: string;
+  default_postgres_schema?: string;
+  auto_inject_timestamps?: boolean;
+  auto_inject_event_id?: boolean;
+  default_currency?: string;
+  default_timezone?: string;
+  custom_entity_pools?: string[];
+}
+
 export interface CDCEnvelope {
   enabled: boolean;
   connector_type?: string;

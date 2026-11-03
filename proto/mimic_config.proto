@@ -49,12 +49,37 @@ message AnomalyPlaybook {
   reserved 4 to 10;
 }
 
-// Phase 9: Workspace, Template & Audit Event messages
+// Phase 9: Multi-tenancy, Workspaces, Settings & Governance
+message GlobalSettings {
+  string environment = 1; // "development", "staging", "production"
+  int32 max_events_per_generator_cap = 2; // e.g. 1,000,000 (Super Admin enforced hard ceiling)
+  int32 max_rate_limit_per_second_cap = 3; // e.g. 5,000 evt/s
+  bool enforce_pii_masking = 4; // True to reject unmasked PII
+  repeated string allowed_sinks = 5; // e.g. ["kafka", "postgres", "redis", "clickhouse", "stdout"]
+  string default_kafka_cluster = 6;
+  string audit_retention_days = 7;
+}
+
+message TenantSettings {
+  string tenant_id = 1;
+  string tenant_name = 2;
+  int32 default_event_limit = 3; // Convention default: e.g. 1,000
+  int32 default_rate_limit = 4;  // Convention default: e.g. 25 eps
+  string default_topic_prefix = 5; // Convention: e.g. "tenant.production."
+  string default_postgres_schema = 6; // Convention: e.g. "mimic_data"
+  bool auto_inject_timestamps = 7; // Convention: auto-add "created_at" if missing
+  bool auto_inject_event_id = 8;    // Convention: auto-add UUID "id" if missing
+  string default_currency = 9;      // e.g. "USD"
+  string default_timezone = 10;     // e.g. "UTC"
+  repeated string custom_entity_pools = 11;
+}
+
 message Workspace {
   string id = 1;
   string name = 2;
   string owner_id = 3;
   repeated string member_ids = 4;
+  string tenant_id = 5;
 }
 
 message Template {

@@ -7,22 +7,71 @@ import (
 	pb "openmimic/engine/pkg/proto/v1"
 )
 
-// PlatformStore manages in-memory workspaces, starter templates, and audit logs (Phase 9).
+// PlatformStore manages in-memory workspaces, starter templates, audit logs, and conventions over settings (Phase 9).
 type PlatformStore struct {
-	mu         sync.RWMutex
-	workspaces map[string]*pb.Workspace
-	templates  map[string]*pb.Template
-	auditLogs  []*pb.AuditEvent
+	mu             sync.RWMutex
+	workspaces     map[string]*pb.Workspace
+	templates      map[string]*pb.Template
+	auditLogs      []*pb.AuditEvent
+	globalSettings *pb.GlobalSettings
+	tenantSettings map[string]*pb.TenantSettings
 }
 
 func NewPlatformStore() *PlatformStore {
 	ps := &PlatformStore{
-		workspaces: make(map[string]*pb.Workspace),
-		templates:  make(map[string]*pb.Template),
-		auditLogs:  make([]*pb.AuditEvent, 0),
+		workspaces:     make(map[string]*pb.Workspace),
+		templates:      make(map[string]*pb.Template),
+		auditLogs:      make([]*pb.AuditEvent, 0),
+		tenantSettings: make(map[string]*pb.TenantSettings),
+		globalSettings: &pb.GlobalSettings{
+			Environment:              "development",
+			MaxEventsPerGeneratorCap: 1000000,
+			MaxRateLimitPerSecondCap: 5000,
+			EnforcePiiMasking:        false,
+			AllowedSinks:             []string{"kafka", "postgres", "redis", "clickhouse", "stdout"},
+			DefaultKafkaCluster:      "localhost:9092",
+		},
+	}
+	ps.tenantSettings["tenant_default"] = &pb.TenantSettings{
+		TenantId:             "tenant_default",
+		TenantName:           "Default Enterprise Tenant",
+		DefaultEventLimit:    1000,
+		DefaultRateLimit:     25,
+		DefaultTopicPrefix:   "mimic.prod.",
+		AutoInjectTimestamps: true,
+		AutoInjectEventId:    true,
+		DefaultCurrency:      "USD",
+		DefaultTimezone:      "UTC",
 	}
 	ps.loadDefaultTemplates()
 	return ps
+}
+
+func (s *PlatformStore) GetGlobalSettings() *pb.GlobalSettings {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.globalSettings
+}
+
+func (s *PlatformStore) UpdateGlobalSettings(g *pb.GlobalSettings) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.globalSettings = g
+}
+
+func (s *PlatformStore) GetTenantSettings(tenantID string) *pb.TenantSettings {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if ts, ok := s.tenantSettings[tenantID]; ok {
+		return ts
+	}
+	return s.tenantSettings["tenant_default"]
+}
+
+func (s *PlatformStore) UpdateTenantSettings(ts *pb.TenantSettings) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.tenantSettings[ts.GetTenantId()] = ts
 }
 
 func (s *PlatformStore) loadDefaultTemplates() {
