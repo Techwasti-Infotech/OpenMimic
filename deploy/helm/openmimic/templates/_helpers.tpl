@@ -38,3 +38,4 @@ Selector labels
 app.kubernetes.io/name: {{ include "openmimic.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+

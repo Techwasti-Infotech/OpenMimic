@@ -70,3 +70,4 @@ func TestCreateDPMechanismFromProto(t *testing.T) {
 		t.Errorf("value %f out of bounds [0, 500]", noisy)
 	}
 }
+

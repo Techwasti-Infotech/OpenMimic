@@ -124,6 +124,8 @@ func CreateSink(cfg *pb.SinkConfig, fallbackWriter io.Writer) (Sink, error) {
 		return NewClickHouseSink(s.Clickhouse, nil), nil
 	case *pb.SinkConfig_Webhook:
 		return NewWebhookSink(s.Webhook, nil), nil
+	case *pb.SinkConfig_S3:
+		return NewS3StorageSink(s.S3, nil), nil
 	case *pb.SinkConfig_Stdout:
 		pretty := false
 		if s.Stdout != nil {

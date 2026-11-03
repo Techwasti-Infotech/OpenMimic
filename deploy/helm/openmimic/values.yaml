@@ -45,3 +45,4 @@ studio:
   service:
     type: LoadBalancer
     port: 80
+

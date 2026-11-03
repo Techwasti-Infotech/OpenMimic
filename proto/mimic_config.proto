@@ -223,7 +223,10 @@ message S3Sink {
   string bucket = 1;
   string region = 2;
   string prefix = 3;
-  string file_format = 4; // e.g. json, csv, parquet
+  string file_format = 4; // "jsonl", "csv", "parquet"
+  string endpoint = 5;    // Optional custom endpoint for MinIO / LocalStack / Cloudflare R2
+  int32 max_records_per_file = 6; // Rollover threshold (default: 10,000)
+  int32 flush_interval_seconds = 7;
 }
 
 message StdoutSink {
@@ -238,7 +241,7 @@ message Field {
 
 // FunctionGenerator defines how a field value is generated.
 message FunctionGenerator {
-  reserved 14 to 20; // Reserved slots
+  reserved 15 to 20; // Reserved slots
   oneof func {
     UuidFunction uuid = 1;
     DistributionFunction distribution = 2;
@@ -253,7 +256,16 @@ message FunctionGenerator {
     ArrayFunction array = 11;                 // Repeating arrays of values/objects
     MediaMetaFunction media_meta = 12;        // Audio/image/video synthetic metadata
     DifferentialPrivacyFunction differential_privacy = 13; // Calibrated Laplace or Gaussian noise
+    PseudonymizeFunction pseudonymize = 14;   // Format-Preserving Encryption & deterministic hashing
   }
+}
+
+// PseudonymizeFunction protects PII while preserving join integrity across tables
+message PseudonymizeFunction {
+  string method = 1; // "fpe_numeric", "fpe_alphanumeric", "sha256_salt", "mask_chars"
+  string salt = 2; // Secret HMAC key or salt
+  string source_category = 3; // "credit_card", "ssn", "phone", "email", "ip"
+  string mask_format = 4; // e.g. "XXX-XX-####" or "************1234"
 }
 
 // DifferentialPrivacyFunction injects calibrated Laplace or Gaussian noise

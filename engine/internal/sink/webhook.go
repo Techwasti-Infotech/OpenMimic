@@ -103,3 +103,4 @@ func (s *WebhookSink) WriteEvent(ctx context.Context, key []byte, payload map[st
 func (s *WebhookSink) Close() error {
 	return nil
 }
+

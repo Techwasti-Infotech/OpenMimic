@@ -91,3 +91,4 @@ spec:
             - "--workers={{ .Values.worker.replicaCount }}"
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
+

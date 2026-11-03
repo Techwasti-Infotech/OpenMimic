@@ -13,6 +13,7 @@ import (
 	"openmimic/engine/internal/generator"
 	"openmimic/engine/internal/metrics"
 	"openmimic/engine/internal/privacy"
+	"openmimic/engine/internal/pseudonym"
 	"openmimic/engine/internal/sink"
 	"openmimic/engine/internal/solver"
 	"openmimic/engine/internal/state"
@@ -308,6 +309,12 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64) any 
 				return dp.AddNoise(baseVal, e.state.RNG)
 			}
 			return f.DifferentialPrivacy.GetBaseValue()
+		}
+
+	case *pb.FunctionGenerator_Pseudonymize:
+		if f.Pseudonymize != nil {
+			p := pseudonym.NewPseudonymizer(f.Pseudonymize)
+			return p.Pseudonymize(e.state.RNG)
 		}
 	}
 
