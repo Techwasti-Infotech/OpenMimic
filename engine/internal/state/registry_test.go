@@ -38,3 +38,4 @@ func TestGlobalEntityRegistry(t *testing.T) {
 		}
 	}
 }
+

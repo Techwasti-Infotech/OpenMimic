@@ -17,7 +17,24 @@ message GeneratorConfig {
   repeated Constraint constraints = 9; // Phase 6: Field and cross-field predicates
   repeated AnomalyPlaybook playbooks = 10; // Phase 10: Anomaly injection playbooks
   CDCEnvelope cdc_envelope = 11; // CDC (Change Data Capture) configuration (Debezium envelope)
-  reserved 12 to 20; // Reserved slots for Phase 8-9 (PII rules, fidelity thresholds, audit tags)
+  DLQConfig dlq = 12; // Dead Letter Queue configuration for quarantined failures
+  OTelTracingConfig otel = 13; // OpenTelemetry trace header injection
+  reserved 14 to 20; // Reserved slots for Phase 8-9 (PII rules, fidelity thresholds, audit tags)
+}
+
+// DLQConfig configures quarantine destinations for events failing constraints or validation
+message DLQConfig {
+  bool enabled = 1;
+  string target_topic_or_table = 2; // e.g. "orders.dlq" or "quarantine_events"
+  bool include_error_stack = 3;
+  bool drop_on_overflow = 4;
+}
+
+// OTelTracingConfig configures OpenTelemetry W3C traceparent headers
+message OTelTracingConfig {
+  bool enabled = 1;
+  string service_name = 2; // e.g. "openmimic-producer"
+  double sample_rate = 3;  // e.g. 1.0 = 100% trace injection
 }
 
 // CDCEnvelope configures Debezium-compatible Change Data Capture payload wrapping

@@ -96,3 +96,4 @@ func TestDynamicCrossTableReferentialIntegrity(t *testing.T) {
 		}
 	}
 }
+

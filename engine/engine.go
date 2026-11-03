@@ -9,11 +9,13 @@ import (
 	"time"
 
 	"openmimic/engine/internal/cdc"
+	"openmimic/engine/internal/dlq"
 	"openmimic/engine/internal/generator"
 	"openmimic/engine/internal/metrics"
 	"openmimic/engine/internal/sink"
 	"openmimic/engine/internal/solver"
 	"openmimic/engine/internal/state"
+	"openmimic/engine/internal/telemetry"
 	"openmimic/engine/internal/traffic"
 	pb "openmimic/engine/pkg/proto/v1"
 )
@@ -28,6 +30,8 @@ type Engine struct {
 	evaluator  *solver.ConstraintEvaluator
 	injector   *generator.AnomalyInjector
 	cdcEnv     *cdc.DebeziumEnvelope
+	dlqRouter  *dlq.Router
+	otelInj    *telemetry.OTelInjector
 }
 
 // NewEngine creates a new Engine instance.
@@ -51,6 +55,8 @@ func NewEngine(cfg *pb.GeneratorConfig, w io.Writer) *Engine {
 	evaluator := solver.NewConstraintEvaluator(cfg.GetConstraints())
 	injector := generator.NewAnomalyInjector(cfg.GetPlaybooks())
 	cdcEnv := cdc.NewDebeziumEnvelope(cfg.GetCdcEnvelope())
+	dlqRouter := dlq.NewRouter(cfg.GetDlq())
+	otelInj := telemetry.NewOTelInjector(cfg.GetOtel())
 
 	return &Engine{
 		config:    cfg,
@@ -61,6 +67,8 @@ func NewEngine(cfg *pb.GeneratorConfig, w io.Writer) *Engine {
 		evaluator: evaluator,
 		injector:  injector,
 		cdcEnv:    cdcEnv,
+		dlqRouter: dlqRouter,
+		otelInj:   otelInj,
 	}
 }
 
@@ -108,12 +116,19 @@ func (e *Engine) GenerateEvent(index int64) (map[string]any, error) {
 			// Wrap in Debezium CDC envelope if enabled
 			record = e.cdcEnv.Wrap(record, index, e.state.RNG, e.state.Clock)
 
+			// Inject OpenTelemetry W3C traceparent headers if enabled
+			record = e.otelInj.Inject(record, e.state.RNG)
+
 			e.state.Clock.Tick()
 			return record, nil
 		}
 	}
 
-	return nil, fmt.Errorf("infeasible constraint set: unable to satisfy predicates after %d resample attempts", maxRetries)
+	err := fmt.Errorf("infeasible constraint set: unable to satisfy predicates after %d resample attempts", maxRetries)
+	// Route failed candidate to Dead Letter Queue if configured
+	_ = e.dlqRouter.Quarantine(context.Background(), e.config.GetId(), err.Error(), maxRetries, map[string]any{"index": index})
+
+	return nil, err
 }
 
 func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64) any {

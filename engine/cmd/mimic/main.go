@@ -14,6 +14,7 @@ import (
 	"openmimic/engine/internal/importer"
 	"openmimic/engine/internal/orchestrator"
 	"openmimic/engine/internal/service"
+	"openmimic/engine/internal/telemetry"
 	pb "openmimic/engine/pkg/proto/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -287,6 +288,9 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write(tsBytes)
 	}))
+
+	// Prometheus Metrics Exporter endpoint
+	mux.HandleFunc("/metrics", telemetry.GetDefaultExporter().Handler())
 
 	log.Printf("OpenMimic REST/HTTP bridge listening on :%d", *httpPort)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), mux); err != nil {
