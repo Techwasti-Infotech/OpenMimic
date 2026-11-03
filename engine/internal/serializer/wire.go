@@ -66,3 +66,4 @@ func ExtractSchemaID(data []byte) (uint32, bool) {
 	schemaID := binary.BigEndian.Uint32(data[1:5])
 	return schemaID, true
 }
+

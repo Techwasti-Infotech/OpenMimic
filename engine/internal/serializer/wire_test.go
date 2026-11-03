@@ -49,3 +49,4 @@ func TestWireSerializerConfluentHeader(t *testing.T) {
 		t.Fatalf("expected order_id ord_999, got %v", decoded["order_id"])
 	}
 }
+
