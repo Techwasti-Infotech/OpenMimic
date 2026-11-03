@@ -12,6 +12,7 @@ import (
 	"openmimic/engine/internal/dlq"
 	"openmimic/engine/internal/generator"
 	"openmimic/engine/internal/metrics"
+	"openmimic/engine/internal/privacy"
 	"openmimic/engine/internal/sink"
 	"openmimic/engine/internal/solver"
 	"openmimic/engine/internal/state"
@@ -297,6 +298,16 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64) any 
 				"storage_uri":  fmt.Sprintf("s3://mimic-media/%s/%08x.%s", mediaType, e.state.RNG.Uint32(), strings.TrimPrefix(mime, mediaType+"/")),
 				"checksum_sha": fmt.Sprintf("%016x%016x", e.state.RNG.Uint64(), e.state.RNG.Uint64()),
 			}
+		}
+
+	case *pb.FunctionGenerator_DifferentialPrivacy:
+		if f.DifferentialPrivacy != nil {
+			dp, err := privacy.CreateDPMechanism(f.DifferentialPrivacy)
+			if err == nil {
+				baseVal := f.DifferentialPrivacy.GetBaseValue()
+				return dp.AddNoise(baseVal, e.state.RNG)
+			}
+			return f.DifferentialPrivacy.GetBaseValue()
 		}
 	}
 

@@ -1,0 +1,17 @@
+apiVersion: v2
+name: openmimic
+description: A Helm chart for deploying OpenMimic Coordinator and Worker generation cluster on Kubernetes
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - synthetic-data
+  - traffic-generator
+  - kafka
+  - openmimic
+home: https://github.com/Techwasti/OpenMimic
+sources:
+  - https://github.com/Techwasti/OpenMimic
+maintainers:
+  - name: OpenMimic Team
+    email: dev@openmimic.org

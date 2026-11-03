@@ -169,7 +169,16 @@ message SinkConfig {
     StdoutSink stdout = 4;
     RedisSink redis = 5;
     ClickHouseSink clickhouse = 6;
+    WebhookSink webhook = 7;
   }
+}
+
+message WebhookSink {
+  string endpoint = 1; // e.g. "https://api.example.com/webhooks/events"
+  string method = 2; // "POST", "PUT"
+  map<string, string> headers = 3;
+  int32 timeout_ms = 4;
+  int32 retry_attempts = 5;
 }
 
 message RedisSink {
@@ -229,7 +238,7 @@ message Field {
 
 // FunctionGenerator defines how a field value is generated.
 message FunctionGenerator {
-  reserved 13 to 20; // Reserved slots
+  reserved 14 to 20; // Reserved slots
   oneof func {
     UuidFunction uuid = 1;
     DistributionFunction distribution = 2;
@@ -243,7 +252,20 @@ message FunctionGenerator {
     NestedObjectFunction nested_object = 10;  // Multimodal/nested structured JSON
     ArrayFunction array = 11;                 // Repeating arrays of values/objects
     MediaMetaFunction media_meta = 12;        // Audio/image/video synthetic metadata
+    DifferentialPrivacyFunction differential_privacy = 13; // Calibrated Laplace or Gaussian noise
   }
+}
+
+// DifferentialPrivacyFunction injects calibrated Laplace or Gaussian noise
+// into numerical columns to guarantee (epsilon, delta)-differential privacy.
+message DifferentialPrivacyFunction {
+  string mechanism = 1; // "laplace" or "gaussian"
+  double base_value = 2; // base ground-truth mean or central value
+  double epsilon = 3; // privacy budget epsilon (> 0)
+  double delta = 4; // delta for gaussian mechanism (e.g. 1e-5)
+  double sensitivity = 5; // global sensitivity Delta f
+  double min_bound = 6; // optional clamp lower bound
+  double max_bound = 7; // optional clamp upper bound
 }
 
 message NestedObjectFunction {

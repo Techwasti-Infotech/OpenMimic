@@ -25,6 +25,12 @@ services:
     environment:
       - GRPC_PORT=50051
       - HTTP_PORT=8080
+      - REDIS_ADDR=redis:6379
+      - CLICKHOUSE_ADDR=clickhouse:9000
+    depends_on:
+      - kafka
+      - redis
+      - clickhouse
     networks:
       - mimic-net
 
@@ -41,7 +47,7 @@ services:
     networks:
       - mimic-net
 
-  # Local Mock Kafka / Redpanda for local stream testing
+  # Local Mock Kafka / Redpanda for streaming sinks
   kafka:
     image: vectorized/redpanda:latest
     container_name: openmimic-kafka
@@ -62,6 +68,42 @@ services:
       - PLAINTEXT://0.0.0.0:9092
       - --advertise-kafka-addr
       - PLAINTEXT://localhost:9092
+    networks:
+      - mimic-net
+
+  # Redis In-Memory & Stream Sink
+  redis:
+    image: redis:7-alpine
+    container_name: openmimic-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - mimic-net
+
+  # ClickHouse Real-Time Analytics Sink
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3-alpine
+    container_name: openmimic-clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - mimic-net
+
+  # Prometheus Telemetry Exporter Scraper
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: openmimic-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - mimic-net
 
