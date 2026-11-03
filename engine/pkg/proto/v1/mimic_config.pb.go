@@ -3415,6 +3415,382 @@ func (x *WeightedChoiceFunction) GetOptions() []*WeightedChoiceOption {
 	return nil
 }
 
+type RegisterWorkerRequest struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	WorkerId             string                 `protobuf:"bytes,1,opt,name=worker_id,json=workerId,proto3" json:"worker_id,omitempty"`
+	Hostname             string                 `protobuf:"bytes,2,opt,name=hostname,proto3" json:"hostname,omitempty"`
+	CpuCores             int32                  `protobuf:"varint,3,opt,name=cpu_cores,json=cpuCores,proto3" json:"cpu_cores,omitempty"`
+	AvailableMemoryBytes int64                  `protobuf:"varint,4,opt,name=available_memory_bytes,json=availableMemoryBytes,proto3" json:"available_memory_bytes,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *RegisterWorkerRequest) Reset() {
+	*x = RegisterWorkerRequest{}
+	mi := &file_mimic_config_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterWorkerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterWorkerRequest) ProtoMessage() {}
+
+func (x *RegisterWorkerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_mimic_config_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterWorkerRequest.ProtoReflect.Descriptor instead.
+func (*RegisterWorkerRequest) Descriptor() ([]byte, []int) {
+	return file_mimic_config_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *RegisterWorkerRequest) GetWorkerId() string {
+	if x != nil {
+		return x.WorkerId
+	}
+	return ""
+}
+
+func (x *RegisterWorkerRequest) GetHostname() string {
+	if x != nil {
+		return x.Hostname
+	}
+	return ""
+}
+
+func (x *RegisterWorkerRequest) GetCpuCores() int32 {
+	if x != nil {
+		return x.CpuCores
+	}
+	return 0
+}
+
+func (x *RegisterWorkerRequest) GetAvailableMemoryBytes() int64 {
+	if x != nil {
+		return x.AvailableMemoryBytes
+	}
+	return 0
+}
+
+type RegisterWorkerResponse struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	Accepted            bool                   `protobuf:"varint,1,opt,name=accepted,proto3" json:"accepted,omitempty"`
+	ClusterId           string                 `protobuf:"bytes,2,opt,name=cluster_id,json=clusterId,proto3" json:"cluster_id,omitempty"`
+	AssignedWorkerIndex int32                  `protobuf:"varint,3,opt,name=assigned_worker_index,json=assignedWorkerIndex,proto3" json:"assigned_worker_index,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *RegisterWorkerResponse) Reset() {
+	*x = RegisterWorkerResponse{}
+	mi := &file_mimic_config_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterWorkerResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterWorkerResponse) ProtoMessage() {}
+
+func (x *RegisterWorkerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_mimic_config_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterWorkerResponse.ProtoReflect.Descriptor instead.
+func (*RegisterWorkerResponse) Descriptor() ([]byte, []int) {
+	return file_mimic_config_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *RegisterWorkerResponse) GetAccepted() bool {
+	if x != nil {
+		return x.Accepted
+	}
+	return false
+}
+
+func (x *RegisterWorkerResponse) GetClusterId() string {
+	if x != nil {
+		return x.ClusterId
+	}
+	return ""
+}
+
+func (x *RegisterWorkerResponse) GetAssignedWorkerIndex() int32 {
+	if x != nil {
+		return x.AssignedWorkerIndex
+	}
+	return 0
+}
+
+type WorkerHeartbeat struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	WorkerId          string                 `protobuf:"bytes,1,opt,name=worker_id,json=workerId,proto3" json:"worker_id,omitempty"`
+	EventsProduced    int64                  `protobuf:"varint,2,opt,name=events_produced,json=eventsProduced,proto3" json:"events_produced,omitempty"`
+	CurrentThroughput float64                `protobuf:"fixed64,3,opt,name=current_throughput,json=currentThroughput,proto3" json:"current_throughput,omitempty"`
+	Errors            int64                  `protobuf:"varint,4,opt,name=errors,proto3" json:"errors,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *WorkerHeartbeat) Reset() {
+	*x = WorkerHeartbeat{}
+	mi := &file_mimic_config_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkerHeartbeat) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkerHeartbeat) ProtoMessage() {}
+
+func (x *WorkerHeartbeat) ProtoReflect() protoreflect.Message {
+	mi := &file_mimic_config_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkerHeartbeat.ProtoReflect.Descriptor instead.
+func (*WorkerHeartbeat) Descriptor() ([]byte, []int) {
+	return file_mimic_config_proto_rawDescGZIP(), []int{48}
+}
+
+func (x *WorkerHeartbeat) GetWorkerId() string {
+	if x != nil {
+		return x.WorkerId
+	}
+	return ""
+}
+
+func (x *WorkerHeartbeat) GetEventsProduced() int64 {
+	if x != nil {
+		return x.EventsProduced
+	}
+	return 0
+}
+
+func (x *WorkerHeartbeat) GetCurrentThroughput() float64 {
+	if x != nil {
+		return x.CurrentThroughput
+	}
+	return 0
+}
+
+func (x *WorkerHeartbeat) GetErrors() int64 {
+	if x != nil {
+		return x.Errors
+	}
+	return 0
+}
+
+type WorkerHeartbeatAck struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Acknowledged    bool                   `protobuf:"varint,1,opt,name=acknowledged,proto3" json:"acknowledged,omitempty"`
+	ShouldTerminate bool                   `protobuf:"varint,2,opt,name=should_terminate,json=shouldTerminate,proto3" json:"should_terminate,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *WorkerHeartbeatAck) Reset() {
+	*x = WorkerHeartbeatAck{}
+	mi := &file_mimic_config_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkerHeartbeatAck) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkerHeartbeatAck) ProtoMessage() {}
+
+func (x *WorkerHeartbeatAck) ProtoReflect() protoreflect.Message {
+	mi := &file_mimic_config_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkerHeartbeatAck.ProtoReflect.Descriptor instead.
+func (*WorkerHeartbeatAck) Descriptor() ([]byte, []int) {
+	return file_mimic_config_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *WorkerHeartbeatAck) GetAcknowledged() bool {
+	if x != nil {
+		return x.Acknowledged
+	}
+	return false
+}
+
+func (x *WorkerHeartbeatAck) GetShouldTerminate() bool {
+	if x != nil {
+		return x.ShouldTerminate
+	}
+	return false
+}
+
+type AssignPartitionWorkRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	JobId           string                 `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
+	Config          *GeneratorConfig       `protobuf:"bytes,2,opt,name=config,proto3" json:"config,omitempty"`
+	StartIndex      int64                  `protobuf:"varint,3,opt,name=start_index,json=startIndex,proto3" json:"start_index,omitempty"` // e.g. partition range 0 to 500,000
+	EndIndex        int64                  `protobuf:"varint,4,opt,name=end_index,json=endIndex,proto3" json:"end_index,omitempty"`
+	TargetPartition int32                  `protobuf:"varint,5,opt,name=target_partition,json=targetPartition,proto3" json:"target_partition,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *AssignPartitionWorkRequest) Reset() {
+	*x = AssignPartitionWorkRequest{}
+	mi := &file_mimic_config_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssignPartitionWorkRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssignPartitionWorkRequest) ProtoMessage() {}
+
+func (x *AssignPartitionWorkRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_mimic_config_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssignPartitionWorkRequest.ProtoReflect.Descriptor instead.
+func (*AssignPartitionWorkRequest) Descriptor() ([]byte, []int) {
+	return file_mimic_config_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *AssignPartitionWorkRequest) GetJobId() string {
+	if x != nil {
+		return x.JobId
+	}
+	return ""
+}
+
+func (x *AssignPartitionWorkRequest) GetConfig() *GeneratorConfig {
+	if x != nil {
+		return x.Config
+	}
+	return nil
+}
+
+func (x *AssignPartitionWorkRequest) GetStartIndex() int64 {
+	if x != nil {
+		return x.StartIndex
+	}
+	return 0
+}
+
+func (x *AssignPartitionWorkRequest) GetEndIndex() int64 {
+	if x != nil {
+		return x.EndIndex
+	}
+	return 0
+}
+
+func (x *AssignPartitionWorkRequest) GetTargetPartition() int32 {
+	if x != nil {
+		return x.TargetPartition
+	}
+	return 0
+}
+
+type AssignPartitionWorkResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	JobId         string                 `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"` // "ACCEPTED", "BUSY"
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssignPartitionWorkResponse) Reset() {
+	*x = AssignPartitionWorkResponse{}
+	mi := &file_mimic_config_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssignPartitionWorkResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssignPartitionWorkResponse) ProtoMessage() {}
+
+func (x *AssignPartitionWorkResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_mimic_config_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssignPartitionWorkResponse.ProtoReflect.Descriptor instead.
+func (*AssignPartitionWorkResponse) Descriptor() ([]byte, []int) {
+	return file_mimic_config_proto_rawDescGZIP(), []int{51}
+}
+
+func (x *AssignPartitionWorkResponse) GetJobId() string {
+	if x != nil {
+		return x.JobId
+	}
+	return ""
+}
+
+func (x *AssignPartitionWorkResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
 type StartGeneratorRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Config        *GeneratorConfig       `protobuf:"bytes,1,opt,name=config,proto3" json:"config,omitempty"`
@@ -3424,7 +3800,7 @@ type StartGeneratorRequest struct {
 
 func (x *StartGeneratorRequest) Reset() {
 	*x = StartGeneratorRequest{}
-	mi := &file_mimic_config_proto_msgTypes[46]
+	mi := &file_mimic_config_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3436,7 +3812,7 @@ func (x *StartGeneratorRequest) String() string {
 func (*StartGeneratorRequest) ProtoMessage() {}
 
 func (x *StartGeneratorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[46]
+	mi := &file_mimic_config_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3449,7 +3825,7 @@ func (x *StartGeneratorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGeneratorRequest.ProtoReflect.Descriptor instead.
 func (*StartGeneratorRequest) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{46}
+	return file_mimic_config_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *StartGeneratorRequest) GetConfig() *GeneratorConfig {
@@ -3469,7 +3845,7 @@ type StartGeneratorResponse struct {
 
 func (x *StartGeneratorResponse) Reset() {
 	*x = StartGeneratorResponse{}
-	mi := &file_mimic_config_proto_msgTypes[47]
+	mi := &file_mimic_config_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3481,7 +3857,7 @@ func (x *StartGeneratorResponse) String() string {
 func (*StartGeneratorResponse) ProtoMessage() {}
 
 func (x *StartGeneratorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[47]
+	mi := &file_mimic_config_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3494,7 +3870,7 @@ func (x *StartGeneratorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGeneratorResponse.ProtoReflect.Descriptor instead.
 func (*StartGeneratorResponse) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{47}
+	return file_mimic_config_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *StartGeneratorResponse) GetGeneratorId() string {
@@ -3520,7 +3896,7 @@ type StopGeneratorRequest struct {
 
 func (x *StopGeneratorRequest) Reset() {
 	*x = StopGeneratorRequest{}
-	mi := &file_mimic_config_proto_msgTypes[48]
+	mi := &file_mimic_config_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3532,7 +3908,7 @@ func (x *StopGeneratorRequest) String() string {
 func (*StopGeneratorRequest) ProtoMessage() {}
 
 func (x *StopGeneratorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[48]
+	mi := &file_mimic_config_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3545,7 +3921,7 @@ func (x *StopGeneratorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopGeneratorRequest.ProtoReflect.Descriptor instead.
 func (*StopGeneratorRequest) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{48}
+	return file_mimic_config_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *StopGeneratorRequest) GetGeneratorId() string {
@@ -3565,7 +3941,7 @@ type StopGeneratorResponse struct {
 
 func (x *StopGeneratorResponse) Reset() {
 	*x = StopGeneratorResponse{}
-	mi := &file_mimic_config_proto_msgTypes[49]
+	mi := &file_mimic_config_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3577,7 +3953,7 @@ func (x *StopGeneratorResponse) String() string {
 func (*StopGeneratorResponse) ProtoMessage() {}
 
 func (x *StopGeneratorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[49]
+	mi := &file_mimic_config_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3590,7 +3966,7 @@ func (x *StopGeneratorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopGeneratorResponse.ProtoReflect.Descriptor instead.
 func (*StopGeneratorResponse) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{49}
+	return file_mimic_config_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *StopGeneratorResponse) GetGeneratorId() string {
@@ -3617,7 +3993,7 @@ type StreamPreviewRequest struct {
 
 func (x *StreamPreviewRequest) Reset() {
 	*x = StreamPreviewRequest{}
-	mi := &file_mimic_config_proto_msgTypes[50]
+	mi := &file_mimic_config_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3629,7 +4005,7 @@ func (x *StreamPreviewRequest) String() string {
 func (*StreamPreviewRequest) ProtoMessage() {}
 
 func (x *StreamPreviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[50]
+	mi := &file_mimic_config_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3642,7 +4018,7 @@ func (x *StreamPreviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamPreviewRequest.ProtoReflect.Descriptor instead.
 func (*StreamPreviewRequest) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{50}
+	return file_mimic_config_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *StreamPreviewRequest) GetConfig() *GeneratorConfig {
@@ -3670,7 +4046,7 @@ type StreamPreviewResponse struct {
 
 func (x *StreamPreviewResponse) Reset() {
 	*x = StreamPreviewResponse{}
-	mi := &file_mimic_config_proto_msgTypes[51]
+	mi := &file_mimic_config_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3682,7 +4058,7 @@ func (x *StreamPreviewResponse) String() string {
 func (*StreamPreviewResponse) ProtoMessage() {}
 
 func (x *StreamPreviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[51]
+	mi := &file_mimic_config_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3695,7 +4071,7 @@ func (x *StreamPreviewResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamPreviewResponse.ProtoReflect.Descriptor instead.
 func (*StreamPreviewResponse) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{51}
+	return file_mimic_config_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *StreamPreviewResponse) GetIndex() int64 {
@@ -3728,7 +4104,7 @@ type StreamMetricsRequest struct {
 
 func (x *StreamMetricsRequest) Reset() {
 	*x = StreamMetricsRequest{}
-	mi := &file_mimic_config_proto_msgTypes[52]
+	mi := &file_mimic_config_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3740,7 +4116,7 @@ func (x *StreamMetricsRequest) String() string {
 func (*StreamMetricsRequest) ProtoMessage() {}
 
 func (x *StreamMetricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[52]
+	mi := &file_mimic_config_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3753,7 +4129,7 @@ func (x *StreamMetricsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamMetricsRequest.ProtoReflect.Descriptor instead.
 func (*StreamMetricsRequest) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{52}
+	return file_mimic_config_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *StreamMetricsRequest) GetGeneratorId() string {
@@ -3778,7 +4154,7 @@ type StreamMetricsResponse struct {
 
 func (x *StreamMetricsResponse) Reset() {
 	*x = StreamMetricsResponse{}
-	mi := &file_mimic_config_proto_msgTypes[53]
+	mi := &file_mimic_config_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3790,7 +4166,7 @@ func (x *StreamMetricsResponse) String() string {
 func (*StreamMetricsResponse) ProtoMessage() {}
 
 func (x *StreamMetricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_mimic_config_proto_msgTypes[53]
+	mi := &file_mimic_config_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3803,7 +4179,7 @@ func (x *StreamMetricsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamMetricsResponse.ProtoReflect.Descriptor instead.
 func (*StreamMetricsResponse) Descriptor() ([]byte, []int) {
-	return file_mimic_config_proto_rawDescGZIP(), []int{53}
+	return file_mimic_config_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *StreamMetricsResponse) GetGeneratorId() string {
@@ -4120,7 +4496,35 @@ const file_mimic_config_proto_rawDesc = "" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12\x16\n" +
 	"\x06weight\x18\x02 \x01(\x01R\x06weight\"V\n" +
 	"\x16WeightedChoiceFunction\x12<\n" +
-	"\aoptions\x18\x01 \x03(\v2\".openmimic.v1.WeightedChoiceOptionR\aoptions\"N\n" +
+	"\aoptions\x18\x01 \x03(\v2\".openmimic.v1.WeightedChoiceOptionR\aoptions\"\xa3\x01\n" +
+	"\x15RegisterWorkerRequest\x12\x1b\n" +
+	"\tworker_id\x18\x01 \x01(\tR\bworkerId\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x1b\n" +
+	"\tcpu_cores\x18\x03 \x01(\x05R\bcpuCores\x124\n" +
+	"\x16available_memory_bytes\x18\x04 \x01(\x03R\x14availableMemoryBytes\"\x87\x01\n" +
+	"\x16RegisterWorkerResponse\x12\x1a\n" +
+	"\baccepted\x18\x01 \x01(\bR\baccepted\x12\x1d\n" +
+	"\n" +
+	"cluster_id\x18\x02 \x01(\tR\tclusterId\x122\n" +
+	"\x15assigned_worker_index\x18\x03 \x01(\x05R\x13assignedWorkerIndex\"\x9e\x01\n" +
+	"\x0fWorkerHeartbeat\x12\x1b\n" +
+	"\tworker_id\x18\x01 \x01(\tR\bworkerId\x12'\n" +
+	"\x0fevents_produced\x18\x02 \x01(\x03R\x0eeventsProduced\x12-\n" +
+	"\x12current_throughput\x18\x03 \x01(\x01R\x11currentThroughput\x12\x16\n" +
+	"\x06errors\x18\x04 \x01(\x03R\x06errors\"c\n" +
+	"\x12WorkerHeartbeatAck\x12\"\n" +
+	"\facknowledged\x18\x01 \x01(\bR\facknowledged\x12)\n" +
+	"\x10should_terminate\x18\x02 \x01(\bR\x0fshouldTerminate\"\xd3\x01\n" +
+	"\x1aAssignPartitionWorkRequest\x12\x15\n" +
+	"\x06job_id\x18\x01 \x01(\tR\x05jobId\x125\n" +
+	"\x06config\x18\x02 \x01(\v2\x1d.openmimic.v1.GeneratorConfigR\x06config\x12\x1f\n" +
+	"\vstart_index\x18\x03 \x01(\x03R\n" +
+	"startIndex\x12\x1b\n" +
+	"\tend_index\x18\x04 \x01(\x03R\bendIndex\x12)\n" +
+	"\x10target_partition\x18\x05 \x01(\x05R\x0ftargetPartition\"L\n" +
+	"\x1bAssignPartitionWorkResponse\x12\x15\n" +
+	"\x06job_id\x18\x01 \x01(\tR\x05jobId\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\"N\n" +
 	"\x15StartGeneratorRequest\x125\n" +
 	"\x06config\x18\x01 \x01(\v2\x1d.openmimic.v1.GeneratorConfigR\x06config\"S\n" +
 	"\x16StartGeneratorResponse\x12!\n" +
@@ -4147,12 +4551,15 @@ const file_mimic_config_proto_rawDesc = "" +
 	"\x19throughput_events_per_sec\x18\x04 \x01(\x01R\x16throughputEventsPerSec\x12!\n" +
 	"\ftotal_errors\x18\x05 \x01(\x03R\vtotalErrors\x12$\n" +
 	"\x0elatency_p99_ms\x18\x06 \x01(\x01R\flatencyP99Ms\x12!\n" +
-	"\ftimestamp_ms\x18\a \x01(\x03R\vtimestampMs2\x81\x03\n" +
+	"\ftimestamp_ms\x18\a \x01(\x03R\vtimestampMs2\x9e\x05\n" +
 	"\x10GeneratorService\x12[\n" +
 	"\x0eStartGenerator\x12#.openmimic.v1.StartGeneratorRequest\x1a$.openmimic.v1.StartGeneratorResponse\x12X\n" +
 	"\rStopGenerator\x12\".openmimic.v1.StopGeneratorRequest\x1a#.openmimic.v1.StopGeneratorResponse\x12Z\n" +
 	"\rStreamPreview\x12\".openmimic.v1.StreamPreviewRequest\x1a#.openmimic.v1.StreamPreviewResponse0\x01\x12Z\n" +
-	"\rStreamMetrics\x12\".openmimic.v1.StreamMetricsRequest\x1a#.openmimic.v1.StreamMetricsResponse0\x01B+Z)openmimic/engine/pkg/proto/v1;openmimicv1b\x06proto3"
+	"\rStreamMetrics\x12\".openmimic.v1.StreamMetricsRequest\x1a#.openmimic.v1.StreamMetricsResponse0\x01\x12[\n" +
+	"\x0eRegisterWorker\x12#.openmimic.v1.RegisterWorkerRequest\x1a$.openmimic.v1.RegisterWorkerResponse\x12R\n" +
+	"\x0fHeartbeatWorker\x12\x1d.openmimic.v1.WorkerHeartbeat\x1a .openmimic.v1.WorkerHeartbeatAck\x12j\n" +
+	"\x13AssignPartitionWork\x12(.openmimic.v1.AssignPartitionWorkRequest\x1a).openmimic.v1.AssignPartitionWorkResponseB+Z)openmimic/engine/pkg/proto/v1;openmimicv1b\x06proto3"
 
 var (
 	file_mimic_config_proto_rawDescOnce sync.Once
@@ -4166,62 +4573,68 @@ func file_mimic_config_proto_rawDescGZIP() []byte {
 	return file_mimic_config_proto_rawDescData
 }
 
-var file_mimic_config_proto_msgTypes = make([]protoimpl.MessageInfo, 54)
+var file_mimic_config_proto_msgTypes = make([]protoimpl.MessageInfo, 60)
 var file_mimic_config_proto_goTypes = []any{
-	(*GeneratorConfig)(nil),           // 0: openmimic.v1.GeneratorConfig
-	(*DLQConfig)(nil),                 // 1: openmimic.v1.DLQConfig
-	(*OTelTracingConfig)(nil),         // 2: openmimic.v1.OTelTracingConfig
-	(*CDCEnvelope)(nil),               // 3: openmimic.v1.CDCEnvelope
-	(*Constraint)(nil),                // 4: openmimic.v1.Constraint
-	(*AnomalyPlaybook)(nil),           // 5: openmimic.v1.AnomalyPlaybook
-	(*GlobalSettings)(nil),            // 6: openmimic.v1.GlobalSettings
-	(*TenantSettings)(nil),            // 7: openmimic.v1.TenantSettings
-	(*Workspace)(nil),                 // 8: openmimic.v1.Workspace
-	(*Template)(nil),                  // 9: openmimic.v1.Template
-	(*AuditEvent)(nil),                // 10: openmimic.v1.AuditEvent
-	(*TopologyNode)(nil),              // 11: openmimic.v1.TopologyNode
-	(*MultiGeneratorTopology)(nil),    // 12: openmimic.v1.MultiGeneratorTopology
-	(*TrafficProfile)(nil),            // 13: openmimic.v1.TrafficProfile
-	(*ConstantRate)(nil),              // 14: openmimic.v1.ConstantRate
-	(*DiurnalRate)(nil),               // 15: openmimic.v1.DiurnalRate
-	(*PoissonArrival)(nil),            // 16: openmimic.v1.PoissonArrival
-	(*BurstSpikeRate)(nil),            // 17: openmimic.v1.BurstSpikeRate
-	(*SinkConfig)(nil),                // 18: openmimic.v1.SinkConfig
-	(*RedisSink)(nil),                 // 19: openmimic.v1.RedisSink
-	(*ClickHouseSink)(nil),            // 20: openmimic.v1.ClickHouseSink
-	(*KafkaSink)(nil),                 // 21: openmimic.v1.KafkaSink
-	(*SchemaRegistryConfig)(nil),      // 22: openmimic.v1.SchemaRegistryConfig
-	(*PostgresSink)(nil),              // 23: openmimic.v1.PostgresSink
-	(*S3Sink)(nil),                    // 24: openmimic.v1.S3Sink
-	(*StdoutSink)(nil),                // 25: openmimic.v1.StdoutSink
-	(*Field)(nil),                     // 26: openmimic.v1.Field
-	(*FunctionGenerator)(nil),         // 27: openmimic.v1.FunctionGenerator
-	(*NestedObjectFunction)(nil),      // 28: openmimic.v1.NestedObjectFunction
-	(*ArrayFunction)(nil),             // 29: openmimic.v1.ArrayFunction
-	(*MediaMetaFunction)(nil),         // 30: openmimic.v1.MediaMetaFunction
-	(*MarkovTransition)(nil),          // 31: openmimic.v1.MarkovTransition
-	(*MarkovState)(nil),               // 32: openmimic.v1.MarkovState
-	(*MarkovChainFunction)(nil),       // 33: openmimic.v1.MarkovChainFunction
-	(*EntityPoolFunction)(nil),        // 34: openmimic.v1.EntityPoolFunction
-	(*RelationalForeignKey)(nil),      // 35: openmimic.v1.RelationalForeignKey
-	(*UuidFunction)(nil),              // 36: openmimic.v1.UuidFunction
-	(*DistributionFunction)(nil),      // 37: openmimic.v1.DistributionFunction
-	(*NormalDistribution)(nil),        // 38: openmimic.v1.NormalDistribution
-	(*UniformDistribution)(nil),       // 39: openmimic.v1.UniformDistribution
-	(*NowFunction)(nil),               // 40: openmimic.v1.NowFunction
-	(*SequentialIntegerFunction)(nil), // 41: openmimic.v1.SequentialIntegerFunction
-	(*StringFakerFunction)(nil),       // 42: openmimic.v1.StringFakerFunction
-	(*ConstantFunction)(nil),          // 43: openmimic.v1.ConstantFunction
-	(*WeightedChoiceOption)(nil),      // 44: openmimic.v1.WeightedChoiceOption
-	(*WeightedChoiceFunction)(nil),    // 45: openmimic.v1.WeightedChoiceFunction
-	(*StartGeneratorRequest)(nil),     // 46: openmimic.v1.StartGeneratorRequest
-	(*StartGeneratorResponse)(nil),    // 47: openmimic.v1.StartGeneratorResponse
-	(*StopGeneratorRequest)(nil),      // 48: openmimic.v1.StopGeneratorRequest
-	(*StopGeneratorResponse)(nil),     // 49: openmimic.v1.StopGeneratorResponse
-	(*StreamPreviewRequest)(nil),      // 50: openmimic.v1.StreamPreviewRequest
-	(*StreamPreviewResponse)(nil),     // 51: openmimic.v1.StreamPreviewResponse
-	(*StreamMetricsRequest)(nil),      // 52: openmimic.v1.StreamMetricsRequest
-	(*StreamMetricsResponse)(nil),     // 53: openmimic.v1.StreamMetricsResponse
+	(*GeneratorConfig)(nil),             // 0: openmimic.v1.GeneratorConfig
+	(*DLQConfig)(nil),                   // 1: openmimic.v1.DLQConfig
+	(*OTelTracingConfig)(nil),           // 2: openmimic.v1.OTelTracingConfig
+	(*CDCEnvelope)(nil),                 // 3: openmimic.v1.CDCEnvelope
+	(*Constraint)(nil),                  // 4: openmimic.v1.Constraint
+	(*AnomalyPlaybook)(nil),             // 5: openmimic.v1.AnomalyPlaybook
+	(*GlobalSettings)(nil),              // 6: openmimic.v1.GlobalSettings
+	(*TenantSettings)(nil),              // 7: openmimic.v1.TenantSettings
+	(*Workspace)(nil),                   // 8: openmimic.v1.Workspace
+	(*Template)(nil),                    // 9: openmimic.v1.Template
+	(*AuditEvent)(nil),                  // 10: openmimic.v1.AuditEvent
+	(*TopologyNode)(nil),                // 11: openmimic.v1.TopologyNode
+	(*MultiGeneratorTopology)(nil),      // 12: openmimic.v1.MultiGeneratorTopology
+	(*TrafficProfile)(nil),              // 13: openmimic.v1.TrafficProfile
+	(*ConstantRate)(nil),                // 14: openmimic.v1.ConstantRate
+	(*DiurnalRate)(nil),                 // 15: openmimic.v1.DiurnalRate
+	(*PoissonArrival)(nil),              // 16: openmimic.v1.PoissonArrival
+	(*BurstSpikeRate)(nil),              // 17: openmimic.v1.BurstSpikeRate
+	(*SinkConfig)(nil),                  // 18: openmimic.v1.SinkConfig
+	(*RedisSink)(nil),                   // 19: openmimic.v1.RedisSink
+	(*ClickHouseSink)(nil),              // 20: openmimic.v1.ClickHouseSink
+	(*KafkaSink)(nil),                   // 21: openmimic.v1.KafkaSink
+	(*SchemaRegistryConfig)(nil),        // 22: openmimic.v1.SchemaRegistryConfig
+	(*PostgresSink)(nil),                // 23: openmimic.v1.PostgresSink
+	(*S3Sink)(nil),                      // 24: openmimic.v1.S3Sink
+	(*StdoutSink)(nil),                  // 25: openmimic.v1.StdoutSink
+	(*Field)(nil),                       // 26: openmimic.v1.Field
+	(*FunctionGenerator)(nil),           // 27: openmimic.v1.FunctionGenerator
+	(*NestedObjectFunction)(nil),        // 28: openmimic.v1.NestedObjectFunction
+	(*ArrayFunction)(nil),               // 29: openmimic.v1.ArrayFunction
+	(*MediaMetaFunction)(nil),           // 30: openmimic.v1.MediaMetaFunction
+	(*MarkovTransition)(nil),            // 31: openmimic.v1.MarkovTransition
+	(*MarkovState)(nil),                 // 32: openmimic.v1.MarkovState
+	(*MarkovChainFunction)(nil),         // 33: openmimic.v1.MarkovChainFunction
+	(*EntityPoolFunction)(nil),          // 34: openmimic.v1.EntityPoolFunction
+	(*RelationalForeignKey)(nil),        // 35: openmimic.v1.RelationalForeignKey
+	(*UuidFunction)(nil),                // 36: openmimic.v1.UuidFunction
+	(*DistributionFunction)(nil),        // 37: openmimic.v1.DistributionFunction
+	(*NormalDistribution)(nil),          // 38: openmimic.v1.NormalDistribution
+	(*UniformDistribution)(nil),         // 39: openmimic.v1.UniformDistribution
+	(*NowFunction)(nil),                 // 40: openmimic.v1.NowFunction
+	(*SequentialIntegerFunction)(nil),   // 41: openmimic.v1.SequentialIntegerFunction
+	(*StringFakerFunction)(nil),         // 42: openmimic.v1.StringFakerFunction
+	(*ConstantFunction)(nil),            // 43: openmimic.v1.ConstantFunction
+	(*WeightedChoiceOption)(nil),        // 44: openmimic.v1.WeightedChoiceOption
+	(*WeightedChoiceFunction)(nil),      // 45: openmimic.v1.WeightedChoiceFunction
+	(*RegisterWorkerRequest)(nil),       // 46: openmimic.v1.RegisterWorkerRequest
+	(*RegisterWorkerResponse)(nil),      // 47: openmimic.v1.RegisterWorkerResponse
+	(*WorkerHeartbeat)(nil),             // 48: openmimic.v1.WorkerHeartbeat
+	(*WorkerHeartbeatAck)(nil),          // 49: openmimic.v1.WorkerHeartbeatAck
+	(*AssignPartitionWorkRequest)(nil),  // 50: openmimic.v1.AssignPartitionWorkRequest
+	(*AssignPartitionWorkResponse)(nil), // 51: openmimic.v1.AssignPartitionWorkResponse
+	(*StartGeneratorRequest)(nil),       // 52: openmimic.v1.StartGeneratorRequest
+	(*StartGeneratorResponse)(nil),      // 53: openmimic.v1.StartGeneratorResponse
+	(*StopGeneratorRequest)(nil),        // 54: openmimic.v1.StopGeneratorRequest
+	(*StopGeneratorResponse)(nil),       // 55: openmimic.v1.StopGeneratorResponse
+	(*StreamPreviewRequest)(nil),        // 56: openmimic.v1.StreamPreviewRequest
+	(*StreamPreviewResponse)(nil),       // 57: openmimic.v1.StreamPreviewResponse
+	(*StreamMetricsRequest)(nil),        // 58: openmimic.v1.StreamMetricsRequest
+	(*StreamMetricsResponse)(nil),       // 59: openmimic.v1.StreamMetricsResponse
 }
 var file_mimic_config_proto_depIdxs = []int32{
 	18, // 0: openmimic.v1.GeneratorConfig.sink:type_name -> openmimic.v1.SinkConfig
@@ -4267,21 +4680,28 @@ var file_mimic_config_proto_depIdxs = []int32{
 	38, // 40: openmimic.v1.DistributionFunction.normal:type_name -> openmimic.v1.NormalDistribution
 	39, // 41: openmimic.v1.DistributionFunction.uniform:type_name -> openmimic.v1.UniformDistribution
 	44, // 42: openmimic.v1.WeightedChoiceFunction.options:type_name -> openmimic.v1.WeightedChoiceOption
-	0,  // 43: openmimic.v1.StartGeneratorRequest.config:type_name -> openmimic.v1.GeneratorConfig
-	0,  // 44: openmimic.v1.StreamPreviewRequest.config:type_name -> openmimic.v1.GeneratorConfig
-	46, // 45: openmimic.v1.GeneratorService.StartGenerator:input_type -> openmimic.v1.StartGeneratorRequest
-	48, // 46: openmimic.v1.GeneratorService.StopGenerator:input_type -> openmimic.v1.StopGeneratorRequest
-	50, // 47: openmimic.v1.GeneratorService.StreamPreview:input_type -> openmimic.v1.StreamPreviewRequest
-	52, // 48: openmimic.v1.GeneratorService.StreamMetrics:input_type -> openmimic.v1.StreamMetricsRequest
-	47, // 49: openmimic.v1.GeneratorService.StartGenerator:output_type -> openmimic.v1.StartGeneratorResponse
-	49, // 50: openmimic.v1.GeneratorService.StopGenerator:output_type -> openmimic.v1.StopGeneratorResponse
-	51, // 51: openmimic.v1.GeneratorService.StreamPreview:output_type -> openmimic.v1.StreamPreviewResponse
-	53, // 52: openmimic.v1.GeneratorService.StreamMetrics:output_type -> openmimic.v1.StreamMetricsResponse
-	49, // [49:53] is the sub-list for method output_type
-	45, // [45:49] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	0,  // 43: openmimic.v1.AssignPartitionWorkRequest.config:type_name -> openmimic.v1.GeneratorConfig
+	0,  // 44: openmimic.v1.StartGeneratorRequest.config:type_name -> openmimic.v1.GeneratorConfig
+	0,  // 45: openmimic.v1.StreamPreviewRequest.config:type_name -> openmimic.v1.GeneratorConfig
+	52, // 46: openmimic.v1.GeneratorService.StartGenerator:input_type -> openmimic.v1.StartGeneratorRequest
+	54, // 47: openmimic.v1.GeneratorService.StopGenerator:input_type -> openmimic.v1.StopGeneratorRequest
+	56, // 48: openmimic.v1.GeneratorService.StreamPreview:input_type -> openmimic.v1.StreamPreviewRequest
+	58, // 49: openmimic.v1.GeneratorService.StreamMetrics:input_type -> openmimic.v1.StreamMetricsRequest
+	46, // 50: openmimic.v1.GeneratorService.RegisterWorker:input_type -> openmimic.v1.RegisterWorkerRequest
+	48, // 51: openmimic.v1.GeneratorService.HeartbeatWorker:input_type -> openmimic.v1.WorkerHeartbeat
+	50, // 52: openmimic.v1.GeneratorService.AssignPartitionWork:input_type -> openmimic.v1.AssignPartitionWorkRequest
+	53, // 53: openmimic.v1.GeneratorService.StartGenerator:output_type -> openmimic.v1.StartGeneratorResponse
+	55, // 54: openmimic.v1.GeneratorService.StopGenerator:output_type -> openmimic.v1.StopGeneratorResponse
+	57, // 55: openmimic.v1.GeneratorService.StreamPreview:output_type -> openmimic.v1.StreamPreviewResponse
+	59, // 56: openmimic.v1.GeneratorService.StreamMetrics:output_type -> openmimic.v1.StreamMetricsResponse
+	47, // 57: openmimic.v1.GeneratorService.RegisterWorker:output_type -> openmimic.v1.RegisterWorkerResponse
+	49, // 58: openmimic.v1.GeneratorService.HeartbeatWorker:output_type -> openmimic.v1.WorkerHeartbeatAck
+	51, // 59: openmimic.v1.GeneratorService.AssignPartitionWork:output_type -> openmimic.v1.AssignPartitionWorkResponse
+	53, // [53:60] is the sub-list for method output_type
+	46, // [46:53] is the sub-list for method input_type
+	46, // [46:46] is the sub-list for extension type_name
+	46, // [46:46] is the sub-list for extension extendee
+	0,  // [0:46] is the sub-list for field type_name
 }
 
 func init() { file_mimic_config_proto_init() }
@@ -4333,7 +4753,7 @@ func file_mimic_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mimic_config_proto_rawDesc), len(file_mimic_config_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   54,
+			NumMessages:   60,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

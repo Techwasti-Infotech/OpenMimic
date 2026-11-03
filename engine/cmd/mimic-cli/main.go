@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"openmimic/engine"
+	"openmimic/engine/internal/cluster"
 	"openmimic/engine/internal/importer"
 	"openmimic/engine/internal/profiler"
 	pb "openmimic/engine/pkg/proto/v1"
@@ -23,6 +24,7 @@ func printUsage() {
 	fmt.Println("  export   --to-template <name>              Generate a starter template (e.g. order-flow, user-signup)")
 	fmt.Println("  discover --sql <file>                      Generate mimic.json from SQL DDL table definition")
 	fmt.Println("  profile  --table <name> --sample <file>    Reverse-engineer mimic.json from sample JSON records")
+	fmt.Println("  cluster  --workers <count> --total <count> Simulate distributed cluster partitioned stream")
 }
 
 func main() {
@@ -175,6 +177,32 @@ func main() {
 
 		bytes, _ := protojson.MarshalOptions{Indent: "  "}.Marshal(cfg)
 		fmt.Println(string(bytes))
+
+	case "cluster":
+		clusterCmd := flag.NewFlagSet("cluster", flag.ExitOnError)
+		workerCount := clusterCmd.Int("workers", 3, "Number of worker nodes to partition across")
+		totalEvents := clusterCmd.Int64("total", 300000, "Total events goal to distribute")
+		_ = clusterCmd.Parse(os.Args[2:])
+
+		coord := cluster.NewCoordinator("cli-cluster")
+		for i := 1; i <= *workerCount; i++ {
+			_, _ = coord.Register(&pb.RegisterWorkerRequest{
+				WorkerId: fmt.Sprintf("worker-%d", i),
+				Hostname: fmt.Sprintf("node-%d.local", i),
+				CpuCores: 8,
+			})
+		}
+
+		plan, err := coord.PlanPartitions(*totalEvents)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cluster partitioning failed: %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Printf("✓ SUCCESS: Distributed %d events across %d cluster workers:\n", *totalEvents, len(plan))
+		for _, p := range plan {
+			fmt.Printf("  • Worker %s: Event Range [%d - %d) -> %d events\n", p.WorkerID, p.StartIndex, p.EndIndex, p.Count)
+		}
 
 	case "profile":
 		profileCmd := flag.NewFlagSet("profile", flag.ExitOnError)

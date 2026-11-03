@@ -55,6 +55,21 @@ class GeneratorServiceStub:
                 request_serializer=mimic__config__pb2.StreamMetricsRequest.SerializeToString,
                 response_deserializer=mimic__config__pb2.StreamMetricsResponse.FromString,
                 _registered_method=True)
+        self.RegisterWorker = channel.unary_unary(
+                '/openmimic.v1.GeneratorService/RegisterWorker',
+                request_serializer=mimic__config__pb2.RegisterWorkerRequest.SerializeToString,
+                response_deserializer=mimic__config__pb2.RegisterWorkerResponse.FromString,
+                _registered_method=True)
+        self.HeartbeatWorker = channel.unary_unary(
+                '/openmimic.v1.GeneratorService/HeartbeatWorker',
+                request_serializer=mimic__config__pb2.WorkerHeartbeat.SerializeToString,
+                response_deserializer=mimic__config__pb2.WorkerHeartbeatAck.FromString,
+                _registered_method=True)
+        self.AssignPartitionWork = channel.unary_unary(
+                '/openmimic.v1.GeneratorService/AssignPartitionWork',
+                request_serializer=mimic__config__pb2.AssignPartitionWorkRequest.SerializeToString,
+                response_deserializer=mimic__config__pb2.AssignPartitionWorkResponse.FromString,
+                _registered_method=True)
 
 
 class GeneratorServiceServicer:
@@ -85,6 +100,25 @@ class GeneratorServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RegisterWorker(self, request, context):
+        """Cluster Coordinator RPCs
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def HeartbeatWorker(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AssignPartitionWork(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_GeneratorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -107,6 +141,21 @@ def add_GeneratorServiceServicer_to_server(servicer, server):
                     servicer.StreamMetrics,
                     request_deserializer=mimic__config__pb2.StreamMetricsRequest.FromString,
                     response_serializer=mimic__config__pb2.StreamMetricsResponse.SerializeToString,
+            ),
+            'RegisterWorker': grpc.unary_unary_rpc_method_handler(
+                    servicer.RegisterWorker,
+                    request_deserializer=mimic__config__pb2.RegisterWorkerRequest.FromString,
+                    response_serializer=mimic__config__pb2.RegisterWorkerResponse.SerializeToString,
+            ),
+            'HeartbeatWorker': grpc.unary_unary_rpc_method_handler(
+                    servicer.HeartbeatWorker,
+                    request_deserializer=mimic__config__pb2.WorkerHeartbeat.FromString,
+                    response_serializer=mimic__config__pb2.WorkerHeartbeatAck.SerializeToString,
+            ),
+            'AssignPartitionWork': grpc.unary_unary_rpc_method_handler(
+                    servicer.AssignPartitionWork,
+                    request_deserializer=mimic__config__pb2.AssignPartitionWorkRequest.FromString,
+                    response_serializer=mimic__config__pb2.AssignPartitionWorkResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -218,6 +267,87 @@ class GeneratorService:
             '/openmimic.v1.GeneratorService/StreamMetrics',
             mimic__config__pb2.StreamMetricsRequest.SerializeToString,
             mimic__config__pb2.StreamMetricsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RegisterWorker(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/openmimic.v1.GeneratorService/RegisterWorker',
+            mimic__config__pb2.RegisterWorkerRequest.SerializeToString,
+            mimic__config__pb2.RegisterWorkerResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def HeartbeatWorker(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/openmimic.v1.GeneratorService/HeartbeatWorker',
+            mimic__config__pb2.WorkerHeartbeat.SerializeToString,
+            mimic__config__pb2.WorkerHeartbeatAck.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AssignPartitionWork(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/openmimic.v1.GeneratorService/AssignPartitionWork',
+            mimic__config__pb2.AssignPartitionWorkRequest.SerializeToString,
+            mimic__config__pb2.AssignPartitionWorkResponse.FromString,
             options,
             channel_credentials,
             insecure,

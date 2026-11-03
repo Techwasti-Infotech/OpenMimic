@@ -78,3 +78,4 @@ func (r *Router) Count() int {
 	defer r.mu.RUnlock()
 	return len(r.quarantined)
 }
+

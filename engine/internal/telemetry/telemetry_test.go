@@ -44,3 +44,4 @@ func TestOTelTraceparentInjection(t *testing.T) {
 		t.Fatalf("expected service name ecom-producer, got %v", injected["_otel_service"])
 	}
 }
+

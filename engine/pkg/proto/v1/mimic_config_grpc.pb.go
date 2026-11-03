@@ -19,10 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	GeneratorService_StartGenerator_FullMethodName = "/openmimic.v1.GeneratorService/StartGenerator"
-	GeneratorService_StopGenerator_FullMethodName  = "/openmimic.v1.GeneratorService/StopGenerator"
-	GeneratorService_StreamPreview_FullMethodName  = "/openmimic.v1.GeneratorService/StreamPreview"
-	GeneratorService_StreamMetrics_FullMethodName  = "/openmimic.v1.GeneratorService/StreamMetrics"
+	GeneratorService_StartGenerator_FullMethodName      = "/openmimic.v1.GeneratorService/StartGenerator"
+	GeneratorService_StopGenerator_FullMethodName       = "/openmimic.v1.GeneratorService/StopGenerator"
+	GeneratorService_StreamPreview_FullMethodName       = "/openmimic.v1.GeneratorService/StreamPreview"
+	GeneratorService_StreamMetrics_FullMethodName       = "/openmimic.v1.GeneratorService/StreamMetrics"
+	GeneratorService_RegisterWorker_FullMethodName      = "/openmimic.v1.GeneratorService/RegisterWorker"
+	GeneratorService_HeartbeatWorker_FullMethodName     = "/openmimic.v1.GeneratorService/HeartbeatWorker"
+	GeneratorService_AssignPartitionWork_FullMethodName = "/openmimic.v1.GeneratorService/AssignPartitionWork"
 )
 
 // GeneratorServiceClient is the client API for GeneratorService service.
@@ -35,6 +38,10 @@ type GeneratorServiceClient interface {
 	StopGenerator(ctx context.Context, in *StopGeneratorRequest, opts ...grpc.CallOption) (*StopGeneratorResponse, error)
 	StreamPreview(ctx context.Context, in *StreamPreviewRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamPreviewResponse], error)
 	StreamMetrics(ctx context.Context, in *StreamMetricsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamMetricsResponse], error)
+	// Cluster Coordinator RPCs
+	RegisterWorker(ctx context.Context, in *RegisterWorkerRequest, opts ...grpc.CallOption) (*RegisterWorkerResponse, error)
+	HeartbeatWorker(ctx context.Context, in *WorkerHeartbeat, opts ...grpc.CallOption) (*WorkerHeartbeatAck, error)
+	AssignPartitionWork(ctx context.Context, in *AssignPartitionWorkRequest, opts ...grpc.CallOption) (*AssignPartitionWorkResponse, error)
 }
 
 type generatorServiceClient struct {
@@ -103,6 +110,36 @@ func (c *generatorServiceClient) StreamMetrics(ctx context.Context, in *StreamMe
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type GeneratorService_StreamMetricsClient = grpc.ServerStreamingClient[StreamMetricsResponse]
 
+func (c *generatorServiceClient) RegisterWorker(ctx context.Context, in *RegisterWorkerRequest, opts ...grpc.CallOption) (*RegisterWorkerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterWorkerResponse)
+	err := c.cc.Invoke(ctx, GeneratorService_RegisterWorker_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *generatorServiceClient) HeartbeatWorker(ctx context.Context, in *WorkerHeartbeat, opts ...grpc.CallOption) (*WorkerHeartbeatAck, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WorkerHeartbeatAck)
+	err := c.cc.Invoke(ctx, GeneratorService_HeartbeatWorker_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *generatorServiceClient) AssignPartitionWork(ctx context.Context, in *AssignPartitionWorkRequest, opts ...grpc.CallOption) (*AssignPartitionWorkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssignPartitionWorkResponse)
+	err := c.cc.Invoke(ctx, GeneratorService_AssignPartitionWork_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GeneratorServiceServer is the server API for GeneratorService service.
 // All implementations must embed UnimplementedGeneratorServiceServer
 // for forward compatibility.
@@ -113,6 +150,10 @@ type GeneratorServiceServer interface {
 	StopGenerator(context.Context, *StopGeneratorRequest) (*StopGeneratorResponse, error)
 	StreamPreview(*StreamPreviewRequest, grpc.ServerStreamingServer[StreamPreviewResponse]) error
 	StreamMetrics(*StreamMetricsRequest, grpc.ServerStreamingServer[StreamMetricsResponse]) error
+	// Cluster Coordinator RPCs
+	RegisterWorker(context.Context, *RegisterWorkerRequest) (*RegisterWorkerResponse, error)
+	HeartbeatWorker(context.Context, *WorkerHeartbeat) (*WorkerHeartbeatAck, error)
+	AssignPartitionWork(context.Context, *AssignPartitionWorkRequest) (*AssignPartitionWorkResponse, error)
 	mustEmbedUnimplementedGeneratorServiceServer()
 }
 
@@ -134,6 +175,15 @@ func (UnimplementedGeneratorServiceServer) StreamPreview(*StreamPreviewRequest, 
 }
 func (UnimplementedGeneratorServiceServer) StreamMetrics(*StreamMetricsRequest, grpc.ServerStreamingServer[StreamMetricsResponse]) error {
 	return status.Error(codes.Unimplemented, "method StreamMetrics not implemented")
+}
+func (UnimplementedGeneratorServiceServer) RegisterWorker(context.Context, *RegisterWorkerRequest) (*RegisterWorkerResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RegisterWorker not implemented")
+}
+func (UnimplementedGeneratorServiceServer) HeartbeatWorker(context.Context, *WorkerHeartbeat) (*WorkerHeartbeatAck, error) {
+	return nil, status.Error(codes.Unimplemented, "method HeartbeatWorker not implemented")
+}
+func (UnimplementedGeneratorServiceServer) AssignPartitionWork(context.Context, *AssignPartitionWorkRequest) (*AssignPartitionWorkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AssignPartitionWork not implemented")
 }
 func (UnimplementedGeneratorServiceServer) mustEmbedUnimplementedGeneratorServiceServer() {}
 func (UnimplementedGeneratorServiceServer) testEmbeddedByValue()                          {}
@@ -214,6 +264,60 @@ func _GeneratorService_StreamMetrics_Handler(srv interface{}, stream grpc.Server
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type GeneratorService_StreamMetricsServer = grpc.ServerStreamingServer[StreamMetricsResponse]
 
+func _GeneratorService_RegisterWorker_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterWorkerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GeneratorServiceServer).RegisterWorker(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GeneratorService_RegisterWorker_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GeneratorServiceServer).RegisterWorker(ctx, req.(*RegisterWorkerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GeneratorService_HeartbeatWorker_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WorkerHeartbeat)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GeneratorServiceServer).HeartbeatWorker(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GeneratorService_HeartbeatWorker_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GeneratorServiceServer).HeartbeatWorker(ctx, req.(*WorkerHeartbeat))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GeneratorService_AssignPartitionWork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssignPartitionWorkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GeneratorServiceServer).AssignPartitionWork(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GeneratorService_AssignPartitionWork_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GeneratorServiceServer).AssignPartitionWork(ctx, req.(*AssignPartitionWorkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GeneratorService_ServiceDesc is the grpc.ServiceDesc for GeneratorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +332,18 @@ var GeneratorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StopGenerator",
 			Handler:    _GeneratorService_StopGenerator_Handler,
+		},
+		{
+			MethodName: "RegisterWorker",
+			Handler:    _GeneratorService_RegisterWorker_Handler,
+		},
+		{
+			MethodName: "HeartbeatWorker",
+			Handler:    _GeneratorService_HeartbeatWorker_Handler,
+		},
+		{
+			MethodName: "AssignPartitionWork",
+			Handler:    _GeneratorService_AssignPartitionWork_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
