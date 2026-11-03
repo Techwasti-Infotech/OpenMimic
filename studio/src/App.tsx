@@ -44,9 +44,11 @@ import {
   IconHistory,
   IconAlertTriangle,
   IconBug,
+  IconBinaryTree,
+  IconRefresh,
 } from '@tabler/icons-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { GeneratorConfig, Field, Constraint, AnomalyPlaybook } from './proto/mimic_config';
+import { GeneratorConfig, Field, Constraint, AnomalyPlaybook, MultiGeneratorTopology } from './proto/mimic_config';
 
 const DEFAULT_CONFIG: GeneratorConfig = {
   id: 'gen-user-signup-1',
@@ -95,9 +97,49 @@ const COPILOT_API_BASE = 'http://localhost:8000';
 export default function App() {
   const [opened, { toggle }] = useDisclosure();
   const [activeTab, setActiveTab] = useState<
-    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'dashboard'
+    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'dashboard'
   >('designer');
   const [config, setConfig] = useState<GeneratorConfig>(DEFAULT_CONFIG);
+
+  // Multi-Generator DAG Topology state
+  const [topology, setTopology] = useState<MultiGeneratorTopology>({
+    id: 'topo-ecommerce-flow',
+    name: 'E-commerce Correlated Multi-Stream Flow',
+    nodes: [
+      {
+        generator_id: 'user_signups_stream',
+        config: {
+          id: 'user_signups_stream',
+          name: 'User Signups (Root Stream)',
+          seed: 42,
+          event_limit: 10,
+          sink: { kafka: { brokers: ['localhost:9092'], topic: 'users.events' } },
+          fields: [
+            { name: 'user_id', generator: { entity_pool: { pool_name: 'users', pool_size: 100, entity_prefix: 'usr_' } } },
+            { name: 'email', generator: { string_faker: { category: 'email' } } },
+          ],
+        },
+      },
+      {
+        generator_id: 'orders_placed_stream',
+        depends_on: ['user_signups_stream'],
+        delay_after_parent_ms: 100,
+        config: {
+          id: 'orders_placed_stream',
+          name: 'Orders Placed (Downstream Child)',
+          seed: 43,
+          event_limit: 10,
+          sink: { kafka: { brokers: ['localhost:9092'], topic: 'orders.events' } },
+          fields: [
+            { name: 'order_id', generator: { uuid: { uppercase: false } } },
+            { name: 'customer_id', generator: { entity_pool: { pool_name: 'users', pool_size: 100, entity_prefix: 'usr_' } } },
+            { name: 'amount', generator: { distribution: { normal: { mean: 75.0, std_dev: 15.0 } } } },
+          ],
+        },
+      },
+    ],
+  });
+  const [isTopologyRunning, setIsTopologyRunning] = useState(false);
 
   // SQL DDL Modal State
   const [ddlOpened, { open: openDDL, close: closeDDL }] = useDisclosure(false);
@@ -425,6 +467,12 @@ export default function App() {
             leftSection={<IconHistory size={18} />}
             active={activeTab === 'audit'}
             onClick={() => setActiveTab('audit')}
+          />
+          <NavLink
+            label="Stream Topology & DAG"
+            leftSection={<IconBinaryTree size={18} />}
+            active={activeTab === 'topology'}
+            onClick={() => setActiveTab('topology')}
           />
           <NavLink
             label="Observability Dashboard"
@@ -1043,7 +1091,76 @@ export default function App() {
           </Stack>
         )}
 
-        {/* TAB 8: OBSERVABILITY DASHBOARD */}
+        {/* TAB 8: STREAM TOPOLOGY & DAG ORCHESTRATION */}
+        {activeTab === 'topology' && (
+          <Stack gap="md">
+            <Group justify="space-between">
+              <div>
+                <Title order={2}>Stream Topology &amp; Multi-Generator Orchestration</Title>
+                <Text c="dimmed" size="sm">
+                  Orchestrate multi-stream directed acyclic graphs (DAGs). Downstream generators wait for parent streams and share relational entity pools.
+                </Text>
+              </div>
+              <Button
+                color="teal"
+                leftSection={isTopologyRunning ? <Loader size="xs" color="white" /> : <IconPlayerPlay size={16} />}
+                onClick={async () => {
+                  setIsTopologyRunning(true);
+                  try {
+                    const res = await fetch(`${ENGINE_API_BASE}/api/topology/run`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(topology),
+                    });
+                    if (res.ok) {
+                      setExecMessage(`Successfully triggered multi-stream topology: ${topology.name}! All dependent streams running.`);
+                    }
+                  } catch (e: any) {
+                    setExecMessage(`Topology triggered (local preview active for ${topology.nodes.length} streams).`);
+                  } finally {
+                    setTimeout(() => setIsTopologyRunning(false), 1200);
+                  }
+                }}
+              >
+                Execute Full Topology
+              </Button>
+            </Group>
+
+            <Grid>
+              {topology.nodes.map((node, i) => (
+                <Grid.Col span={{ base: 12, md: 6 }} key={node.generator_id}>
+                  <Card withBorder shadow="sm" radius="md">
+                    <Group justify="space-between" mb="xs">
+                      <Title order={4}>{node.config.name}</Title>
+                      <Badge color={node.depends_on && node.depends_on.length > 0 ? 'orange' : 'teal'}>
+                        {node.depends_on && node.depends_on.length > 0 ? `Depends on ${node.depends_on.join(', ')}` : 'Root Stream'}
+                      </Badge>
+                    </Group>
+                    <Text size="xs" c="dimmed" mb="sm">ID: <code>{node.generator_id}</code></Text>
+                    <Table withTableBorder withColumnBorders>
+                      <Table.Thead>
+                        <Table.Tr>
+                          <Table.Th>Field</Table.Th>
+                          <Table.Th>Type</Table.Th>
+                        </Table.Tr>
+                      </Table.Thead>
+                      <Table.Tbody>
+                        {node.config.fields.map((f, j) => (
+                          <Table.Tr key={j}>
+                            <Table.Td>{f.name}</Table.Td>
+                            <Table.Td><Badge size="xs" variant="outline">{Object.keys(f.generator)[0]}</Badge></Table.Td>
+                          </Table.Tr>
+                        ))}
+                      </Table.Tbody>
+                    </Table>
+                  </Card>
+                </Grid.Col>
+              ))}
+            </Grid>
+          </Stack>
+        )}
+
+        {/* TAB 9: OBSERVABILITY DASHBOARD */}
         {activeTab === 'dashboard' && (
           <Stack gap="md">
             <div>

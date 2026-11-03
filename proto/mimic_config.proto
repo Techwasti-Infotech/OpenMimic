@@ -16,7 +16,20 @@ message GeneratorConfig {
   TrafficProfile traffic_profile = 8; // Advanced traffic shaping (diurnal, poisson, bursts)
   repeated Constraint constraints = 9; // Phase 6: Field and cross-field predicates
   repeated AnomalyPlaybook playbooks = 10; // Phase 10: Anomaly injection playbooks
-  reserved 11 to 20; // Reserved slots for Phase 8-9 (PII rules, fidelity thresholds, audit tags)
+  CDCEnvelope cdc_envelope = 11; // CDC (Change Data Capture) configuration (Debezium envelope)
+  reserved 12 to 20; // Reserved slots for Phase 8-9 (PII rules, fidelity thresholds, audit tags)
+}
+
+// CDCEnvelope configures Debezium-compatible Change Data Capture payload wrapping
+message CDCEnvelope {
+  bool enabled = 1;
+  string connector_type = 2; // e.g. "postgres", "mysql", "mongodb"
+  string database_name = 3;
+  string schema_name = 4;
+  string table_name = 5;
+  double insert_ratio = 6; // e.g. 0.70 (70% create 'c')
+  double update_ratio = 7; // e.g. 0.25 (25% update 'u')
+  double delete_ratio = 8; // e.g. 0.05 (5% delete 'd')
 }
 
 // Constraint definition for predicate evaluation and filtering (Phase 6)

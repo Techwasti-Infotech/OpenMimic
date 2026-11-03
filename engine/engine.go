@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"openmimic/engine/internal/cdc"
 	"openmimic/engine/internal/generator"
 	"openmimic/engine/internal/metrics"
 	"openmimic/engine/internal/sink"
@@ -26,6 +27,7 @@ type Engine struct {
 	shaper     traffic.Shaper
 	evaluator  *solver.ConstraintEvaluator
 	injector   *generator.AnomalyInjector
+	cdcEnv     *cdc.DebeziumEnvelope
 }
 
 // NewEngine creates a new Engine instance.
@@ -48,6 +50,7 @@ func NewEngine(cfg *pb.GeneratorConfig, w io.Writer) *Engine {
 	shaper := traffic.NewShaper(cfg.GetTrafficProfile(), cfg.GetRateLimitPerSecond())
 	evaluator := solver.NewConstraintEvaluator(cfg.GetConstraints())
 	injector := generator.NewAnomalyInjector(cfg.GetPlaybooks())
+	cdcEnv := cdc.NewDebeziumEnvelope(cfg.GetCdcEnvelope())
 
 	return &Engine{
 		config:    cfg,
@@ -57,6 +60,7 @@ func NewEngine(cfg *pb.GeneratorConfig, w io.Writer) *Engine {
 		shaper:    shaper,
 		evaluator: evaluator,
 		injector:  injector,
+		cdcEnv:    cdcEnv,
 	}
 }
 
@@ -100,6 +104,9 @@ func (e *Engine) GenerateEvent(index int64) (map[string]any, error) {
 		if satisfied {
 			// Apply anomaly injection if playbooks are active
 			record, _ = e.injector.Apply(record, e.state.RNG)
+
+			// Wrap in Debezium CDC envelope if enabled
+			record = e.cdcEnv.Wrap(record, index, e.state.RNG, e.state.Clock)
 
 			e.state.Clock.Tick()
 			return record, nil

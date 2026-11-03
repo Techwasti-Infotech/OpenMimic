@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"openmimic/engine/internal/importer"
+	"openmimic/engine/internal/orchestrator"
 	"openmimic/engine/internal/service"
 	pb "openmimic/engine/pkg/proto/v1"
 	"google.golang.org/grpc"
@@ -208,6 +209,39 @@ func main() {
 		logs := platformStore.GetAuditLogs(50)
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(logs)
+	}))
+
+	mux.HandleFunc("/api/topology/run", enableCORS(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		var topology pb.MultiGeneratorTopology
+		unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+		if err := unmarshaler.Unmarshal(bodyBytes, &topology); err != nil {
+			http.Error(w, fmt.Sprintf("invalid topology JSON: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		runner := orchestrator.NewTopologyRunner(&topology)
+		go func() {
+			platformStore.LogAudit("START_TOPOLOGY", topology.GetId(), "studio_user", fmt.Sprintf("Started topology %s with %d streams", topology.GetName(), len(topology.GetNodes())))
+			_ = runner.Execute(context.Background())
+		}()
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"status":   "RUNNING",
+			"topology": topology.GetId(),
+			"nodes":    len(topology.GetNodes()),
+		})
 	}))
 
 	log.Printf("OpenMimic REST/HTTP bridge listening on :%d", *httpPort)

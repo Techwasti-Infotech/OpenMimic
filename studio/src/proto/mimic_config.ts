@@ -12,6 +12,31 @@ export interface GeneratorConfig {
   traffic_profile?: TrafficProfile;
   constraints?: Constraint[];
   playbooks?: AnomalyPlaybook[];
+  cdc_envelope?: CDCEnvelope;
+}
+
+export interface CDCEnvelope {
+  enabled: boolean;
+  connector_type?: string;
+  database_name?: string;
+  schema_name?: string;
+  table_name?: string;
+  insert_ratio?: number;
+  update_ratio?: number;
+  delete_ratio?: number;
+}
+
+export interface MultiGeneratorTopology {
+  id: string;
+  name: string;
+  nodes: TopologyNode[];
+}
+
+export interface TopologyNode {
+  generator_id: string;
+  config: GeneratorConfig;
+  depends_on?: string[];
+  delay_after_parent_ms?: number;
 }
 
 export interface Constraint {
@@ -55,10 +80,29 @@ export interface BurstSpikeRate {
 }
 
 export type SinkConfig = 
-  | { kafka: KafkaSink; postgres?: never; s3?: never; stdout?: never }
-  | { postgres: PostgresSink; kafka?: never; s3?: never; stdout?: never }
-  | { s3: S3Sink; kafka?: never; postgres?: never; stdout?: never }
-  | { stdout: StdoutSink; kafka?: never; postgres?: never; s3?: never };
+  | { kafka: KafkaSink; postgres?: never; s3?: never; stdout?: never; redis?: never; clickhouse?: never }
+  | { postgres: PostgresSink; kafka?: never; s3?: never; stdout?: never; redis?: never; clickhouse?: never }
+  | { s3: S3Sink; kafka?: never; postgres?: never; stdout?: never; redis?: never; clickhouse?: never }
+  | { stdout: StdoutSink; kafka?: never; postgres?: never; s3?: never; redis?: never; clickhouse?: never }
+  | { redis: RedisSink; kafka?: never; postgres?: never; s3?: never; stdout?: never; clickhouse?: never }
+  | { clickhouse: ClickHouseSink; kafka?: never; postgres?: never; s3?: never; stdout?: never; redis?: never };
+
+export interface RedisSink {
+  addr: string;
+  password?: string;
+  db?: number;
+  key_pattern?: string;
+  mode?: 'set' | 'lpush' | 'rpush' | 'publish' | 'xadd' | string;
+  stream_or_channel?: string;
+}
+
+export interface ClickHouseSink {
+  addr: string;
+  database?: string;
+  table: string;
+  username?: string;
+  password?: string;
+}
 
 export interface KafkaSink {
   brokers: string[];
@@ -89,15 +133,36 @@ export interface Field {
 }
 
 export type FunctionGenerator =
-  | { uuid: UuidFunction; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never }
-  | { distribution: DistributionFunction; uuid?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never }
-  | { now: NowFunction; uuid?: never; distribution?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never }
-  | { sequential_integer: SequentialIntegerFunction; uuid?: never; distribution?: never; now?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never }
-  | { string_faker: StringFakerFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never }
-  | { constant: ConstantFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never }
-  | { weighted_choice: WeightedChoiceFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; markov_chain?: never; entity_pool?: never }
-  | { markov_chain: MarkovChainFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; entity_pool?: never }
-  | { entity_pool: EntityPoolFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never };
+  | { uuid: UuidFunction; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never; nested_object?: never; array?: never; media_meta?: never }
+  | { distribution: DistributionFunction; uuid?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never; nested_object?: never; array?: never; media_meta?: never }
+  | { now: NowFunction; uuid?: never; distribution?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never; nested_object?: never; array?: never; media_meta?: never }
+  | { sequential_integer: SequentialIntegerFunction; uuid?: never; distribution?: never; now?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never; nested_object?: never; array?: never; media_meta?: never }
+  | { string_faker: StringFakerFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never; nested_object?: never; array?: never; media_meta?: never }
+  | { constant: ConstantFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never; nested_object?: never; array?: never; media_meta?: never }
+  | { weighted_choice: WeightedChoiceFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; markov_chain?: never; entity_pool?: never; nested_object?: never; array?: never; media_meta?: never }
+  | { markov_chain: MarkovChainFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; entity_pool?: never; nested_object?: never; array?: never; media_meta?: never }
+  | { entity_pool: EntityPoolFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; nested_object?: never; array?: never; media_meta?: never }
+  | { nested_object: NestedObjectFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never; array?: never; media_meta?: never }
+  | { array: ArrayFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never; nested_object?: never; media_meta?: never }
+  | { media_meta: MediaMetaFunction; uuid?: never; distribution?: never; now?: never; sequential_integer?: never; string_faker?: never; constant?: never; weighted_choice?: never; markov_chain?: never; entity_pool?: never; nested_object?: never; array?: never };
+
+export interface NestedObjectFunction {
+  fields: Field[];
+}
+
+export interface ArrayFunction {
+  min_items?: number;
+  max_items?: number;
+  item_generator: FunctionGenerator;
+}
+
+export interface MediaMetaFunction {
+  media_type: string;
+  mime_type: string;
+  width?: number;
+  height?: number;
+  max_bytes?: number;
+}
 
 export interface UuidFunction {
   uppercase?: boolean;
