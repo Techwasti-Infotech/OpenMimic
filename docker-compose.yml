@@ -1,0 +1,70 @@
+services:
+  # Mimic Studio (Visual Web UI)
+  studio:
+    build:
+      context: .
+      dockerfile: studio/Dockerfile
+    container_name: openmimic-studio
+    ports:
+      - "3000:80"
+    depends_on:
+      - engine
+      - copilot
+    networks:
+      - mimic-net
+
+  # OpenMimic Engine gRPC & HTTP Bridge
+  engine:
+    build:
+      context: ./engine
+      dockerfile: Dockerfile
+    container_name: openmimic-engine
+    ports:
+      - "50051:50051"
+      - "8080:8080"
+    environment:
+      - GRPC_PORT=50051
+      - HTTP_PORT=8080
+    networks:
+      - mimic-net
+
+  # Mimic Copilot Service
+  copilot:
+    build:
+      context: .
+      dockerfile: copilot/Dockerfile
+    container_name: openmimic-copilot
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    networks:
+      - mimic-net
+
+  # Local Mock Kafka / Redpanda for local stream testing
+  kafka:
+    image: vectorized/redpanda:latest
+    container_name: openmimic-kafka
+    ports:
+      - "9092:9092"
+      - "9644:9644"
+    command:
+      - redpanda
+      - start
+      - --smp
+      - "1"
+      - --reserve-memory
+      - "0M"
+      - --overprovisioned
+      - --node-id
+      - "0"
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://localhost:9092
+    networks:
+      - mimic-net
+
+networks:
+  mimic-net:
+    driver: bridge

@@ -1,0 +1,273 @@
+syntax = "proto3";
+
+package openmimic.v1;
+
+option go_package = "openmimic/engine/pkg/proto/v1;openmimicv1";
+
+// GeneratorConfig is the top-level configuration for an OpenMimic data generator.
+message GeneratorConfig {
+  string id = 1;
+  string name = 2;
+  int64 seed = 3;
+  int64 event_limit = 4; // 0 for infinite stream
+  int32 rate_limit_per_second = 5; // Rate limit (events per second, 0 = unlimited)
+  SinkConfig sink = 6;
+  repeated Field fields = 7;
+  TrafficProfile traffic_profile = 8; // Advanced traffic shaping (diurnal, poisson, bursts)
+  repeated Constraint constraints = 9; // Phase 6: Field and cross-field predicates
+  repeated AnomalyPlaybook playbooks = 10; // Phase 10: Anomaly injection playbooks
+  reserved 11 to 20; // Reserved slots for Phase 8-9 (PII rules, fidelity thresholds, audit tags)
+}
+
+// Constraint definition for predicate evaluation and filtering (Phase 6)
+message Constraint {
+  string id = 1;
+  string name = 2;
+  string expression = 3; // e.g. "amount > 50000 && fraud_flag == 1"
+  int32 max_resample_retries = 4; // Default 100
+  reserved 5 to 10;
+}
+
+// AnomalyPlaybook definition (Phase 10)
+message AnomalyPlaybook {
+  string name = 1;
+  double anomaly_rate = 2; // e.g. 0.05 for 5% anomalies
+  string injection_type = 3; // "corrupt_payload", "timeout", "null_field", "burst"
+  reserved 4 to 10;
+}
+
+// Phase 9: Workspace, Template & Audit Event messages
+message Workspace {
+  string id = 1;
+  string name = 2;
+  string owner_id = 3;
+  repeated string member_ids = 4;
+}
+
+message Template {
+  string id = 1;
+  string title = 2;
+  string category = 3; // e.g. "finance", "ecommerce", "iot"
+  GeneratorConfig config = 4;
+}
+
+message AuditEvent {
+  string id = 1;
+  string user_id = 2;
+  string action = 3; // "START_GENERATOR", "STOP_GENERATOR", "UPDATE_CONFIG"
+  string generator_id = 4;
+  int64 timestamp_ms = 5;
+  string details = 6;
+}
+
+// TrafficProfile shapes production rate dynamics
+message TrafficProfile {
+  oneof profile_type {
+    ConstantRate constant = 1;
+    DiurnalRate diurnal = 2;     // Sine/cosine wave day-night cycles
+    PoissonArrival poisson = 3;  // Stochastic inter-arrival times
+    BurstSpikeRate burst = 4;    // Periodic traffic spikes (e.g. flash sales)
+  }
+}
+
+message ConstantRate {
+  int32 rate_per_second = 1;
+}
+
+message DiurnalRate {
+  int32 base_rate = 1;    // Minimum rate (e.g. night trough)
+  int32 peak_rate = 2;    // Maximum rate (e.g. daytime peak)
+  int32 period_seconds = 3; // Cycle duration (e.g. 86400s for a day, or 60s for demo)
+}
+
+message PoissonArrival {
+  double lambda_rate = 1; // Expected average events per second
+}
+
+message BurstSpikeRate {
+  int32 normal_rate = 1;
+  int32 burst_rate = 2;
+  int32 interval_seconds = 3;
+  int32 duration_seconds = 4;
+}
+
+// SinkConfig defines the destination for generated events.
+message SinkConfig {
+  oneof sink_type {
+    KafkaSink kafka = 1;
+    PostgresSink postgres = 2;
+    S3Sink s3 = 3;
+    StdoutSink stdout = 4;
+  }
+}
+
+message KafkaSink {
+  repeated string brokers = 1;
+  string topic = 2;
+  string client_id = 3;
+}
+
+message PostgresSink {
+  string connection_string = 1;
+  string table = 2;
+  repeated string columns = 3;
+}
+
+message S3Sink {
+  string bucket = 1;
+  string region = 2;
+  string prefix = 3;
+  string file_format = 4; // e.g. json, csv, parquet
+}
+
+message StdoutSink {
+  bool pretty = 1;
+}
+
+// Field defines a property in generated JSON/record payload.
+message Field {
+  string name = 1;
+  FunctionGenerator generator = 2;
+}
+
+// FunctionGenerator defines how a field value is generated.
+message FunctionGenerator {
+  reserved 10 to 20; // Reserved slots for Phase 6 constraints, Phase 8 PII masking & multimodal
+  oneof func {
+    UuidFunction uuid = 1;
+    DistributionFunction distribution = 2;
+    NowFunction now = 3;
+    SequentialIntegerFunction sequential_integer = 4;
+    StringFakerFunction string_faker = 5;
+    ConstantFunction constant = 6;
+    WeightedChoiceFunction weighted_choice = 7;
+    MarkovChainFunction markov_chain = 8;     // State-machine transitions
+    EntityPoolFunction entity_pool = 9;       // Shared relational foreign-key references
+  }
+}
+
+message MarkovTransition {
+  string to_state = 1;
+  double probability = 2;
+}
+
+message MarkovState {
+  string state_name = 1;
+  repeated MarkovTransition transitions = 2;
+}
+
+message MarkovChainFunction {
+  string initial_state = 1;
+  repeated MarkovState states = 2;
+}
+
+message EntityPoolFunction {
+  string pool_name = 1;      // Identifier for entity pool (e.g. "users", "devices")
+  int32 pool_size = 2;       // Maximum distinct entities (e.g. 1000 users)
+  string entity_prefix = 3;  // e.g. "usr_"
+}
+
+message UuidFunction {
+  bool uppercase = 1;
+}
+
+message DistributionFunction {
+  oneof distribution_type {
+    NormalDistribution normal = 1;
+    UniformDistribution uniform = 2;
+  }
+}
+
+message NormalDistribution {
+  double mean = 1;
+  double std_dev = 2;
+}
+
+message UniformDistribution {
+  double min = 1;
+  double max = 2;
+}
+
+message NowFunction {
+  string format = 1; // "RFC3339", "epoch_ms", "epoch_s", or custom layout
+}
+
+message SequentialIntegerFunction {
+  int64 start = 1;
+  int64 step = 2;
+}
+
+message StringFakerFunction {
+  string category = 1; // "name", "email", "country", "city", "lorem", etc.
+  string pattern = 2;  // e.g. "USER_{####}"
+}
+
+message ConstantFunction {
+  oneof value {
+    string string_val = 1;
+    int64 int_val = 2;
+    double double_val = 3;
+    bool bool_val = 4;
+  }
+}
+
+message WeightedChoiceOption {
+  string value = 1;
+  double weight = 2;
+}
+
+message WeightedChoiceFunction {
+  repeated WeightedChoiceOption options = 1;
+}
+
+// Engine gRPC Service for generator control and previews
+service GeneratorService {
+  rpc StartGenerator(StartGeneratorRequest) returns (StartGeneratorResponse);
+  rpc StopGenerator(StopGeneratorRequest) returns (StopGeneratorResponse);
+  rpc StreamPreview(StreamPreviewRequest) returns (stream StreamPreviewResponse);
+  rpc StreamMetrics(StreamMetricsRequest) returns (stream StreamMetricsResponse);
+}
+
+message StartGeneratorRequest {
+  GeneratorConfig config = 1;
+}
+
+message StartGeneratorResponse {
+  string generator_id = 1;
+  string status = 2;
+}
+
+message StopGeneratorRequest {
+  string generator_id = 1;
+}
+
+message StopGeneratorResponse {
+  string generator_id = 1;
+  string status = 2;
+}
+
+message StreamPreviewRequest {
+  GeneratorConfig config = 1;
+  int32 preview_count = 2; // Default 10
+}
+
+message StreamPreviewResponse {
+  int64 index = 1;
+  string json_payload = 2;
+  int64 timestamp_ms = 3;
+}
+
+message StreamMetricsRequest {
+  string generator_id = 1;
+}
+
+message StreamMetricsResponse {
+  string generator_id = 1;
+  string status = 2; // "RUNNING", "STOPPED", "FAILED"
+  int64 total_events = 3;
+  double throughput_events_per_sec = 4;
+  int64 total_errors = 5;
+  double latency_p99_ms = 6;
+  int64 timestamp_ms = 7;
+}
+

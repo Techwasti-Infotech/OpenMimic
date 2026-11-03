@@ -1,0 +1,26 @@
+# Binaries and executables
+engine/bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Dependencies
+node_modules/
+studio/node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# Production Builds
+dist/
+studio/dist/
+build/
+
+# IDE and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

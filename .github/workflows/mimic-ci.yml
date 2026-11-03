@@ -1,0 +1,56 @@
+name: OpenMimic Validation & Preview
+
+on:
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  validate-and-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Build mimic CLI
+        run: |
+          cd engine
+          go build -o mimic ./cmd/mimic-cli
+
+      - name: Validate Generator Configurations
+        run: |
+          ./engine/mimic validate --config sample_order_flow.json --constraints
+
+      - name: Generate Preview Events
+        id: preview
+        run: |
+          EVENTS=$(./engine/mimic preview --config sample_order_flow.json --count 5)
+          echo "events<<EOF" >> $GITHUB_OUTPUT
+          echo "$EVENTS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post PR Comment with Sample Events
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `### ⚡ OpenMimic PR Preview
+            **Configuration validated successfully!**
+            
+            Sample simulated events:
+            \`\`\`json
+            ${{ steps.preview.outputs.events }}
+            \`\`\`
+            `;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+

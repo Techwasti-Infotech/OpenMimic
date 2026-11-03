@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenMimic — Free & Open-Source Synthetic Data & Traffic Generator</title>
+  <meta name="description" content="Declarative synthetic data and production traffic generator for Kafka, PostgreSQL, and S3 with visual studio, AI Copilot, and real-time observability. 100% Free Apache 2.0.">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container nav-wrapper">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <span>OpenMimic</span>
+        <span class="badge-pill">Apache 2.0 (100% Free)</span>
+      </div>
+      <div class="nav-menu">
+        <a href="#features">Features</a>
+        <a href="#traffic">Traffic Shaping</a>
+        <a href="#comparison">Comparison</a>
+        <a href="https://techwasti.github.io/OpenMimic/guides/getting-started.html" target="_blank">Docs</a>
+        <a href="https://buymeacoffee.com/techwasti" target="_blank" style="color: #f59e0b; font-weight: 600;">☕ Buy Me a Coffee</a>
+        <a href="https://github.com/Techwasti/OpenMimic" target="_blank" class="btn btn-primary">⭐ Star on GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-tag">
+        <span class="dot"></span> 100% Free & Open Source Data & Traffic Generator
+      </div>
+      <h1 class="hero-headline">
+        Rapidly Simulate<br>
+        <span class="gradient-title">Production Traffic to Your Backend.</span>
+      </h1>
+      <p class="hero-lead">
+        OpenMimic is a visual-first, declarative streaming data generator. Simulate authentic day/night diurnal cycles, Poisson network jitter, Markov user journeys, and flash sales surges directly into Kafka, PostgreSQL, S3, or stdout.
+      </p>
+
+      <div class="hero-actions">
+        <a href="http://localhost:3000" target="_blank" class="btn btn-primary" style="padding: 12px 28px; font-size: 1.05rem;">
+          Launch Mimic Studio
+        </a>
+        <a href="https://techwasti.github.io/OpenMimic/guides/traffic-simulation.html" target="_blank" class="btn btn-outline" style="padding: 12px 28px; font-size: 1.05rem;">
+          Traffic Simulation Guide
+        </a>
+        <a href="https://buymeacoffee.com/techwasti" target="_blank" class="btn" style="background: #f59e0b; color: #000; font-weight: 700; padding: 12px 22px;">
+          ☕ Buy Coffee
+        </a>
+      </div>
+
+      <!-- BENCHMARK STRIP -->
+      <div class="benchmark-strip">
+        <div class="benchmark-card">
+          <div class="benchmark-val">50,000+</div>
+          <div class="benchmark-label">Events / Second (Go Engine)</div>
+        </div>
+        <div class="benchmark-card">
+          <div class="benchmark-val">100%</div>
+          <div class="benchmark-label">Deterministic & Replay-Safe</div>
+        </div>
+        <div class="benchmark-card">
+          <div class="benchmark-val">&lt; 1.5ms</div>
+          <div class="benchmark-label">p99 Generation Latency</div>
+        </div>
+        <div class="benchmark-card">
+          <div class="benchmark-val">$0</div>
+          <div class="benchmark-label">Free Apache 2.0 License</div>
+        </div>
+      </div>
+
+      <!-- SPLIT INTERACTIVE WORKSPACE -->
+      <div class="split-console">
+        <div class="console-pane">
+          <div class="console-header">
+            <span class="console-title">📄 mimic.json — Declarative Traffic & Schema</span>
+            <span class="status-pill">Protocol Buffers v1</span>
+          </div>
+          <div class="console-body">
+<pre class="code-stream"><code>{
+  <span class="key">"id"</span>: <span class="str">"gen-production-signups"</span>,
+  <span class="key">"sink"</span>: { <span class="key">"kafka"</span>: { <span class="key">"topic"</span>: <span class="str">"user.signups"</span> } },
+  <span class="key">"traffic_profile"</span>: {
+    <span class="key">"burst"</span>: {
+      <span class="key">"normal_rate"</span>: <span class="num">10</span>,
+      <span class="key">"burst_rate"</span>: <span class="num">100</span>,
+      <span class="key">"interval_seconds"</span>: <span class="num">30</span>
+    }
+  },
+  <span class="key">"fields"</span>: [
+    { <span class="key">"name"</span>: <span class="str">"user_id"</span>, <span class="key">"generator"</span>: { <span class="key">"entity_pool"</span>: { <span class="key">"pool_size"</span>: <span class="num">100</span> } } },
+    { <span class="key">"name"</span>: <span class="str">"email"</span>, <span class="key">"generator"</span>: { <span class="key">"string_faker"</span>: { <span class="key">"category"</span>: <span class="str">"email"</span> } } },
+    { <span class="key">"name"</span>: <span class="str">"state"</span>, <span class="key">"generator"</span>: { <span class="key">"markov_chain"</span>: { <span class="key">"initial"</span>: <span class="str">"LANDING"</span> } } },
+    { <span class="key">"name"</span>: <span class="str">"timestamp"</span>, <span class="key">"generator"</span>: { <span class="key">"now"</span>: { <span class="key">"format"</span>: <span class="str">"RFC3339"</span> } } }
+  ]
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="console-pane">
+          <div class="console-header">
+            <span class="console-title">⚡ Live Produced NDJSON Event Stream</span>
+            <span class="status-pill">● Engine Streaming</span>
+          </div>
+          <div class="console-body">
+<pre class="code-stream"><code><span class="comment">// Produced to Kafka [user.signups] partition 0 (Bursted at 100 evt/s)</span>
+{
+  <span class="key">"user_id"</span>: <span class="str">"usr_00005"</span>,
+  <span class="key">"email"</span>: <span class="str">"hannah.taylor423@mimicdata.io"</span>,
+  <span class="key">"state"</span>: <span class="str">"PRODUCT_VIEW"</span>,
+  <span class="key">"timestamp"</span>: <span class="str">"2026-11-01T12:00:00Z"</span>
+}
+
+<span class="comment">// Produced to Kafka [user.signups] partition 1</span>
+{
+  <span class="key">"user_id"</span>: <span class="str">"usr_00057"</span>,
+  <span class="key">"email"</span>: <span class="str">"george.taylor929@samplecloud.net"</span>,
+  <span class="key">"state"</span>: <span class="str">"CART_ADD"</span>,
+  <span class="key">"timestamp"</span>: <span class="str">"2026-11-01T12:00:00.010Z"</span>
+}
+
+<span class="comment">// Produced to Kafka [user.signups] partition 0</span>
+{
+  <span class="key">"user_id"</span>: <span class="str">"usr_00005"</span>,
+  <span class="key">"email"</span>: <span class="str">"hannah.taylor423@mimicdata.io"</span>,
+  <span class="key">"state"</span>: <span class="str">"CHECKOUT_COMPLETE"</span>,
+  <span class="key">"timestamp"</span>: <span class="str">"2026-11-01T12:00:00.020Z"</span>
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Engineered for Data Teams & Developers</h2>
+        <p class="section-sub">Everything needed to stress test streaming pipelines, benchmark analytics lakes, and train ML models.</p>
+      </div>
+
+      <div class="pillars-grid">
+        <div class="pillar-box">
+          <div class="pillar-icon">🎨</div>
+          <h3 class="pillar-title">Mimic Studio IDE</h3>
+          <p class="pillar-desc">Visual workbench built with React 18 & Mantine. Build schemas interactively, view live 10-event streaming previews, and control engine runs with a single click.</p>
+        </div>
+
+        <div class="pillar-box">
+          <div class="pillar-icon">🤖</div>
+          <h3 class="pillar-title">Mimic Copilot (AI)</h3>
+          <p class="pillar-desc">Natural language translation microservice powered by FastAPI. Describe complex data pipelines in plain English and receive validated Protocol Buffers configurations.</p>
+        </div>
+
+        <div class="pillar-box">
+          <div class="pillar-icon">📊</div>
+          <h3 class="pillar-title">Live Observability</h3>
+          <p class="pillar-desc">Real-time throughput (events/sec), latency p99 percentiles, and error tracking streamed via internal channels and rendered in Recharts dashboards.</p>
+        </div>
+
+        <div class="pillar-box">
+          <div class="pillar-icon">🌊</div>
+          <h3 class="pillar-title">Traffic Shaping Engine</h3>
+          <p class="pillar-desc">Simulate realistic production conditions with Diurnal day/night sine curves, stochastic Poisson arrivals, and flash sales burst spikes.</p>
+        </div>
+
+        <div class="pillar-box">
+          <div class="pillar-icon">🔄</div>
+          <h3 class="pillar-title">Markov Funnels & Entity Pools</h3>
+          <p class="pillar-desc">Maintain referential consistency across topics with bounded entity pools and model stateful user conversions through transition matrices.</p>
+        </div>
+
+        <div class="pillar-box">
+          <div class="pillar-icon">📥</div>
+          <h3 class="pillar-title">SQL DDL Auto-Import</h3>
+          <p class="pillar-desc">Paste your SQL <code>CREATE TABLE</code> definition and OpenMimic instantly maps UUIDs, Gaussian numerical distributions, statuses, and timestamps.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE -->
+  <section class="section" id="comparison">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Open-Source Freedom vs Commercial Alternatives</h2>
+        <p class="section-sub">OpenMimic gives you enterprise-grade streaming data generation with 100% open-source transparency.</p>
+      </div>
+
+      <div class="table-card">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>OpenMimic</th>
+              <th>Commercial Alternatives</th>
+              <th>Ad-hoc Mock Scripts</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>License & Cost</strong></td>
+              <td class="cell-open">100% Free Apache 2.0</td>
+              <td class="cell-dim">Proprietary ($15k–$50k/yr)</td>
+              <td class="cell-dim">In-house / Fragile</td>
+            </tr>
+            <tr>
+              <td><strong>Visual Studio IDE</strong></td>
+              <td class="cell-open">✓ Built-in React 18 UI</td>
+              <td class="cell-dim">✕ None (JSON Only)</td>
+              <td class="cell-dim">✕ None</td>
+            </tr>
+            <tr>
+              <td><strong>AI Copilot</strong></td>
+              <td class="cell-open">✓ Natural Language to Proto3</td>
+              <td class="cell-dim">✕ None</td>
+              <td class="cell-dim">✕ None</td>
+            </tr>
+            <tr>
+              <td><strong>Observability Dashboard</strong></td>
+              <td class="cell-open">✓ Real-time Throughput, Errors, p99</td>
+              <td class="cell-dim">Limited CLI metrics</td>
+              <td class="cell-dim">Manual logging</td>
+            </tr>
+            <tr>
+              <td><strong>Traffic Shaping</strong></td>
+              <td class="cell-open">✓ Diurnal, Poisson, Flash Bursts</td>
+              <td class="cell-dim">Basic rate limits</td>
+              <td class="cell-dim">Fixed sleeps</td>
+            </tr>
+            <tr>
+              <td><strong>SQL DDL Auto-Import</strong></td>
+              <td class="cell-open">✓ One-Click CREATE TABLE</td>
+              <td class="cell-dim">✕ None</td>
+              <td class="cell-dim">✕ None</td>
+            </tr>
+            <tr>
+              <td><strong>Universal Sinks</strong></td>
+              <td class="cell-open">✓ Kafka, Postgres, S3, Stdout</td>
+              <td class="cell-dim">Kafka, Postgres, S3</td>
+              <td class="cell-dim">Single-target</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPONSORSHIP CALLOUT -->
+  <section class="section" style="background: var(--bg-secondary);">
+    <div class="container">
+      <div class="cta-banner">
+        <h2>Support Open-Source Development ☕</h2>
+        <p>OpenMimic is independent open-source software built for the engineering community. If OpenMimic saves your team time, please consider buying us a coffee or becoming a sponsor!</p>
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+          <a href="https://buymeacoffee.com/techwasti" target="_blank" class="btn" style="background: #f59e0b; color: #000; font-weight: 700; padding: 12px 28px; font-size: 1rem;">
+            ☕ Buy Me a Coffee
+          </a>
+          <a href="https://github.com/sponsors/Techwasti" target="_blank" class="btn" style="background: #ea4aaa; color: #fff; font-weight: 700; padding: 12px 28px; font-size: 1rem;">
+            💖 Sponsor on GitHub
+          </a>
+          <a href="https://github.com/Techwasti/OpenMimic" target="_blank" class="btn btn-outline" style="padding: 12px 28px; font-size: 1rem;">
+            ⭐ Star on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-flex">
+      <div>
+        <strong>OpenMimic</strong> — 100% Free & Open Source under the Apache 2.0 License.
+      </div>
+      <div style="display: flex; gap: 24px;">
+        <a href="https://buymeacoffee.com/techwasti" target="_blank">Buy Coffee</a>
+        <a href="https://github.com/sponsors/Techwasti" target="_blank">Sponsor</a>
+        <a href="https://techwasti.github.io/OpenMimic/" target="_blank">Documentation</a>
+        <a href="https://github.com/Techwasti/OpenMimic" target="_blank">GitHub</a>
+        <a href="http://localhost:3000" target="_blank">Studio Web App</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

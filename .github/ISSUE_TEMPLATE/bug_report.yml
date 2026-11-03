@@ -1,0 +1,60 @@
+name: Bug Report
+description: File a bug report or unexpected error in OpenMimic
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue! Please provide as much detail as possible to help us reproduce and fix it quickly.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected Component
+      options:
+        - OpenMimic Engine (Go core)
+        - Mimic Studio (React UI)
+        - Mimic Copilot (Python/FastAPI)
+        - Sinks (Kafka / Postgres / S3)
+        - Documentation / Website
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce the issue?
+      placeholder: |
+        1. Start engine with `.\run-local.ps1`
+        2. In Studio, configure Kafka sink with ...
+        3. Click 'Run Generator'
+        4. See error: ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Error Output
+      description: Paste any terminal logs or browser console errors here.
+      render: shell
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS (Windows, macOS, Ubuntu), Go version, Docker version, etc.
+      placeholder: Windows 11, Go 1.23, Node 20
+

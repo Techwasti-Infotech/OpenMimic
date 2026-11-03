@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ☕ Buy Me a Coffee
+    url: https://buymeacoffee.com/techwasti
+    about: Support OpenMimic open-source development with a small donation.
+  - name: 💖 GitHub Sponsors
+    url: https://github.com/sponsors/Techwasti
+    about: Sponsor OpenMimic on GitHub.
+  - name: 📖 Official Documentation
+    url: https://techwasti.github.io/OpenMimic/
+    about: Read the complete architecture and traffic simulation guides.
+
