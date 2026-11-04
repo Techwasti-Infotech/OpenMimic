@@ -65,3 +65,4 @@ func TestKafkaTransactionalEOSCommitMarkers(t *testing.T) {
 		t.Errorf("expected commit marker key '__mimic_tx_commit__', got %s", string(lastMsg.Key))
 	}
 }
+

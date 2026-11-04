@@ -123,3 +123,4 @@ func GetClaims(ctx context.Context) (*Claims, bool) {
 	c, ok := ctx.Value(ClaimsContextKey).(*Claims)
 	return c, ok
 }
+

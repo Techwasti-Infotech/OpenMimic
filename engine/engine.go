@@ -13,6 +13,7 @@ import (
 	"openmimic/engine/internal/dlq"
 	"openmimic/engine/internal/expression"
 	"openmimic/engine/internal/generator"
+	"openmimic/engine/internal/geo"
 	"openmimic/engine/internal/metrics"
 	"openmimic/engine/internal/privacy"
 	"openmimic/engine/internal/pseudonym"
@@ -359,6 +360,12 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64, curr
 				e.sessions[userField] = tracker
 			}
 			return tracker.GetOrCreateSession(userID, e.state.Clock.Now())
+		}
+
+	case *pb.FunctionGenerator_GeoLocation:
+		if f.GeoLocation != nil {
+			geoGen := geo.NewGeoGenerator(f.GeoLocation)
+			return geoGen.Generate(e.state.RNG)
 		}
 	}
 

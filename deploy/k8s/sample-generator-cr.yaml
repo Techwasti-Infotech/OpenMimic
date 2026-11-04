@@ -1,0 +1,13 @@
+apiVersion: openmimic.org/v1alpha1
+kind: OpenMimicGenerator
+metadata:
+  name: orders-stream-production
+  namespace: default
+spec:
+  configMapRef: "orders-mimic-config"
+  replicas: 4
+  rateLimitPerSecond: 2500
+  sinkOverride:
+    kafkaBrokers:
+      - "kafka.streaming.svc.cluster.local:9092"
+    kafkaTopic: "orders.production.events"

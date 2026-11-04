@@ -73,3 +73,4 @@ func TestTokenValidatorTenantAdminAccess(t *testing.T) {
 		t.Errorf("expected 200 OK with body tenant_alpha, got %d body=%s", rrAdmin.Code, rrAdmin.Body.String())
 	}
 }
+

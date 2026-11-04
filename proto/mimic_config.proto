@@ -295,7 +295,7 @@ message LogReplayerConfig {
 
 // FunctionGenerator defines how a field value is generated.
 message FunctionGenerator {
-  reserved 18 to 20; // Reserved slots
+  reserved 19 to 20; // Reserved slots
   oneof func {
     UuidFunction uuid = 1;
     DistributionFunction distribution = 2;
@@ -314,7 +314,18 @@ message FunctionGenerator {
     CalculatedExpressionFunction expression = 15; // In-flight computed formula / CEL expression
     TimeSeriesDriftFunction time_series_drift = 16; // Sinusoidal trends and sensor drift
     SessionWindowFunction session_window = 17;     // Stateful user/device session timeouts
+    GeoLocationFunction geo_location = 18;         // Realistic geo coordinates, bounding boxes & country codes
   }
+}
+
+// GeoLocationFunction generates correlated latitude, longitude, country, and IP addresses
+message GeoLocationFunction {
+  string mode = 1; // "coordinates", "country_code", "city", "correlated_ip"
+  string region = 2; // "NA" (North America), "EU" (Europe), "APAC" (Asia-Pacific), "GLOBAL"
+  double min_latitude = 3;
+  double max_latitude = 4;
+  double min_longitude = 5;
+  double max_longitude = 6;
 }
 
 // TimeSeriesDriftFunction simulates seasonal cycles, gradual trend drift, and noise
