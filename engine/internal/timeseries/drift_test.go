@@ -61,3 +61,4 @@ func TestSessionWindowExpiration(t *testing.T) {
 		t.Errorf("expected rotated session after timeout, got same %s", sess3)
 	}
 }
+

@@ -126,6 +126,10 @@ func CreateSink(cfg *pb.SinkConfig, fallbackWriter io.Writer) (Sink, error) {
 		return NewWebhookSink(s.Webhook, nil), nil
 	case *pb.SinkConfig_S3:
 		return NewS3StorageSink(s.S3, nil), nil
+	case *pb.SinkConfig_Graphql:
+		return NewGraphQLSink(s.Graphql, nil), nil
+	case *pb.SinkConfig_GrpcStream:
+		return NewGrpcStreamingSink(s.GrpcStream, nil), nil
 	case *pb.SinkConfig_Stdout:
 		pretty := false
 		if s.Stdout != nil {

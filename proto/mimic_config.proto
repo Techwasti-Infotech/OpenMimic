@@ -21,7 +21,17 @@ message GeneratorConfig {
   OTelTracingConfig otel = 13; // OpenTelemetry trace header injection
   SchemaEvolutionConfig schema_evolution = 14; // Mid-stream schema evolution / drift
   LogReplayerConfig log_replayer = 15; // Historical log file replay with time inflation
-  reserved 16 to 20; // Reserved slots for Phase 8-9 (PII rules, fidelity thresholds, audit tags)
+  ChaosConfig chaos = 16; // Dynamic chaos, latency injection, and broker backpressure
+  reserved 17 to 20; // Reserved slots for Phase 8-9 (PII rules, fidelity thresholds, audit tags)
+}
+
+// ChaosConfig simulates real-world infrastructure failures and latency spikes
+message ChaosConfig {
+  bool enabled = 1;
+  double failure_rate = 2; // e.g. 0.05 for 5% socket drops / write failures
+  int32 min_latency_ms = 3; // e.g. 10ms
+  int32 max_latency_ms = 4; // e.g. 500ms
+  bool simulate_backpressure = 5; // Simulates slow broker / thread pool starvation
 }
 
 // DLQConfig configures quarantine destinations for events failing constraints or validation
@@ -172,7 +182,24 @@ message SinkConfig {
     RedisSink redis = 5;
     ClickHouseSink clickhouse = 6;
     WebhookSink webhook = 7;
+    GraphQLSink graphql = 8;
+    GrpcStreamSink grpc_stream = 9;
   }
+}
+
+message GraphQLSink {
+  string endpoint = 1; // e.g. "https://api.example.com/graphql"
+  string query_or_mutation = 2; // e.g. "mutation CreateEvent($input: EventInput!) { createEvent(input: $input) { id } }"
+  string operation_name = 3;
+  map<string, string> headers = 4;
+  int32 timeout_ms = 5;
+}
+
+message GrpcStreamSink {
+  string target = 1; // e.g. "localhost:50051"
+  string service_name = 2;
+  string method_name = 3;
+  bool use_tls = 4;
 }
 
 message WebhookSink {

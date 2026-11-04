@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"openmimic/engine/internal/cdc"
+	"openmimic/engine/internal/chaos"
 	"openmimic/engine/internal/dlq"
 	"openmimic/engine/internal/expression"
 	"openmimic/engine/internal/generator"
@@ -36,6 +37,7 @@ type Engine struct {
 	cdcEnv     *cdc.DebeziumEnvelope
 	dlqRouter  *dlq.Router
 	otelInj    *telemetry.OTelInjector
+	chaosSim   *chaos.ChaosSimulator
 	sessions   map[string]*timeseries.SessionTracker
 }
 
@@ -74,6 +76,7 @@ func NewEngine(cfg *pb.GeneratorConfig, w io.Writer) *Engine {
 		cdcEnv:    cdcEnv,
 		dlqRouter: dlqRouter,
 		otelInj:   otelInj,
+		chaosSim:  chaos.NewChaosSimulator(cfg.GetChaos()),
 		sessions:  make(map[string]*timeseries.SessionTracker),
 	}
 }
@@ -382,6 +385,14 @@ func (e *Engine) Run(ctx context.Context) error {
 			}
 
 			key := []byte(fmt.Sprintf("%d", i))
+
+			// Inject dynamic chaos latency jitter or simulated broker partition
+			if err := e.chaosSim.Intercept(ctx, e.state.RNG); err != nil {
+				e.metrics.RecordError()
+				_ = e.dlqRouter.Quarantine(ctx, e.config.GetId(), err.Error(), 1, record)
+				continue
+			}
+
 			if err := e.sink.WriteEvent(ctx, key, record); err != nil {
 				e.metrics.RecordError()
 				return err

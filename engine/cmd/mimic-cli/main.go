@@ -11,6 +11,7 @@ import (
 	"openmimic/engine/internal/cluster"
 	"openmimic/engine/internal/importer"
 	"openmimic/engine/internal/profiler"
+	"openmimic/engine/internal/replayer"
 	pb "openmimic/engine/pkg/proto/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -25,6 +26,7 @@ func printUsage() {
 	fmt.Println("  discover --sql <file>                      Generate mimic.json from SQL DDL table definition")
 	fmt.Println("  profile  --table <name> --sample <file>    Reverse-engineer mimic.json from sample JSON records")
 	fmt.Println("  cluster  --workers <count> --total <count> Simulate distributed cluster partitioned stream")
+	fmt.Println("  replay   --file <path> [--format nginx|jsonl] Replay historical log files with current timestamp inflation")
 }
 
 func main() {
@@ -240,6 +242,39 @@ func main() {
 
 		bytes, _ := protojson.MarshalOptions{Indent: "  "}.Marshal(cfg)
 		fmt.Println(string(bytes))
+
+	case "replay":
+		replayCmd := flag.NewFlagSet("replay", flag.ExitOnError)
+		filePath := replayCmd.String("file", "", "Path to historical log file")
+		format := replayCmd.String("format", "nginx_combined", "Log format: nginx_combined, apache_common, or jsonl_audit")
+		maxCount := replayCmd.Int("count", 10, "Max lines to replay to stdout")
+		_ = replayCmd.Parse(os.Args[2:])
+
+		if *filePath == "" {
+			fmt.Fprintf(os.Stderr, "Error: --file argument is required\n")
+			os.Exit(1)
+		}
+
+		rep := replayer.NewLogReplayer(&pb.LogReplayerConfig{
+			LogFormat: *format,
+		})
+
+		count := 0
+		err := rep.ReplayFile(*filePath, func(record map[string]any) error {
+			if count >= *maxCount {
+				return nil
+			}
+			out, _ := json.Marshal(record)
+			fmt.Println(string(out))
+			count++
+			return nil
+		})
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error during log replay: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stderr, "\nSuccessfully replayed %d records from %s\n", count, *filePath)
 
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n\n", command)
