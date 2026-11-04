@@ -55,3 +55,4 @@ func TestGrpcStreamingSinkWriteEvent(t *testing.T) {
 		t.Errorf("expected client to be closed")
 	}
 }
+

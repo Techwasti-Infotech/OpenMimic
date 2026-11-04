@@ -232,6 +232,14 @@ message KafkaSink {
   string topic = 2;
   string client_id = 3;
   SchemaRegistryConfig schema_registry = 4; // Native Schema Registry & wire format support
+  KafkaTransactionalConfig transactional = 5; // Exactly-Once Semantics (EOS) & transactional producers
+}
+
+message KafkaTransactionalConfig {
+  bool enabled = 1;
+  string transactional_id = 2; // e.g. "mimic-tx-producer-01"
+  int32 transaction_timeout_ms = 3; // e.g. 60000ms
+  int32 batch_commit_size = 4; // Commit transaction every N events (default: 100)
 }
 
 message SchemaRegistryConfig {

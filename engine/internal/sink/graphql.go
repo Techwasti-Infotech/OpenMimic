@@ -79,3 +79,4 @@ func (s *GraphQLSink) WriteEvent(ctx context.Context, key []byte, payload map[st
 func (s *GraphQLSink) Close() error {
 	return nil
 }
+

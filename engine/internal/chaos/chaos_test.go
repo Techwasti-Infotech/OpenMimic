@@ -43,3 +43,4 @@ func TestChaosSimulatorLatencyDelay(t *testing.T) {
 		t.Errorf("expected at least ~15ms delay, got %v", elapsed)
 	}
 }
+

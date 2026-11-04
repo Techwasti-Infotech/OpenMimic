@@ -64,3 +64,4 @@ func (s *GrpcStreamingSink) WriteEvent(ctx context.Context, key []byte, payload 
 func (s *GrpcStreamingSink) Close() error {
 	return s.client.Close()
 }
+

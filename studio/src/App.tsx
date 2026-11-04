@@ -53,6 +53,7 @@ import {
   IconServer,
   IconCpu,
   IconMathFunction,
+  IconFlame,
 } from '@tabler/icons-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
@@ -112,7 +113,7 @@ const COPILOT_API_BASE = 'http://localhost:8000';
 export default function App() {
   const [opened, { toggle }] = useDisclosure();
   const [activeTab, setActiveTab] = useState<
-    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'expressions' | 'settings' | 'dashboard'
+    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'expressions' | 'chaos' | 'settings' | 'dashboard'
   >('designer');
   const [config, setConfig] = useState<GeneratorConfig>(DEFAULT_CONFIG);
 
@@ -513,6 +514,12 @@ export default function App() {
             leftSection={<IconMathFunction size={18} />}
             active={activeTab === 'expressions'}
             onClick={() => setActiveTab('expressions')}
+          />
+          <NavLink
+            label="Chaos Engineering"
+            leftSection={<IconFlame size={18} />}
+            active={activeTab === 'chaos'}
+            onClick={() => setActiveTab('chaos')}
           />
           <NavLink
             label="Settings & Governance"
@@ -1304,6 +1311,99 @@ export default function App() {
                       </Table.Tr>
                     </Table.Tbody>
                   </Table>
+                </Card>
+              </Grid.Col>
+            </Grid>
+          </Stack>
+        )}
+
+        {/* TAB: CHAOS ENGINEERING & LATENCY INJECTION */}
+        {activeTab === 'chaos' && (
+          <Stack gap="md">
+            <div>
+              <Title order={2}>Chaos Engineering &amp; Fault Injection</Title>
+              <Text c="dimmed" size="sm">
+                Simulate real-world downstream broker outages, network partition packet loss, latency spikes, and backpressure testing.
+              </Text>
+            </div>
+
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Group justify="space-between" mb="xs">
+                    <Title order={4}>Chaos Fault Injection Dial</Title>
+                    <Badge color="red" leftSection={<IconFlame size={14} />}>Resilience Test</Badge>
+                  </Group>
+                  <Text size="xs" c="dimmed" mb="md">
+                    Configure intentional fault rates and latency jitter injected into streaming message delivery.
+                  </Text>
+
+                  <Stack gap="md">
+                    <NumberInput
+                      label="Simulated Failure Rate (%)"
+                      description="Percentage of socket disconnections / broker packet drops (0 - 100%)"
+                      defaultValue={5}
+                      min={0}
+                      max={100}
+                    />
+                    <Grid>
+                      <Grid.Col span={6}>
+                        <NumberInput
+                          label="Min Latency (ms)"
+                          defaultValue={10}
+                          min={0}
+                          max={5000}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <NumberInput
+                          label="Max Latency (ms)"
+                          defaultValue={250}
+                          min={0}
+                          max={10000}
+                        />
+                      </Grid.Col>
+                    </Grid>
+                    <Select
+                      label="Simulate Downstream Broker Backpressure"
+                      defaultValue="true"
+                      data={[
+                        { value: 'true', label: 'Enabled (Throttle producer on slow ACKs)' },
+                        { value: 'false', label: 'Disabled (Drop failed messages into DLQ)' },
+                      ]}
+                    />
+                    <Button color="red" variant="filled" onClick={() => setExecMessage('Chaos fault injection profile activated for running streams.')}>
+                      Arm Chaos Monkey
+                    </Button>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Title order={4} mb="xs">Active Chaos Status &amp; Telemetry</Title>
+                  <Text size="xs" c="dimmed" mb="md">
+                    Live impact of current fault injection profile on stream throughput.
+                  </Text>
+
+                  <Grid mb="md">
+                    <Grid.Col span={6}>
+                      <Paper withBorder p="md" radius="md">
+                        <Text size="xs" c="dimmed" tt="uppercase" fw={700}>Injected Drops</Text>
+                        <Title order={3} c="red">5.0%</Title>
+                      </Paper>
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <Paper withBorder p="md" radius="md">
+                        <Text size="xs" c="dimmed" tt="uppercase" fw={700}>Added Jitter p99</Text>
+                        <Title order={3} c="orange">248ms</Title>
+                      </Paper>
+                    </Grid.Col>
+                  </Grid>
+
+                  <Alert color="orange" title="Automatic Quarantine Active" icon={<IconAlertTriangle size={16} />}>
+                    Events affected by simulated network drops are automatically routed to the circular Dead Letter Queue (DLQ) with stack traces preserved.
+                  </Alert>
                 </Card>
               </Grid.Col>
             </Grid>

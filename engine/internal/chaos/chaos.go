@@ -68,3 +68,4 @@ func (c *ChaosSimulator) Intercept(ctx context.Context, rng *state.Deterministic
 
 	return nil
 }
+

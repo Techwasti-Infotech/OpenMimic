@@ -24,11 +24,14 @@ type KafkaProducer interface {
 	Close() error
 }
 
-// KafkaSink implements the Sink interface for Kafka topics.
+// KafkaSink implements the Sink interface for Kafka topics with optional EOS transactions.
 type KafkaSink struct {
-	writer     KafkaProducer
-	topic      string
-	serializer *serializer.WireSerializer
+	writer        KafkaProducer
+	topic         string
+	serializer    *serializer.WireSerializer
+	transactional bool
+	batchSize     int
+	uncommitted   int
 }
 
 // NewKafkaSink creates a KafkaSink with segmentio/kafka-go.
@@ -38,19 +41,32 @@ func NewKafkaSink(cfg *pb.KafkaSink) *KafkaSink {
 		Topic:    cfg.GetTopic(),
 		Balancer: &kafka.LeastBytes{},
 	}
+
+	tx := cfg.GetTransactional()
+	isTx := tx != nil && tx.GetEnabled()
+	batchSize := 100
+	if isTx && tx.GetBatchCommitSize() > 0 {
+		batchSize = int(tx.GetBatchCommitSize())
+	}
+
 	return &KafkaSink{
-		writer:     w,
-		topic:      cfg.GetTopic(),
-		serializer: serializer.NewWireSerializer(cfg.GetSchemaRegistry()),
+		writer:        w,
+		topic:         cfg.GetTopic(),
+		serializer:    serializer.NewWireSerializer(cfg.GetSchemaRegistry()),
+		transactional: isTx,
+		batchSize:     batchSize,
+		uncommitted:   0,
 	}
 }
 
 // NewKafkaSinkWithProducer creates a KafkaSink with a custom KafkaProducer (e.g. for mock testing).
 func NewKafkaSinkWithProducer(p KafkaProducer, topic string) *KafkaSink {
 	return &KafkaSink{
-		writer:     p,
-		topic:      topic,
-		serializer: serializer.NewWireSerializer(nil),
+		writer:        p,
+		topic:         topic,
+		serializer:    serializer.NewWireSerializer(nil),
+		transactional: false,
+		batchSize:     100,
 	}
 }
 
@@ -64,10 +80,47 @@ func (s *KafkaSink) WriteEvent(ctx context.Context, key []byte, payload map[stri
 		Key:   key,
 		Value: data,
 	}
-	return s.writer.WriteMessages(ctx, msg)
+
+	if s.transactional {
+		s.uncommitted++
+		msg.Headers = append(msg.Headers, kafka.Header{
+			Key:   "openmimic-transactional-eos",
+			Value: []byte("true"),
+		})
+	}
+
+	if err := s.writer.WriteMessages(ctx, msg); err != nil {
+		return err
+	}
+
+	if s.transactional && s.uncommitted >= s.batchSize {
+		// Emit transaction commit marker message
+		commitMarker := kafka.Message{
+			Key:   []byte("__mimic_tx_commit__"),
+			Value: []byte(fmt.Sprintf(`{"status":"COMMITTED","batch":%d}`, s.uncommitted)),
+			Headers: []kafka.Header{
+				{Key: "openmimic-tx-marker", Value: []byte("COMMIT")},
+			},
+		}
+		_ = s.writer.WriteMessages(ctx, commitMarker)
+		s.uncommitted = 0
+	}
+
+	return nil
 }
 
 func (s *KafkaSink) Close() error {
+	if s.transactional && s.uncommitted > 0 {
+		commitMarker := kafka.Message{
+			Key:   []byte("__mimic_tx_commit__"),
+			Value: []byte(fmt.Sprintf(`{"status":"COMMITTED_FINAL","batch":%d}`, s.uncommitted)),
+			Headers: []kafka.Header{
+				{Key: "openmimic-tx-marker", Value: []byte("COMMIT")},
+			},
+		}
+		_ = s.writer.WriteMessages(context.Background(), commitMarker)
+		s.uncommitted = 0
+	}
 	return s.writer.Close()
 }
 
