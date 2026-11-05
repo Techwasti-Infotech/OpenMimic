@@ -54,6 +54,8 @@ import {
   IconCpu,
   IconMathFunction,
   IconFlame,
+  IconWorld,
+  IconMapPin,
 } from '@tabler/icons-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
@@ -113,7 +115,7 @@ const COPILOT_API_BASE = 'http://localhost:8000';
 export default function App() {
   const [opened, { toggle }] = useDisclosure();
   const [activeTab, setActiveTab] = useState<
-    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'expressions' | 'chaos' | 'settings' | 'dashboard'
+    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'expressions' | 'chaos' | 'geomap' | 'settings' | 'dashboard'
   >('designer');
   const [config, setConfig] = useState<GeneratorConfig>(DEFAULT_CONFIG);
 
@@ -520,6 +522,12 @@ export default function App() {
             leftSection={<IconFlame size={18} />}
             active={activeTab === 'chaos'}
             onClick={() => setActiveTab('chaos')}
+          />
+          <NavLink
+            label="Geo Map & Hotspots"
+            leftSection={<IconWorld size={18} />}
+            active={activeTab === 'geomap'}
+            onClick={() => setActiveTab('geomap')}
           />
           <NavLink
             label="Settings & Governance"
@@ -1404,6 +1412,84 @@ export default function App() {
                   <Alert color="orange" title="Automatic Quarantine Active" icon={<IconAlertTriangle size={16} />}>
                     Events affected by simulated network drops are automatically routed to the circular Dead Letter Queue (DLQ) with stack traces preserved.
                   </Alert>
+                </Card>
+              </Grid.Col>
+            </Grid>
+          </Stack>
+        )}
+
+        {/* TAB: GEOLOCATION MAP & SPATIAL HOTSPOTS */}
+        {activeTab === 'geomap' && (
+          <Stack gap="md">
+            <div>
+              <Title order={2}>Geolocation Stream &amp; Spatial Hotspots</Title>
+              <Text c="dimmed" size="sm">
+                Real-time regional distribution, correlated Geo-IP addresses, and GPS coordinate bounding boxes.
+              </Text>
+            </div>
+
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 8 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Group justify="space-between" mb="xs">
+                    <Title order={4}>Global Hotspot Map</Title>
+                    <Badge color="blue" leftSection={<IconWorld size={14} />}>Live Coordinates</Badge>
+                  </Group>
+                  <Text size="xs" c="dimmed" mb="md">
+                    Simulated coordinate clusters correlated across regional bounding boxes (NA, EU, APAC).
+                  </Text>
+
+                  {/* Visual World Grid Mock */}
+                  <div style={{ background: '#141517', border: '1px solid #2C2E33', borderRadius: '8px', padding: '24px', height: '280px', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: '35%', left: '20%', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <IconMapPin size={20} color="#228be6" />
+                      <Badge color="blue" size="xs">North America (12.148.*)</Badge>
+                    </div>
+                    <div style={{ position: 'absolute', top: '28%', left: '50%', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <IconMapPin size={20} color="#40c057" />
+                      <Badge color="green" size="xs">Europe (82.165.*)</Badge>
+                    </div>
+                    <div style={{ position: 'absolute', top: '50%', left: '75%', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <IconMapPin size={20} color="#fab005" />
+                      <Badge color="yellow" size="xs">Asia-Pacific (115.112.*)</Badge>
+                    </div>
+                  </div>
+                </Card>
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 4 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Title order={4} mb="xs">Regional Coordinate Streams</Title>
+                  <Text size="xs" c="dimmed" mb="md">
+                    Recent simulated GPS coordinates.
+                  </Text>
+
+                  <Table striped highlightOnHover>
+                    <Table.Thead>
+                      <Table.Tr>
+                        <Table.Th>Region</Table.Th>
+                        <Table.Th>Latitude</Table.Th>
+                        <Table.Th>Longitude</Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      <Table.Tr>
+                        <Table.Td><Badge color="blue">NA</Badge></Table.Td>
+                        <Table.Td>37.7749</Table.Td>
+                        <Table.Td>-122.4194</Table.Td>
+                      </Table.Tr>
+                      <Table.Tr>
+                        <Table.Td><Badge color="green">EU</Badge></Table.Td>
+                        <Table.Td>50.1109</Table.Td>
+                        <Table.Td>8.6821</Table.Td>
+                      </Table.Tr>
+                      <Table.Tr>
+                        <Table.Td><Badge color="yellow">APAC</Badge></Table.Td>
+                        <Table.Td>35.6762</Table.Td>
+                        <Table.Td>139.6503</Table.Td>
+                      </Table.Tr>
+                    </Table.Tbody>
+                  </Table>
                 </Card>
               </Grid.Col>
             </Grid>

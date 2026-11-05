@@ -55,3 +55,4 @@ spec:
                   type: integer
       subresources:
         status: {}
+

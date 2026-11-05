@@ -92,6 +92,40 @@ func (s *BurstShaper) NextDelay(elapsed time.Duration, rng *state.DeterministicR
 	return time.Second / time.Duration(rate)
 }
 
+// BlackFridayFlashCrowdShaper models realistic 3-phase surge: ramp-up -> doorbuster plateau -> ramp-down.
+type BlackFridayFlashCrowdShaper struct {
+	baseRate     float64
+	peakRate     float64
+	rampUpDur    time.Duration
+	plateauDur   time.Duration
+	rampDownDur  time.Duration
+	totalDur     time.Duration
+}
+
+func (s *BlackFridayFlashCrowdShaper) NextDelay(elapsed time.Duration, rng *state.DeterministicRand) time.Duration {
+	cyclePos := elapsed % s.totalDur
+	currentRate := s.baseRate
+
+	if cyclePos < s.rampUpDur {
+		// Linear ramp-up from baseRate to peakRate
+		progress := float64(cyclePos) / float64(s.rampUpDur)
+		currentRate = s.baseRate + progress*(s.peakRate-s.baseRate)
+	} else if cyclePos < s.rampUpDur+s.plateauDur {
+		// Sustained peak doorbuster plateau
+		currentRate = s.peakRate
+	} else {
+		// Linear ramp-down from peakRate back to baseRate
+		rampDownPos := cyclePos - (s.rampUpDur + s.plateauDur)
+		progress := float64(rampDownPos) / float64(s.rampDownDur)
+		currentRate = s.peakRate - progress*(s.peakRate-s.baseRate)
+	}
+
+	if currentRate <= 0 {
+		return 0
+	}
+	return time.Duration(float64(time.Second) / currentRate)
+}
+
 // NewShaper constructs a traffic shaper from the TrafficProfile or legacy rate limit.
 func NewShaper(profile *pb.TrafficProfile, legacyRate int32) Shaper {
 	if profile != nil && profile.ProfileType != nil {
@@ -112,6 +146,27 @@ func NewShaper(profile *pb.TrafficProfile, legacyRate int32) Shaper {
 				burstRate:  p.Burst.BurstRate,
 				interval:   time.Duration(p.Burst.IntervalSeconds) * time.Second,
 				duration:   time.Duration(p.Burst.DurationSeconds) * time.Second,
+			}
+		case *pb.TrafficProfile_FlashCrowd:
+			rampUp := time.Duration(p.FlashCrowd.RampUpSeconds) * time.Second
+			if rampUp <= 0 {
+				rampUp = 10 * time.Second
+			}
+			plateau := time.Duration(p.FlashCrowd.PlateauSeconds) * time.Second
+			if plateau <= 0 {
+				plateau = 20 * time.Second
+			}
+			rampDown := time.Duration(p.FlashCrowd.RampDownSeconds) * time.Second
+			if rampDown <= 0 {
+				rampDown = 10 * time.Second
+			}
+			return &BlackFridayFlashCrowdShaper{
+				baseRate:    float64(p.FlashCrowd.BaselineRate),
+				peakRate:    float64(p.FlashCrowd.SurgePeakRate),
+				rampUpDur:   rampUp,
+				plateauDur:  plateau,
+				rampDownDur: rampDown,
+				totalDur:    rampUp + plateau + rampDown,
 			}
 		}
 	}

@@ -41,3 +41,4 @@ func TestAnomalyMLDetectionBenchmark(t *testing.T) {
 		t.Errorf("expected F1-score >= 0.60, got %f", result.F1Score)
 	}
 }
+

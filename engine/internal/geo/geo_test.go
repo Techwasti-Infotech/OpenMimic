@@ -58,3 +58,4 @@ func TestGeoGeneratorCityAndCountry(t *testing.T) {
 		t.Errorf("unexpected APAC country: %s", country)
 	}
 }
+

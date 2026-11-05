@@ -120,3 +120,4 @@ func (g *GeoGenerator) Generate(rng *state.DeterministicRand) any {
 		}
 	}
 }
+

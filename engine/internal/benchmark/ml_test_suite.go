@@ -105,3 +105,4 @@ func IsolationScoreBenchmark(values []float64, groundTruthInjected []bool, conta
 		F1Score:          f1,
 	}, nil
 }
+

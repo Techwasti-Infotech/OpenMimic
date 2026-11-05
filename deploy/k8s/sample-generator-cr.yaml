@@ -11,3 +11,4 @@ spec:
     kafkaBrokers:
       - "kafka.streaming.svc.cluster.local:9092"
     kafkaTopic: "orders.production.events"
+

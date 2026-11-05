@@ -148,7 +148,17 @@ message TrafficProfile {
     DiurnalRate diurnal = 2;     // Sine/cosine wave day-night cycles
     PoissonArrival poisson = 3;  // Stochastic inter-arrival times
     BurstSpikeRate burst = 4;    // Periodic traffic spikes (e.g. flash sales)
+    BlackFridayFlashCrowd flash_crowd = 5; // Multi-stage Black Friday / Cyber Monday surge
   }
+}
+
+message BlackFridayFlashCrowd {
+  int32 baseline_rate = 1;     // Normal cruising rate (e.g. 50 eps)
+  int32 surge_peak_rate = 2;   // Peak burst during doorbuster (e.g. 5000 eps)
+  int32 ramp_up_seconds = 3;   // Seconds to ramp up from baseline to surge
+  int32 plateau_seconds = 4;   // Seconds to sustain peak flash traffic
+  int32 ramp_down_seconds = 5; // Seconds to return to cruising rate
+  double surge_error_rate = 6; // Deliberate failure rate during surge (e.g. 0.08 for 8% timeouts)
 }
 
 message ConstantRate {
@@ -184,7 +194,26 @@ message SinkConfig {
     WebhookSink webhook = 7;
     GraphQLSink graphql = 8;
     GrpcStreamSink grpc_stream = 9;
+    SnowflakeSink snowflake = 10;
+    BigQuerySink bigquery = 11;
   }
+}
+
+message SnowflakeSink {
+  string account_identifier = 1; // e.g. "xy12345.us-east-1"
+  string database = 2;
+  string schema = 3;
+  string table = 4;
+  string pipe_name = 5; // Optional Snowpipe for auto-ingest
+  string warehouse = 6;
+  int32 batch_size = 7; // Micro-batch size (default: 500)
+}
+
+message BigQuerySink {
+  string project_id = 1;
+  string dataset_id = 2;
+  string table_id = 3;
+  int32 batch_size = 4; // Streaming buffer batch size (default: 500)
 }
 
 message GraphQLSink {

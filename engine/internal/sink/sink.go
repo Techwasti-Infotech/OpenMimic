@@ -183,6 +183,10 @@ func CreateSink(cfg *pb.SinkConfig, fallbackWriter io.Writer) (Sink, error) {
 		return NewGraphQLSink(s.Graphql, nil), nil
 	case *pb.SinkConfig_GrpcStream:
 		return NewGrpcStreamingSink(s.GrpcStream, nil), nil
+	case *pb.SinkConfig_Snowflake:
+		return NewSnowflakeSink(s.Snowflake, nil), nil
+	case *pb.SinkConfig_Bigquery:
+		return NewBigQuerySink(s.Bigquery, nil), nil
 	case *pb.SinkConfig_Stdout:
 		pretty := false
 		if s.Stdout != nil {
