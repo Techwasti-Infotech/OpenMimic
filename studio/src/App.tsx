@@ -1187,6 +1187,47 @@ export default function App() {
               </Button>
             </Group>
 
+            {/* Interactive Visual DAG Topology Graph Canvas */}
+            <Card withBorder shadow="sm" radius="md">
+              <Group justify="space-between" mb="xs">
+                <Title order={4}>Interactive Stream Topology Graph</Title>
+                <Badge color="violet">DAG Visualizer</Badge>
+              </Group>
+              <Text size="xs" c="dimmed" mb="md">
+                Directed Acyclic Graph layout showing upstream dependencies and shared foreign key references.
+              </Text>
+
+              <div style={{ background: '#141517', border: '1px solid #2C2E33', borderRadius: '8px', padding: '32px', minHeight: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '32px', flexWrap: 'wrap' }}>
+                <Paper withBorder p="md" radius="md" style={{ background: '#1A1B1E', borderLeft: '4px solid #20c997', minWidth: '180px' }}>
+                  <Text size="xs" fw={700} c="teal">ROOT PRODUCER</Text>
+                  <Text fw={600} size="sm">users_stream</Text>
+                  <Text size="xs" c="dimmed">Pool: active_users</Text>
+                </Paper>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Text size="xs" c="dimmed" fw={700}>FK CASCADE ➔</Text>
+                  <div style={{ width: '48px', height: '2px', background: '#373A40' }}></div>
+                </div>
+
+                <Paper withBorder p="md" radius="md" style={{ background: '#1A1B1E', borderLeft: '4px solid #fab005', minWidth: '180px' }}>
+                  <Text size="xs" fw={700} c="yellow">DEPENDENT STREAM</Text>
+                  <Text fw={600} size="sm">orders_stream</Text>
+                  <Text size="xs" c="dimmed">Parent: users_stream</Text>
+                </Paper>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Text size="xs" c="dimmed" fw={700}>ROLLUP ➔</Text>
+                  <div style={{ width: '48px', height: '2px', background: '#373A40' }}></div>
+                </div>
+
+                <Paper withBorder p="md" radius="md" style={{ background: '#1A1B1E', borderLeft: '4px solid #228be6', minWidth: '180px' }}>
+                  <Text size="xs" fw={700} c="blue">CEP SLIDING WINDOW</Text>
+                  <Text fw={600} size="sm">user_metrics_rollup</Text>
+                  <Text size="xs" c="dimmed">Source: orders_stream</Text>
+                </Paper>
+              </div>
+            </Card>
+
             <Grid>
               {topology.nodes.map((node, i) => (
                 <Grid.Col span={{ base: 12, md: 6 }} key={node.generator_id}>

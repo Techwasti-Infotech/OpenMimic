@@ -9,11 +9,13 @@ import (
 	"time"
 
 	"openmimic/engine/internal/cdc"
+	"openmimic/engine/internal/cep"
 	"openmimic/engine/internal/chaos"
 	"openmimic/engine/internal/dlq"
 	"openmimic/engine/internal/expression"
 	"openmimic/engine/internal/generator"
 	"openmimic/engine/internal/geo"
+	"openmimic/engine/internal/media"
 	"openmimic/engine/internal/metrics"
 	"openmimic/engine/internal/privacy"
 	"openmimic/engine/internal/pseudonym"
@@ -366,6 +368,17 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64, curr
 		if f.GeoLocation != nil {
 			geoGen := geo.NewGeoGenerator(f.GeoLocation)
 			return geoGen.Generate(e.state.RNG)
+		}
+
+	case *pb.FunctionGenerator_BinaryMedia:
+		if f.BinaryMedia != nil {
+			return media.GenerateMediaPayload(f.BinaryMedia)
+		}
+
+	case *pb.FunctionGenerator_Aggregation:
+		if f.Aggregation != nil {
+			agg := cep.GetOrCreateAggregator(f.Aggregation)
+			return agg.ComputeRollup()
 		}
 	}
 

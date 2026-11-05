@@ -53,3 +53,4 @@ func TestBigQueryStreamingSink(t *testing.T) {
 	}
 	_ = sink.Close()
 }
+

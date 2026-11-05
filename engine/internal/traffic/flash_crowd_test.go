@@ -36,3 +36,4 @@ func TestBlackFridayFlashCrowdShaperPhases(t *testing.T) {
 		t.Errorf("expected ~10ms during surge peak plateau, got %v", dPeak)
 	}
 }
+

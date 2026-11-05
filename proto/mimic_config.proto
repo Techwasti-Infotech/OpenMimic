@@ -324,7 +324,7 @@ message LogReplayerConfig {
 
 // FunctionGenerator defines how a field value is generated.
 message FunctionGenerator {
-  reserved 19 to 20; // Reserved slots
+  reserved 21 to 25; // Reserved slots
   oneof func {
     UuidFunction uuid = 1;
     DistributionFunction distribution = 2;
@@ -344,7 +344,26 @@ message FunctionGenerator {
     TimeSeriesDriftFunction time_series_drift = 16; // Sinusoidal trends and sensor drift
     SessionWindowFunction session_window = 17;     // Stateful user/device session timeouts
     GeoLocationFunction geo_location = 18;         // Realistic geo coordinates, bounding boxes & country codes
+    BinaryMediaFunction binary_media = 19;         // Valid synthesized binary media headers (WAV, JPEG, PNG)
+    StreamAggregationFunction aggregation = 20;    // Real-time CEP sliding/tumbling window rollups
   }
+}
+
+// BinaryMediaFunction generates actual synthetically valid media byte streams
+message BinaryMediaFunction {
+  string format = 1; // "wav_audio", "jpeg_image", "png_image"
+  int32 width = 2; // for images (default: 64)
+  int32 height = 3; // for images (default: 64)
+  int32 duration_ms = 4; // for audio (default: 1000ms)
+}
+
+// StreamAggregationFunction computes complex event processing (CEP) rollups across window intervals
+message StreamAggregationFunction {
+  string source_stream_id = 1; // Parent stream ID to aggregate over
+  string window_type = 2; // "tumbling", "sliding"
+  int32 window_size_events = 3; // Window size in event count
+  string aggregation_op = 4; // "sum", "count", "avg", "min", "max"
+  string target_field = 5; // Field in source stream to aggregate
 }
 
 // GeoLocationFunction generates correlated latitude, longitude, country, and IP addresses

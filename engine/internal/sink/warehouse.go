@@ -145,3 +145,4 @@ func (b *BigQuerySink) Flush(ctx context.Context) error {
 func (b *BigQuerySink) Close() error {
 	return b.Flush(context.Background())
 }
+
