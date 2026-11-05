@@ -96,6 +96,11 @@ func NewAutoRegisterWireSerializer(cfg *pb.SchemaRegistryConfig, client Registry
 
 // AutoRegisterIfNecessary queries or posts the schema if schema_id is 0.
 func (s *AutoRegisterWireSerializer) AutoRegisterIfNecessary(ctx context.Context, schemaStr string) (uint32, error) {
+	return s.AutoRegisterWithTopicIfNecessary(ctx, "", schemaStr)
+}
+
+// AutoRegisterWithTopicIfNecessary queries or posts the schema with topic awareness using the configured SubjectNamingStrategy.
+func (s *AutoRegisterWireSerializer) AutoRegisterWithTopicIfNecessary(ctx context.Context, topic, schemaStr string) (uint32, error) {
 	if s.cfg == nil || !s.cfg.GetEnabled() {
 		return 0, nil
 	}
@@ -106,10 +111,7 @@ func (s *AutoRegisterWireSerializer) AutoRegisterIfNecessary(ctx context.Context
 		return 1, nil
 	}
 
-	subject := s.cfg.GetSubject()
-	if subject == "" {
-		subject = "openmimic-default-value"
-	}
+	subject := ComputeSubject(s.cfg, topic)
 	format := s.cfg.GetFormat()
 	if format == "" {
 		format = "JSON"

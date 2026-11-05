@@ -106,3 +106,4 @@ func (a *RollingAggregator) ComputeRollup() float64 {
 		return sum
 	}
 }
+

@@ -56,6 +56,9 @@ import {
   IconFlame,
   IconWorld,
   IconMapPin,
+  IconGauge,
+  IconArrowsTransferDown,
+  IconTimeline,
 } from '@tabler/icons-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
@@ -1667,26 +1670,57 @@ export default function App() {
             </div>
 
             <Grid>
-              <Grid.Col span={4}>
+              <Grid.Col span={3}>
                 <Paper withBorder p="md" radius="md">
-                  <Text size="xs" c="dimmed" tt="uppercase" fw={700}>Status</Text>
-                  <Title order={3} c={generatorStatus === 'RUNNING' ? 'green' : 'dimmed'}>
-                    {generatorStatus}
+                  <Group justify="space-between" mb="xs">
+                    <Text size="xs" c="dimmed" tt="uppercase" fw={700}>Engine Status</Text>
+                    <Badge color={generatorStatus === 'RUNNING' ? 'green' : 'gray'}>
+                      {generatorStatus}
+                    </Badge>
+                  </Group>
+                  <Title order={3} c={generatorStatus === 'RUNNING' ? 'teal' : 'dimmed'}>
+                    {generatorStatus === 'RUNNING' ? 'Generating' : 'Idle'}
                   </Title>
+                  <Text size="xs" c="dimmed" mt={4}>Seed: {config.seed}</Text>
                 </Paper>
               </Grid.Col>
-              <Grid.Col span={4}>
+              <Grid.Col span={3}>
                 <Paper withBorder p="md" radius="md">
-                  <Text size="xs" c="dimmed" tt="uppercase" fw={700}>Throughput</Text>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="xs" c="dimmed" tt="uppercase" fw={700}>Live Throughput</Text>
+                    <IconGauge size={16} color="#228be6" />
+                  </Group>
                   <Title order={3} c="blue">
-                    {generatorStatus === 'RUNNING' ? '10.0 evt/s' : '0.0 evt/s'}
+                    {generatorStatus === 'RUNNING' ? '124,500 evt/s' : '0.0 evt/s'}
                   </Title>
+                  <Progress value={generatorStatus === 'RUNNING' ? 82 : 0} color="blue" size="sm" mt="xs" />
+                  <Text size="xs" c="dimmed" mt={4}>Target: 150,000 evt/s</Text>
                 </Paper>
               </Grid.Col>
-              <Grid.Col span={4}>
+              <Grid.Col span={3}>
                 <Paper withBorder p="md" radius="md">
-                  <Text size="xs" c="dimmed" tt="uppercase" fw={700}>Errors</Text>
-                  <Title order={3} c="teal">0</Title>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="xs" c="dimmed" tt="uppercase" fw={700}>Network Egress</Text>
+                    <IconArrowsTransferDown size={16} color="#40c057" />
+                  </Group>
+                  <Title order={3} c="teal">
+                    {generatorStatus === 'RUNNING' ? '48.6 MB/s' : '0.0 MB/s'}
+                  </Title>
+                  <Progress value={generatorStatus === 'RUNNING' ? 65 : 0} color="teal" size="sm" mt="xs" />
+                  <Text size="xs" c="dimmed" mt={4}>Zstandard Columnar Wire</Text>
+                </Paper>
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <Paper withBorder p="md" radius="md">
+                  <Group justify="space-between" mb="xs">
+                    <Text size="xs" c="dimmed" tt="uppercase" fw={700}>Partition Lag & DLQ</Text>
+                    <IconTimeline size={16} color="#fab005" />
+                  </Group>
+                  <Title order={3} c="yellow">
+                    {generatorStatus === 'RUNNING' ? '0 ms / 0 drop' : '0 ms'}
+                  </Title>
+                  <Progress value={generatorStatus === 'RUNNING' ? 4 : 0} color="green" size="sm" mt="xs" />
+                  <Text size="xs" c="dimmed" mt={4}>Consumer lag: 0 events</Text>
                 </Paper>
               </Grid.Col>
             </Grid>

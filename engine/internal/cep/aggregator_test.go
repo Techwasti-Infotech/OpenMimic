@@ -51,3 +51,4 @@ func TestRollingAggregatorSum(t *testing.T) {
 		t.Errorf("expected sum 20.0, got %f", agg.ComputeRollup())
 	}
 }
+

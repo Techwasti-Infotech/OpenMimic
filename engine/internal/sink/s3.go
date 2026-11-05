@@ -41,16 +41,17 @@ func (m *MemoryStorageClient) UploadPart(ctx context.Context, bucket, key string
 
 // S3StorageSink buffers generated records and flushes them as chunked JSONL, CSV, or Parquet files.
 type S3StorageSink struct {
-	mu              sync.Mutex
-	client          ObjectStorageClient
-	bucket          string
-	prefix          string
-	format          string
-	maxRecords      int
-	flushInterval   time.Duration
-	buffer          []map[string]any
-	filePartIndex   int
-	lastFlush       time.Time
+	mu               sync.Mutex
+	client           ObjectStorageClient
+	bucket           string
+	prefix           string
+	format           string
+	compressionCodec string
+	maxRecords       int
+	flushInterval    time.Duration
+	buffer           []map[string]any
+	filePartIndex    int
+	lastFlush        time.Time
 }
 
 // NewS3StorageSink creates a new object storage sink.
@@ -58,6 +59,11 @@ func NewS3StorageSink(cfg *pb.S3Sink, client ObjectStorageClient) *S3StorageSink
 	format := "jsonl"
 	if cfg.GetFileFormat() != "" {
 		format = cfg.GetFileFormat()
+	}
+
+	compression := "none"
+	if cfg.GetCompressionCodec() != "" {
+		compression = cfg.GetCompressionCodec()
 	}
 
 	maxRecs := int(cfg.GetMaxRecordsPerFile())
@@ -75,14 +81,15 @@ func NewS3StorageSink(cfg *pb.S3Sink, client ObjectStorageClient) *S3StorageSink
 	}
 
 	return &S3StorageSink{
-		client:        client,
-		bucket:        cfg.GetBucket(),
-		prefix:        cfg.GetPrefix(),
-		format:        format,
-		maxRecords:    maxRecs,
-		flushInterval: time.Duration(flushSec) * time.Second,
-		buffer:        make([]map[string]any, 0, maxRecs),
-		filePartIndex: 0,
+		client:           client,
+		bucket:           cfg.GetBucket(),
+		prefix:           cfg.GetPrefix(),
+		format:           format,
+		compressionCodec: compression,
+		maxRecords:       maxRecs,
+		flushInterval:    time.Duration(flushSec) * time.Second,
+		buffer:           make([]map[string]any, 0, maxRecs),
+		filePartIndex:    0,
 		lastFlush:     time.Now(),
 	}
 }
@@ -128,8 +135,8 @@ func (s *S3StorageSink) Flush(ctx context.Context) error {
 		data = b
 	case "parquet":
 		ext = "parquet"
-		// High-performance tabular columnar stream representation
-		b, err := serializeParquetMeta(records)
+		// High-performance tabular columnar stream representation with dictionary encoding & compression
+		b, err := EncodeColumnarParquet(records, s.compressionCodec)
 		if err != nil {
 			return fmt.Errorf("failed to encode Parquet file: %w", err)
 		}

@@ -2541,14 +2541,17 @@ func (x *KafkaTransactionalConfig) GetBatchCommitSize() int32 {
 }
 
 type SchemaRegistryConfig struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Enabled       bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`                            // e.g. "http://localhost:8081"
-	Format        string                 `protobuf:"bytes,3,opt,name=format,proto3" json:"format,omitempty"`                      // "avro", "protobuf", "json_schema"
-	SchemaId      int32                  `protobuf:"varint,4,opt,name=schema_id,json=schemaId,proto3" json:"schema_id,omitempty"` // Explicit ID or 0 for auto-discovered/auto-registered
-	Subject       string                 `protobuf:"bytes,5,opt,name=subject,proto3" json:"subject,omitempty"`                    // e.g. "orders-value"
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	Enabled                bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	Url                    string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`                                                                      // e.g. "http://localhost:8081"
+	Format                 string                 `protobuf:"bytes,3,opt,name=format,proto3" json:"format,omitempty"`                                                                // "avro", "protobuf", "json_schema"
+	SchemaId               int32                  `protobuf:"varint,4,opt,name=schema_id,json=schemaId,proto3" json:"schema_id,omitempty"`                                           // Explicit ID or 0 for auto-discovered/auto-registered
+	Subject                string                 `protobuf:"bytes,5,opt,name=subject,proto3" json:"subject,omitempty"`                                                              // Explicit override e.g. "orders-value"
+	SubjectNamingStrategy  string                 `protobuf:"bytes,6,opt,name=subject_naming_strategy,json=subjectNamingStrategy,proto3" json:"subject_naming_strategy,omitempty"` // "TopicNameStrategy", "RecordNameStrategy", "TopicRecordNameStrategy"
+	RecordName             string                 `protobuf:"bytes,7,opt,name=record_name,json=recordName,proto3" json:"record_name,omitempty"`                                     // e.g. "io.confluent.examples.OrderEvent"
+	IsKey                  bool                   `protobuf:"varint,8,opt,name=is_key,json=isKey,proto3" json:"is_key,omitempty"`                                                   // false for value, true for key
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *SchemaRegistryConfig) Reset() {
@@ -2614,6 +2617,27 @@ func (x *SchemaRegistryConfig) GetSubject() string {
 		return x.Subject
 	}
 	return ""
+}
+
+func (x *SchemaRegistryConfig) GetSubjectNamingStrategy() string {
+	if x != nil {
+		return x.SubjectNamingStrategy
+	}
+	return ""
+}
+
+func (x *SchemaRegistryConfig) GetRecordName() string {
+	if x != nil {
+		return x.RecordName
+	}
+	return ""
+}
+
+func (x *SchemaRegistryConfig) GetIsKey() bool {
+	if x != nil {
+		return x.IsKey
+	}
+	return false
 }
 
 type PostgresSink struct {
@@ -2685,6 +2709,7 @@ type S3Sink struct {
 	Endpoint             string                 `protobuf:"bytes,5,opt,name=endpoint,proto3" json:"endpoint,omitempty"`                                                 // Optional custom endpoint for MinIO / LocalStack / Cloudflare R2
 	MaxRecordsPerFile    int32                  `protobuf:"varint,6,opt,name=max_records_per_file,json=maxRecordsPerFile,proto3" json:"max_records_per_file,omitempty"` // Rollover threshold (default: 10,000)
 	FlushIntervalSeconds int32                  `protobuf:"varint,7,opt,name=flush_interval_seconds,json=flushIntervalSeconds,proto3" json:"flush_interval_seconds,omitempty"`
+	CompressionCodec     string                 `protobuf:"bytes,8,opt,name=compression_codec,json=compressionCodec,proto3" json:"compression_codec,omitempty"`        // "none", "snappy", "gzip", "zstd"
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -2766,6 +2791,13 @@ func (x *S3Sink) GetFlushIntervalSeconds() int32 {
 		return x.FlushIntervalSeconds
 	}
 	return 0
+}
+
+func (x *S3Sink) GetCompressionCodec() string {
+	if x != nil {
+		return x.CompressionCodec
+	}
+	return ""
 }
 
 type StdoutSink struct {

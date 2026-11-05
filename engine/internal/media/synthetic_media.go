@@ -122,3 +122,4 @@ func GenerateMediaPayload(cfg *pb.BinaryMediaFunction) map[string]any {
 		"base64":     base64.StdEncoding.EncodeToString(raw),
 	}
 }
+
