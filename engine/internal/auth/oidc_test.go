@@ -112,6 +112,32 @@ func TestEnterpriseOIDCValidationAndRoleMapping(t *testing.T) {
 	if err == nil {
 		t.Errorf("expected error for audience mismatch, got nil")
 	}
+
+	// 9. Test Invalid Signature Tampering (security attack simulation)
+	tamperedToken := tokenStr[:len(tokenStr)-4] + "AAAA"
+	_, err = validator.ValidateJWT(tamperedToken)
+	if err == nil {
+		t.Errorf("expected signature verification failure for tampered token, got nil")
+	}
+
+	// 10. Test Unknown Key ID (kid)
+	unknownKidToken := createSignedJWT(t, privKey, "unknown-kid-999", "user@corp.internal", "openmimic-enterprise-client", []string{"Data-Engineers"}, time.Now().Add(1*time.Hour).Unix())
+	_, err = validator.ValidateJWT(unknownKidToken)
+	if err == nil {
+		t.Errorf("expected error for unknown kid, got nil")
+	}
+
+	// 11. Test Malformed Tokens
+	malformedTokens := []string{
+		"not-a-jwt",
+		"header.payload",
+		"",
+	}
+	for _, mt := range malformedTokens {
+		if _, err := validator.ValidateJWT(mt); err == nil {
+			t.Errorf("expected error for malformed token %q, got nil", mt)
+		}
+	}
 }
 
 func createSignedJWT(t *testing.T, privKey *rsa.PrivateKey, kid, sub, aud string, groups []string, exp int64) string {

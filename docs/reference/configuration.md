@@ -175,7 +175,26 @@ The `sink` object accepts one of the following definitions:
 - **`graphql`**: Streaming mutations over HTTP/HTTPS with custom operation templates.
 - **`grpc`**: Native protocol buffer streaming directly to gRPC ingest services.
 
-### 7. Redis Sink
+### 7. Enterprise SSO & Identity Provider (`sso_config`)
+```json
+"sso_config": {
+  "enabled": true,
+  "provider_type": "OKTA",
+  "issuer_url": "https://techwasti.okta.com/oauth2/default",
+  "client_id": "0oae9k2z45OpenMimicClient",
+  "group_role_mappings": {
+    "DataPlatform-Admins": "super_admin",
+    "Data-Engineers": "tenant_admin",
+    "Security-Auditors": "viewer"
+  },
+  "default_role": "viewer",
+  "enforce_pkce": true
+}
+```
+- **`provider_type`**: `"OIDC"`, `"OKTA"`, `"AZURE_AD"`, `"KEYCLOAK"`, or `"SAML"`.
+- **`group_role_mappings`**: Dynamic RBAC mapping from corporate IdP groups to OpenMimic roles (`super_admin`, `tenant_admin`, `viewer`).
+
+### 8. Redis Sink
 ```json
 "sink": {
   "redis": {
@@ -187,7 +206,7 @@ The `sink` object accepts one of the following definitions:
 }
 ```
 
-### 8. ClickHouse Sink
+### 9. ClickHouse Sink
 ```json
 "sink": {
   "clickhouse": {
@@ -199,7 +218,7 @@ The `sink` object accepts one of the following definitions:
 }
 ```
 
-### 9. Stdout Sink
+### 10. Stdout Sink
 ```json
 "sink": {
   "stdout": {

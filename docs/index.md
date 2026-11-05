@@ -20,6 +20,7 @@ If OpenMimic helps your engineering workflows:
 ## ⚡ Quick Navigation
 
 - [Local Setup & Quickstart Guide](guides/getting-started.html) — Launch with Docker Compose or from source.
+- [Enterprise Single Sign-On (SSO) & RBAC Guide](guides/enterprise-sso.html) — Okta, Microsoft Entra ID, Keycloak, OIDC, and group role mappings.
 - [Traffic Simulation & Load Generation Guide](guides/traffic-simulation.html) — Production traffic shaping, diurnal curves, Poisson arrivals, and Markov funnels.
 - [Functions & Expression Reference](reference/functions.html) — Complete guide to `uuid`, `normalDistribution`, `weightedChoice`, `markovChain`, etc.
 - [Configuration Reference (`mimic.json`)](reference/configuration.html) — Full Protocol Buffers schema guide.
