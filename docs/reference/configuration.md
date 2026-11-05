@@ -94,10 +94,25 @@ The `sink` object accepts one of the following definitions:
   "kafka": {
     "brokers": ["localhost:9092"],
     "topic": "events.raw",
-    "client_id": "mimic-client"
+    "client_id": "mimic-client",
+    "schema_registry": {
+      "enabled": true,
+      "url": "http://localhost:8081",
+      "format": "avro",
+      "subject_naming_strategy": "TopicRecordNameStrategy",
+      "record_name": "io.confluent.examples.OrderEvent"
+    },
+    "transactional": {
+      "enabled": true,
+      "transactional_id": "mimic-tx-producer-01",
+      "transaction_timeout_ms": 60000,
+      "batch_commit_size": 100
+    }
   }
 }
 ```
+- **`subject_naming_strategy`**: Supports `TopicNameStrategy` (default: `<topic>-value`), `RecordNameStrategy` (`<record_name>`), and `TopicRecordNameStrategy` (`<topic>-<record_name>`).
+- **`transactional`**: Emits transactional Kafka Exactly-Once Semantics (EOS) commit markers with atomic two-phase commit batches.
 
 ### 2. PostgreSQL Sink
 ```json
@@ -111,19 +126,56 @@ The `sink` object accepts one of the following definitions:
 ```
 *Note: If `columns` is omitted, the payload is written directly to a single `data` JSONB column.*
 
-### 3. Amazon S3 Sink
+### 3. Amazon S3 / Cloudflare R2 / MinIO Sink
 ```json
 "sink": {
   "s3": {
     "bucket": "data-lake-raw",
     "region": "us-east-1",
     "prefix": "incoming/events/",
-    "file_format": "json"
+    "file_format": "parquet",
+    "compression_codec": "zstd",
+    "max_records_per_file": 10000,
+    "flush_interval_seconds": 60
+  }
+}
+```
+- **`file_format`**: `"jsonl"`, `"csv"`, or `"parquet"`.
+- **`compression_codec`**: `"none"`, `"snappy"`, `"gzip"`, or `"zstd"`. High-performance columnar pivoting with dictionary encoding.
+
+### 4. Snowflake Streaming Sink
+```json
+"sink": {
+  "snowflake": {
+    "account_identifier": "xy12345.us-east-1",
+    "warehouse": "COMPUTE_WH",
+    "database": "ANALYTICS_DB",
+    "schema": "PUBLIC",
+    "table": "RAW_EVENTS",
+    "batch_size": 500,
+    "flush_interval_ms": 5000
   }
 }
 ```
 
-### 4. Redis Sink
+### 5. Google BigQuery Streaming Sink
+```json
+"sink": {
+  "bigquery": {
+    "project_id": "my-gcp-project",
+    "dataset_id": "telemetry",
+    "table_id": "streaming_events",
+    "batch_size": 500,
+    "write_mode": "STORAGE_WRITE_API"
+  }
+}
+```
+
+### 6. GraphQL & gRPC Sinks
+- **`graphql`**: Streaming mutations over HTTP/HTTPS with custom operation templates.
+- **`grpc`**: Native protocol buffer streaming directly to gRPC ingest services.
+
+### 7. Redis Sink
 ```json
 "sink": {
   "redis": {
@@ -135,7 +187,7 @@ The `sink` object accepts one of the following definitions:
 }
 ```
 
-### 5. ClickHouse Sink
+### 8. ClickHouse Sink
 ```json
 "sink": {
   "clickhouse": {
@@ -147,7 +199,7 @@ The `sink` object accepts one of the following definitions:
 }
 ```
 
-### 6. Stdout Sink
+### 9. Stdout Sink
 ```json
 "sink": {
   "stdout": {

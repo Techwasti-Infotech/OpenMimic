@@ -77,4 +77,23 @@ Switch to **Constraints & Solvers**:
 Switch to **Stream Topology & DAG**:
 - View directed acyclic graph nodes (e.g., `user_signups_stream` &rarr; `orders_placed_stream`).
 - Configure downstream dependency triggers and delay offsets (`delay_after_parent_ms`).
+- Link upstream streams to real-time streaming CEP window rollups.
 - Click **Execute Full Topology** to trigger coordinated multi-topic generation.
+
+---
+
+### 6. Observability & Throughput Dashboard
+
+Switch to **Observability Dashboard**:
+- **Live Throughput Gauge (EPS):** Visual velocity gauge monitoring events per second against configured capacity limits.
+- **Network Egress Gauge (MB/s):** Real-time bandwidth tracking with columnar Parquet dictionary and wire codec statistics.
+- **Partition Lag & DLQ Counter:** Real-time consumer lag and dead-letter queue spillover monitoring.
+- **Distributed Cluster Workers:** Scale-out node table monitoring partitioned generation agents.
+
+---
+
+### 7. Geo Map & Hotspots
+
+Switch to **Geo Map & Hotspots**:
+- Interactive geographic projection visualizer for simulated latitude/longitude coordinates and correlated regional IP hotspots.
+- Inspect spatial distribution and bounded region clusters in real time.

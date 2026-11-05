@@ -130,7 +130,49 @@ To simulate a conversion funnel where actions depend on the prior state:
 
 ---
 
-## 📥 4. Automatic SQL DDL Schema Ingestion
+## ⚡ 4. Black Friday Flash-Crowd Spike Simulation
+
+Simulates massive e-commerce surges (ramp-up, sustained peak volume, and exponential cooldown) to stress-test ingest backpressure, auto-scalers, and partition buffers:
+
+```json
+"traffic_profile": {
+  "flash_crowd": {
+    "baseline_rate": 50,
+    "peak_rate": 5000,
+    "ramp_duration_seconds": 30,
+    "peak_duration_seconds": 60,
+    "cooldown_duration_seconds": 30
+  }
+}
+```
+
+---
+
+## 🗺️ 5. Correlated Geo-Location Simulation
+
+Simulate realistic user telemetry with coherent IP addresses, latitude/longitude bounding boxes, and regional city metadata:
+
+```json
+{
+  "name": "location",
+  "generator": {
+    "geo": {
+      "region": "US-WEST",
+      "correlated_ip": true,
+      "bounds": {
+        "min_lat": 32.5,
+        "max_lat": 42.0,
+        "min_lon": -124.5,
+        "max_lon": -114.0
+      }
+    }
+  }
+}
+```
+
+---
+
+## 📥 6. Automatic SQL DDL Schema Ingestion
 
 If you already have a relational database schema, you don't need to write JSON configurations:
 1. Open **Mimic Studio** (`http://localhost:3000`).

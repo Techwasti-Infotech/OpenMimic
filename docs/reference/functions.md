@@ -159,3 +159,53 @@ Outputs a fixed literal value.
 ```
 Supports `string_val`, `int_val`, `double_val`, and `bool_val`.
 
+---
+
+## 8. `binary_media` (Synthetic Audio & Images)
+
+Generates valid binary media containers directly into streaming payloads (useful for multimodal pipelines, computer vision benchmarks, and media processing ingestion).
+
+### Schema
+```json
+{
+  "binary_media": {
+    "format": "wav",
+    "sample_rate": 44100,
+    "duration_seconds": 1.0,
+    "frequency_hz": 440.0
+  }
+}
+```
+
+### Supported Media Formats:
+- **`wav`**: Generates RFC PCM WAV audio streams containing a pure sinusoidal tone (e.g. 440 Hz standard A4) with valid `RIFF` and `WAVEfmt ` headers.
+- **`png`**: Generates valid PNG images with official magic header `0x89 0x50 0x4E 0x47 0x0D 0x0A 0x1A 0x0A`, `IHDR`, and `IEND` chunks.
+- **`jpeg`**: Generates valid JPEG images with SOI marker `0xFF 0xD8`, JFIF application header, and EOI marker `0xFF 0xD9`.
+
+---
+
+## 9. `aggregation` (Streaming CEP Window Rollups)
+
+Calculates streaming rollups (`sum`, `avg`, `min`, `max`, `count`) over sliding or tumbling event windows from correlated upstream streams.
+
+### Schema
+```json
+{
+  "aggregation": {
+    "source_stream_id": "stream-orders",
+    "window_type": "sliding",
+    "window_size_events": 50,
+    "aggregation_op": "avg",
+    "target_field": "order_amount"
+  }
+}
+```
+
+---
+
+## 10. `markov_chain` & `entity_pool`
+
+- **`entity_pool`**: Selects foreign keys from a pre-allocated bounded pool of entities (e.g. `cust_00001` through `cust_00500`) to maintain relational referential integrity across topics.
+- **`markov_chain`**: Simulates realistic state progressions (e.g. `CART -> CHECKOUT -> PAYMENT_PENDING -> ORDER_COMPLETED`) according to transition probability matrices.
+
+
