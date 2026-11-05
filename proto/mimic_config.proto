@@ -101,6 +101,21 @@ message TenantSettings {
   string default_currency = 9;      // e.g. "USD"
   string default_timezone = 10;     // e.g. "UTC"
   repeated string custom_entity_pools = 11;
+  EnterpriseSSOConfig sso_config = 12; // Enterprise OIDC / SAML SSO integration
+}
+
+// EnterpriseSSOConfig governs Single Sign-On, OIDC discovery, and role mapping
+message EnterpriseSSOConfig {
+  bool enabled = 1;
+  string provider_type = 2; // "OIDC", "SAML", "OKTA", "AZURE_AD", "KEYCLOAK"
+  string issuer_url = 3;    // e.g. "https://login.microsoftonline.com/{tenant}/v2.0" or "https://dev-123.okta.com"
+  string client_id = 4;     // OAuth2 / OIDC Client ID
+  string client_secret = 5; // Encrypted or secret reference
+  string jwks_url = 6;      // JSON Web Key Set URL (auto-discovered if empty)
+  string redirect_uri = 7;  // Callback URI, e.g. "http://localhost:3000/auth/callback"
+  map<string, string> group_role_mappings = 8; // e.g. {"Platform-Admins": "super_admin", "Data-Engineers": "tenant_admin"}
+  string default_role = 9;  // e.g. "viewer"
+  bool enforce_pkce = 10;   // Enforce Proof Key for Code Exchange (S256)
 }
 
 message Workspace {

@@ -730,6 +730,7 @@ type TenantSettings struct {
 	DefaultCurrency       string                 `protobuf:"bytes,9,opt,name=default_currency,json=defaultCurrency,proto3" json:"default_currency,omitempty"`                     // e.g. "USD"
 	DefaultTimezone       string                 `protobuf:"bytes,10,opt,name=default_timezone,json=defaultTimezone,proto3" json:"default_timezone,omitempty"`                    // e.g. "UTC"
 	CustomEntityPools     []string               `protobuf:"bytes,11,rep,name=custom_entity_pools,json=customEntityPools,proto3" json:"custom_entity_pools,omitempty"`
+	SsoConfig             *EnterpriseSSOConfig   `protobuf:"bytes,12,opt,name=sso_config,json=ssoConfig,proto3" json:"sso_config,omitempty"`                                      // Enterprise SSO Config
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -839,6 +840,109 @@ func (x *TenantSettings) GetCustomEntityPools() []string {
 		return x.CustomEntityPools
 	}
 	return nil
+}
+
+func (x *TenantSettings) GetSsoConfig() *EnterpriseSSOConfig {
+	if x != nil {
+		return x.SsoConfig
+	}
+	return nil
+}
+
+type EnterpriseSSOConfig struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Enabled            bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	ProviderType       string                 `protobuf:"bytes,2,opt,name=provider_type,json=providerType,proto3" json:"provider_type,omitempty"` // "OIDC", "SAML", "OKTA", "AZURE_AD", "KEYCLOAK"
+	IssuerUrl          string                 `protobuf:"bytes,3,opt,name=issuer_url,json=issuerUrl,proto3" json:"issuer_url,omitempty"`          // e.g. "https://login.microsoftonline.com/{tenant}/v2.0"
+	ClientId           string                 `protobuf:"bytes,4,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`             // OAuth2 / OIDC Client ID
+	ClientSecret       string                 `protobuf:"bytes,5,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"` // Secret reference
+	JwksUrl            string                 `protobuf:"bytes,6,opt,name=jwks_url,json=jwksUrl,proto3" json:"jwks_url,omitempty"`                // JWKS URL
+	RedirectUri        string                 `protobuf:"bytes,7,opt,name=redirect_uri,json=redirectUri,proto3" json:"redirect_uri,omitempty"`    // Redirect URI
+	GroupRoleMappings  map[string]string      `protobuf:"bytes,8,rep,name=group_role_mappings,json=groupRoleMappings,proto3" json:"group_role_mappings,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	DefaultRole        string                 `protobuf:"bytes,9,opt,name=default_role,json=defaultRole,proto3" json:"default_role,omitempty"`    // e.g. "viewer"
+	EnforcePkce        bool                   `protobuf:"varint,10,opt,name=enforce_pkce,json=enforcePkce,proto3" json:"enforce_pkce,omitempty"`  // S256 PKCE
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *EnterpriseSSOConfig) Reset() {
+	*x = EnterpriseSSOConfig{}
+}
+
+func (x *EnterpriseSSOConfig) String() string {
+	return "EnterpriseSSOConfig"
+}
+
+func (*EnterpriseSSOConfig) ProtoMessage() {}
+
+func (x *EnterpriseSSOConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *EnterpriseSSOConfig) GetProviderType() string {
+	if x != nil {
+		return x.ProviderType
+	}
+	return ""
+}
+
+func (x *EnterpriseSSOConfig) GetIssuerUrl() string {
+	if x != nil {
+		return x.IssuerUrl
+	}
+	return ""
+}
+
+func (x *EnterpriseSSOConfig) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
+func (x *EnterpriseSSOConfig) GetClientSecret() string {
+	if x != nil {
+		return x.ClientSecret
+	}
+	return ""
+}
+
+func (x *EnterpriseSSOConfig) GetJwksUrl() string {
+	if x != nil {
+		return x.JwksUrl
+	}
+	return ""
+}
+
+func (x *EnterpriseSSOConfig) GetRedirectUri() string {
+	if x != nil {
+		return x.RedirectUri
+	}
+	return ""
+}
+
+func (x *EnterpriseSSOConfig) GetGroupRoleMappings() map[string]string {
+	if x != nil {
+		return x.GroupRoleMappings
+	}
+	return nil
+}
+
+func (x *EnterpriseSSOConfig) GetDefaultRole() string {
+	if x != nil {
+		return x.DefaultRole
+	}
+	return ""
+}
+
+func (x *EnterpriseSSOConfig) GetEnforcePkce() bool {
+	if x != nil {
+		return x.EnforcePkce
+	}
+	return false
 }
 
 type Workspace struct {
