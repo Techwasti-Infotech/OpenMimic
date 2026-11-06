@@ -483,9 +483,12 @@ export default function App() {
         <Group h="100%" px="md" justify="space-between">
           <Group>
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-            <Title order={3} c="blue">
-              OpenMimic <Badge color="teal" size="sm" variant="light">Studio</Badge>
-            </Title>
+            <Group gap="xs" align="center">
+              <img src="/logo.svg" alt="OpenMimic Logo" width="28" height="28" style={{ display: 'block' }} />
+              <Title order={3} c="blue">
+                OpenMimic <Badge color="teal" size="sm" variant="light">Studio</Badge>
+              </Title>
+            </Group>
           </Group>
           <Group>
             {ssoUser ? (

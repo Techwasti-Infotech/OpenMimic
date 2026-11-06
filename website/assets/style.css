@@ -79,14 +79,18 @@ a:hover {
 }
 
 .brand-icon {
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, #2563eb, #38bdf8);
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.45));
+}
+
+.brand-logo-img {
+  width: 32px;
+  height: 32px;
+  display: block;
 }
 
 .badge-pill {

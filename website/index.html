@@ -6,7 +6,7 @@
   <title>OpenMimic — Free & Open-Source Synthetic Data & Traffic Generator</title>
   <meta name="description" content="Declarative synthetic data and production traffic generator for Kafka, PostgreSQL, and S3 with visual studio, AI Copilot, and real-time observability. 100% Free Apache 2.0.">
   <link rel="stylesheet" href="assets/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 </head>
 <body>
 
@@ -14,7 +14,9 @@
   <nav class="navbar">
     <div class="container nav-wrapper">
       <div class="brand">
-        <div class="brand-icon">⚡</div>
+        <div class="brand-icon">
+          <img src="assets/logo.svg" alt="OpenMimic Logo" class="brand-logo-img">
+        </div>
         <span>OpenMimic</span>
         <span class="badge-pill">Apache 2.0 (100% Free)</span>
       </div>
@@ -182,6 +184,24 @@
           <h3 class="pillar-title">SQL DDL Auto-Import</h3>
           <p class="pillar-desc">Paste your SQL <code>CREATE TABLE</code> definition and OpenMimic instantly maps UUIDs, Gaussian numerical distributions, statuses, and timestamps.</p>
         </div>
+
+        <div class="pillar-box">
+          <div class="pillar-icon">🏛️</div>
+          <h3 class="pillar-title">Lakehouse Streaming Sinks</h3>
+          <p class="pillar-desc">Stream directly into Apache Iceberg (V2 snapshot metadata) and Delta Lake with transactional ACID commits, parity checksums, and partitioned Parquet layouts.</p>
+        </div>
+
+        <div class="pillar-box">
+          <div class="pillar-icon">🔐</div>
+          <h3 class="pillar-title">Enterprise SSO & SCIM 2.0</h3>
+          <p class="pillar-desc">SAML 2.0 / OIDC Identity Provider integration with RFC 7643/7644 SCIM 2.0 directory provisioning for Okta, Entra ID, and automated role-based access control.</p>
+        </div>
+
+        <div class="pillar-box">
+          <div class="pillar-icon">📹</div>
+          <h3 class="pillar-title">Synthetic Video Broadcaster</h3>
+          <p class="pillar-desc">Real-time MJPEG camera stream simulator. Broadcasts video feeds with bounding-box motion trajectories, timestamp burns, and frame-loss jitter for computer vision testing.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -236,6 +256,24 @@
               <td class="cell-dim">Fixed sleeps</td>
             </tr>
             <tr>
+              <td><strong>Lakehouse Sinks</strong></td>
+              <td class="cell-open">✓ Apache Iceberg V2 & Delta Lake</td>
+              <td class="cell-dim">Paid add-on tier</td>
+              <td class="cell-dim">✕ None</td>
+            </tr>
+            <tr>
+              <td><strong>SSO & SCIM 2.0</strong></td>
+              <td class="cell-open">✓ Okta, Entra ID, PingIdentity</td>
+              <td class="cell-dim">Enterprise Gate ($$ extra)</td>
+              <td class="cell-dim">✕ None</td>
+            </tr>
+            <tr>
+              <td><strong>Synthetic Video Streams</strong></td>
+              <td class="cell-open">✓ MJPEG Real-time Camera Feeds</td>
+              <td class="cell-dim">✕ None</td>
+              <td class="cell-dim">✕ None</td>
+            </tr>
+            <tr>
               <td><strong>SQL DDL Auto-Import</strong></td>
               <td class="cell-open">✓ One-Click CREATE TABLE</td>
               <td class="cell-dim">✕ None</td>
@@ -243,7 +281,7 @@
             </tr>
             <tr>
               <td><strong>Universal Sinks</strong></td>
-              <td class="cell-open">✓ Kafka, Postgres, S3, Stdout</td>
+              <td class="cell-open">✓ Kafka, Postgres, S3, Iceberg, Delta</td>
               <td class="cell-dim">Kafka, Postgres, S3</td>
               <td class="cell-dim">Single-target</td>
             </tr>
