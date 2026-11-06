@@ -1890,6 +1890,24 @@ func (x *SinkConfig) GetBigquery() *BigQuerySink {
 	return nil
 }
 
+func (x *SinkConfig) GetIceberg() *IcebergSink {
+	if x != nil {
+		if x, ok := x.SinkType.(*SinkConfig_Iceberg); ok {
+			return x.Iceberg
+		}
+	}
+	return nil
+}
+
+func (x *SinkConfig) GetDeltaLake() *DeltaLakeSink {
+	if x != nil {
+		if x, ok := x.SinkType.(*SinkConfig_DeltaLake); ok {
+			return x.DeltaLake
+		}
+	}
+	return nil
+}
+
 type isSinkConfig_SinkType interface {
 	isSinkConfig_SinkType()
 }
@@ -1938,6 +1956,14 @@ type SinkConfig_Bigquery struct {
 	Bigquery *BigQuerySink `protobuf:"bytes,11,opt,name=bigquery,proto3,oneof"`
 }
 
+type SinkConfig_Iceberg struct {
+	Iceberg *IcebergSink `protobuf:"bytes,12,opt,name=iceberg,proto3,oneof"`
+}
+
+type SinkConfig_DeltaLake struct {
+	DeltaLake *DeltaLakeSink `protobuf:"bytes,13,opt,name=delta_lake,json=deltaLake,proto3,oneof"`
+}
+
 func (*SinkConfig_Kafka) isSinkConfig_SinkType() {}
 
 func (*SinkConfig_Postgres) isSinkConfig_SinkType() {}
@@ -1959,6 +1985,122 @@ func (*SinkConfig_GrpcStream) isSinkConfig_SinkType() {}
 func (*SinkConfig_Snowflake) isSinkConfig_SinkType() {}
 
 func (*SinkConfig_Bigquery) isSinkConfig_SinkType() {}
+
+func (*SinkConfig_Iceberg) isSinkConfig_SinkType() {}
+
+func (*SinkConfig_DeltaLake) isSinkConfig_SinkType() {}
+
+type IcebergSink struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	CatalogUri       string                 `protobuf:"bytes,1,opt,name=catalog_uri,json=catalogUri,proto3" json:"catalog_uri,omitempty"`
+	Warehouse        string                 `protobuf:"bytes,2,opt,name=warehouse,proto3" json:"warehouse,omitempty"`
+	Database         string                 `protobuf:"bytes,3,opt,name=database,proto3" json:"database,omitempty"`
+	Table            string                 `protobuf:"bytes,4,opt,name=table,proto3" json:"table,omitempty"`
+	FormatVersion    string                 `protobuf:"bytes,5,opt,name=format_version,json=formatVersion,proto3" json:"format_version,omitempty"`
+	CommitIntervalMs int32                  `protobuf:"varint,6,opt,name=commit_interval_ms,json=commitIntervalMs,proto3" json:"commit_interval_ms,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *IcebergSink) Reset() {
+	*x = IcebergSink{}
+}
+
+func (x *IcebergSink) String() string {
+	return "IcebergSink"
+}
+
+func (*IcebergSink) ProtoMessage() {}
+
+func (x *IcebergSink) GetCatalogUri() string {
+	if x != nil {
+		return x.CatalogUri
+	}
+	return ""
+}
+
+func (x *IcebergSink) GetWarehouse() string {
+	if x != nil {
+		return x.Warehouse
+	}
+	return ""
+}
+
+func (x *IcebergSink) GetDatabase() string {
+	if x != nil {
+		return x.Database
+	}
+	return ""
+}
+
+func (x *IcebergSink) GetTable() string {
+	if x != nil {
+		return x.Table
+	}
+	return ""
+}
+
+func (x *IcebergSink) GetFormatVersion() string {
+	if x != nil {
+		return x.FormatVersion
+	}
+	return ""
+}
+
+func (x *IcebergSink) GetCommitIntervalMs() int32 {
+	if x != nil {
+		return x.CommitIntervalMs
+	}
+	return 0
+}
+
+type DeltaLakeSink struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	TableUri         string                 `protobuf:"bytes,1,opt,name=table_uri,json=tableUri,proto3" json:"table_uri,omitempty"`
+	Mode             string                 `protobuf:"bytes,2,opt,name=mode,proto3" json:"mode,omitempty"`
+	BatchSize        int32                  `protobuf:"varint,3,opt,name=batch_size,json=batchSize,proto3" json:"batch_size,omitempty"`
+	GenerateDeltaLog bool                   `protobuf:"varint,4,opt,name=generate_delta_log,json=generateDeltaLog,proto3" json:"generate_delta_log,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *DeltaLakeSink) Reset() {
+	*x = DeltaLakeSink{}
+}
+
+func (x *DeltaLakeSink) String() string {
+	return "DeltaLakeSink"
+}
+
+func (*DeltaLakeSink) ProtoMessage() {}
+
+func (x *DeltaLakeSink) GetTableUri() string {
+	if x != nil {
+		return x.TableUri
+	}
+	return ""
+}
+
+func (x *DeltaLakeSink) GetMode() string {
+	if x != nil {
+		return x.Mode
+	}
+	return ""
+}
+
+func (x *DeltaLakeSink) GetBatchSize() int32 {
+	if x != nil {
+		return x.BatchSize
+	}
+	return 0
+}
+
+func (x *DeltaLakeSink) GetGenerateDeltaLog() bool {
+	if x != nil {
+		return x.GenerateDeltaLog
+	}
+	return false
+}
 
 type SnowflakeSink struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
@@ -3394,6 +3536,15 @@ func (x *FunctionGenerator) GetAggregation() *StreamAggregationFunction {
 	return nil
 }
 
+func (x *FunctionGenerator) GetVideoStream() *VideoStreamFunction {
+	if x != nil {
+		if x, ok := x.Func.(*FunctionGenerator_VideoStream); ok {
+			return x.VideoStream
+		}
+	}
+	return nil
+}
+
 type isFunctionGenerator_Func interface {
 	isFunctionGenerator_Func()
 }
@@ -3478,6 +3629,10 @@ type FunctionGenerator_Aggregation struct {
 	Aggregation *StreamAggregationFunction `protobuf:"bytes,20,opt,name=aggregation,proto3,oneof"` // Real-time CEP sliding/tumbling window rollups
 }
 
+type FunctionGenerator_VideoStream struct {
+	VideoStream *VideoStreamFunction `protobuf:"bytes,21,opt,name=video_stream,json=videoStream,proto3,oneof"` // Real-time synthetic video frame broadcaster
+}
+
 func (*FunctionGenerator_Uuid) isFunctionGenerator_Func() {}
 
 func (*FunctionGenerator_Distribution) isFunctionGenerator_Func() {}
@@ -3517,6 +3672,72 @@ func (*FunctionGenerator_GeoLocation) isFunctionGenerator_Func() {}
 func (*FunctionGenerator_BinaryMedia) isFunctionGenerator_Func() {}
 
 func (*FunctionGenerator_Aggregation) isFunctionGenerator_Func() {}
+
+func (*FunctionGenerator_VideoStream) isFunctionGenerator_Func() {}
+
+type VideoStreamFunction struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Codec           string                 `protobuf:"bytes,1,opt,name=codec,proto3" json:"codec,omitempty"`
+	Width           int32                  `protobuf:"varint,2,opt,name=width,proto3" json:"width,omitempty"`
+	Height          int32                  `protobuf:"varint,3,opt,name=height,proto3" json:"height,omitempty"`
+	Fps             int32                  `protobuf:"varint,4,opt,name=fps,proto3" json:"fps,omitempty"`
+	Pattern         string                 `protobuf:"bytes,5,opt,name=pattern,proto3" json:"pattern,omitempty"`
+	RenderTimestamp bool                   `protobuf:"varint,6,opt,name=render_timestamp,json=renderTimestamp,proto3" json:"render_timestamp,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *VideoStreamFunction) Reset() {
+	*x = VideoStreamFunction{}
+}
+
+func (x *VideoStreamFunction) String() string {
+	return "VideoStreamFunction"
+}
+
+func (*VideoStreamFunction) ProtoMessage() {}
+
+func (x *VideoStreamFunction) GetCodec() string {
+	if x != nil {
+		return x.Codec
+	}
+	return ""
+}
+
+func (x *VideoStreamFunction) GetWidth() int32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+func (x *VideoStreamFunction) GetHeight() int32 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
+}
+
+func (x *VideoStreamFunction) GetFps() int32 {
+	if x != nil {
+		return x.Fps
+	}
+	return 0
+}
+
+func (x *VideoStreamFunction) GetPattern() string {
+	if x != nil {
+		return x.Pattern
+	}
+	return ""
+}
+
+func (x *VideoStreamFunction) GetRenderTimestamp() bool {
+	if x != nil {
+		return x.RenderTimestamp
+	}
+	return false
+}
 
 // BinaryMediaFunction generates actual synthetically valid media byte streams
 type BinaryMediaFunction struct {

@@ -97,3 +97,21 @@ Switch to **Observability Dashboard**:
 Switch to **Geo Map & Hotspots**:
 - Interactive geographic projection visualizer for simulated latitude/longitude coordinates and correlated regional IP hotspots.
 - Inspect spatial distribution and bounded region clusters in real time.
+
+---
+
+### 8. Schema Version Control & Visual Diff
+
+Switch to **Schema Version Control**:
+- **Side-by-Side Diff Inspector:** Compare fields, types, distributions, and sink definitions between releases (e.g. `v1.0.0-prod` vs `v1.2.0-rc1`) with color-coded diff tags (`ADDED`, `REMOVED`, `UNCHANGED`).
+- **Git Branch Switching:** Seamlessly switch between active Git schema branches (`main`, `feature/lakehouse-ingest`, `v2-candidate`).
+- **One-Click Version Tagging:** Snapshot and tag version releases with author stamps and commit messages.
+
+---
+
+### 9. Synthetic Camera Video Broadcaster
+
+Switch to **Synthetic Video Broadcaster**:
+- **Live Frame Player:** Real-time visual preview displaying simulated camera frame streams with burnt-in OCR timestamp timecodes.
+- **Motion Patterns:** Switch between `Bouncing Object Tracking`, `SMPTE Color Calibration Bars`, and `Optical Sensor Noise`.
+- **Codec & FPS Tuning:** Configure real-time frame rates (1 to 60 FPS) and MJPEG container encodings.

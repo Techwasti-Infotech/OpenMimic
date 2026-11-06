@@ -102,3 +102,22 @@ In **Mimic Studio**:
    - **Sign in with Microsoft Entra ID (Azure AD)**
    - **Sign in with Corporate SAML / Keycloak**
 3. Once authenticated, the header displays your corporate email, assigned role badge, and provider pill.
+
+---
+
+## 🔄 SCIM 2.0 User & Group Provisioning (RFC 7643 / RFC 7644)
+
+OpenMimic includes a full-featured SCIM 2.0 service allowing Okta and Microsoft Entra ID to automatically provision, synchronize, and de-provision user accounts and groups:
+
+- **Users API:**
+  - `GET /scim/v2/Users` — List and paginate users.
+  - `POST /scim/v2/Users` — Provision new user accounts.
+  - `GET /scim/v2/Users/{id}` — Retrieve user profile.
+  - `PUT /scim/v2/Users/{id}` — Update user profile and activate/deactivate accounts.
+  - `DELETE /scim/v2/Users/{id}` — Offboard user account upon departure.
+- **Groups API:**
+  - `GET /scim/v2/Groups` — List provisioned enterprise groups.
+  - `POST /scim/v2/Groups` — Create groups and manage member assignments.
+- **Specification Discovery:**
+  - `GET /scim/v2/ServiceProviderConfig` — Discovers supported auth schemes and capabilities.
+

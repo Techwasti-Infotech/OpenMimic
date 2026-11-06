@@ -40,9 +40,9 @@ If OpenMimic saves your team time, speeds up your testing, or helps validate you
   - Share customer IDs across multiple topics with bounded entity pools (`EntityPool`).
   - Model multi-step user funnels through probabilistic transition matrices (`MarkovChain`).
 - **📥 SQL DDL Schema Auto-Import:** Paste any `CREATE TABLE` statement to auto-generate a matching generator configuration.
-- **🔌 Universal Sinks:** Apache Kafka (with Confluent Schema Registry `TopicRecordNameStrategy` & EOS Transactions), PostgreSQL (`pgx`), Amazon S3 / MinIO (with Snappy/GZIP/ZSTD Columnar Parquet), Snowflake Streaming, Google BigQuery, GraphQL mutations, gRPC streams, Redis, ClickHouse, and NDJSON Stdout.
-- **📦 Starter Template Library & Audit Trail:** Pre-built e-commerce and financial fraud streams, with enterprise audit logging for configuration and lifecycle events.
-- **⚡ Advanced Streaming:** Complex Event Processing (CEP) window rollups (`sum`, `avg`, `min`, `max`, `count`), synthetic binary media synthesizers (WAV audio, PNG/JPEG), Black Friday flash-crowd spike profile, and visual DAG canvas.
+- **🔌 Universal Sinks:** Apache Kafka (with Confluent Schema Registry `TopicRecordNameStrategy` & EOS Transactions), Apache Iceberg V2 ACID Table Sink, Delta Lake ACID Log Sink, PostgreSQL (`pgx`), Amazon S3 / MinIO (with Snappy/GZIP/ZSTD Columnar Parquet), Snowflake Streaming, Google BigQuery, GraphQL mutations, gRPC streams, Redis, ClickHouse, and NDJSON Stdout.
+- **📦 Enterprise Security & Identity:** Single Sign-On (SSO) with Okta, Microsoft Entra ID (Azure AD), Keycloak, and SAML 2.0; automatic user & group provisioning via RFC 7643/7644 SCIM 2.0.
+- **⚡ Advanced Streaming:** Complex Event Processing (CEP) window rollups (`sum`, `avg`, `min`, `max`, `count`), synthetic camera video broadcaster (real-time MJPEG frames with motion tracking and OCR timecodes), PCM WAV audio synthesizers, visual DAG canvas, and schema version control with visual diff.
 
 ---
 

@@ -104,12 +104,30 @@ export interface BurstSpikeRate {
 }
 
 export type SinkConfig = 
-  | { kafka: KafkaSink; postgres?: never; s3?: never; stdout?: never; redis?: never; clickhouse?: never }
-  | { postgres: PostgresSink; kafka?: never; s3?: never; stdout?: never; redis?: never; clickhouse?: never }
-  | { s3: S3Sink; kafka?: never; postgres?: never; stdout?: never; redis?: never; clickhouse?: never }
-  | { stdout: StdoutSink; kafka?: never; postgres?: never; s3?: never; redis?: never; clickhouse?: never }
-  | { redis: RedisSink; kafka?: never; postgres?: never; s3?: never; stdout?: never; clickhouse?: never }
-  | { clickhouse: ClickHouseSink; kafka?: never; postgres?: never; s3?: never; stdout?: never; redis?: never };
+  | { kafka: KafkaSink; postgres?: never; s3?: never; stdout?: never; redis?: never; clickhouse?: never; iceberg?: never; delta_lake?: never }
+  | { postgres: PostgresSink; kafka?: never; s3?: never; stdout?: never; redis?: never; clickhouse?: never; iceberg?: never; delta_lake?: never }
+  | { s3: S3Sink; kafka?: never; postgres?: never; stdout?: never; redis?: never; clickhouse?: never; iceberg?: never; delta_lake?: never }
+  | { stdout: StdoutSink; kafka?: never; postgres?: never; s3?: never; redis?: never; clickhouse?: never; iceberg?: never; delta_lake?: never }
+  | { redis: RedisSink; kafka?: never; postgres?: never; s3?: never; stdout?: never; clickhouse?: never; iceberg?: never; delta_lake?: never }
+  | { clickhouse: ClickHouseSink; kafka?: never; postgres?: never; s3?: never; stdout?: never; redis?: never; iceberg?: never; delta_lake?: never }
+  | { iceberg: IcebergSink; kafka?: never; postgres?: never; s3?: never; stdout?: never; redis?: never; clickhouse?: never; delta_lake?: never }
+  | { delta_lake: DeltaLakeSink; kafka?: never; postgres?: never; s3?: never; stdout?: never; redis?: never; clickhouse?: never; iceberg?: never };
+
+export interface IcebergSink {
+  catalog_uri: string;
+  warehouse: string;
+  database: string;
+  table: string;
+  format_version?: string;
+  commit_interval_ms?: number;
+}
+
+export interface DeltaLakeSink {
+  table_uri: string;
+  mode?: string;
+  batch_size?: number;
+  generate_delta_log?: boolean;
+}
 
 export interface RedisSink {
   addr: string;

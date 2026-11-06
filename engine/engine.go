@@ -380,6 +380,23 @@ func (e *Engine) generateFieldValue(gen *pb.FunctionGenerator, index int64, curr
 			agg := cep.GetOrCreateAggregator(f.Aggregation)
 			return agg.ComputeRollup()
 		}
+
+	case *pb.FunctionGenerator_VideoStream:
+		if f.VideoStream != nil {
+			vGen := media.NewVideoStreamGenerator(f.VideoStream)
+			frame, err := vGen.NextFrame()
+			if err == nil {
+				return map[string]any{
+					"frame_index": frame.FrameIndex,
+					"timestamp":   frame.Timestamp.Format(time.RFC3339Nano),
+					"codec":       frame.Codec,
+					"width":       frame.Width,
+					"height":      frame.Height,
+					"data_b64":    frame.DataB64,
+					"size_bytes":  frame.SizeBytes,
+				}
+			}
+		}
 	}
 
 	return nil

@@ -62,6 +62,9 @@ import {
   IconLock,
   IconUserCheck,
   IconKey,
+  IconGitBranch,
+  IconGitCommit,
+  IconVideo,
 } from '@tabler/icons-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
@@ -121,7 +124,7 @@ const COPILOT_API_BASE = 'http://localhost:8000';
 export default function App() {
   const [opened, { toggle }] = useDisclosure();
   const [activeTab, setActiveTab] = useState<
-    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'expressions' | 'chaos' | 'geomap' | 'settings' | 'dashboard'
+    'designer' | 'copilot' | 'constraints' | 'quality' | 'privacy' | 'templates' | 'audit' | 'topology' | 'expressions' | 'chaos' | 'geomap' | 'settings' | 'dashboard' | 'versioning' | 'media'
   >('designer');
   const [config, setConfig] = useState<GeneratorConfig>(DEFAULT_CONFIG);
 
@@ -229,6 +232,22 @@ export default function App() {
   const [ssoProvider, setSsoProvider] = useState<string>('okta');
   const [ssoIssuerUrl, setSsoIssuerUrl] = useState<string>('https://techwasti.okta.com/oauth2/default');
   const [ssoClientId, setSsoClientId] = useState<string>('0oae9k2z45OpenMimicClient');
+
+  // Schema Versioning & Branching State
+  const [schemaBranches, setSchemaBranches] = useState<string[]>(['main', 'feature/lakehouse-ingest', 'v2-candidate']);
+  const [activeBranch, setActiveBranch] = useState<string>('main');
+  const [versionHistory, setVersionHistory] = useState<any[]>([
+    { version: 'v1.0.0-prod', author: 'sso.engineer@techwasti.com', timestamp: '2026-11-05 18:30:00', commitMessage: 'Initial enterprise Kafka order stream', fieldsCount: 4 },
+    { version: 'v1.1.0-staging', author: 'techwastiinfotech@gmail.com', timestamp: '2026-11-06 09:15:00', commitMessage: 'Add Iceberg & Delta Lake table lakehouse sinks', fieldsCount: 5 },
+    { version: 'v1.2.0-rc1', author: 'sso.engineer@techwasti.com', timestamp: '2026-11-06 10:05:00', commitMessage: 'Incorporate real-time synthetic camera video feed broadcaster', fieldsCount: 6 },
+  ]);
+  const [selectedVersionLeft, setSelectedVersionLeft] = useState<string>('v1.0.0-prod');
+  const [selectedVersionRight, setSelectedVersionRight] = useState<string>('v1.2.0-rc1');
+
+  // Video broadcaster state
+  const [videoPattern, setVideoPattern] = useState<string>('bouncing_ball');
+  const [videoFps, setVideoFps] = useState<number>(30);
+  const [videoFrameCount, setVideoFrameCount] = useState<number>(128);
 
   // Load Templates & Audit Logs
   useEffect(() => {
@@ -581,6 +600,18 @@ export default function App() {
             leftSection={<IconActivity size={18} />}
             active={activeTab === 'dashboard'}
             onClick={() => setActiveTab('dashboard')}
+          />
+          <NavLink
+            label="Schema Version Control"
+            leftSection={<IconGitBranch size={18} />}
+            active={activeTab === 'versioning'}
+            onClick={() => setActiveTab('versioning')}
+          />
+          <NavLink
+            label="Synthetic Video Broadcaster"
+            leftSection={<IconVideo size={18} />}
+            active={activeTab === 'media'}
+            onClick={() => setActiveTab('media')}
           />
         </Stack>
       </AppShell.Navbar>
@@ -1942,6 +1973,298 @@ export default function App() {
                 </Table.Tbody>
               </Table>
             </Card>
+          </Stack>
+        )}
+
+        {/* TAB 11: SCHEMA VERSION CONTROL & VISUAL DIFF */}
+        {activeTab === 'versioning' && (
+          <Stack gap="md">
+            <Group justify="space-between">
+              <div>
+                <Title order={2}>Schema Version Control &amp; Visual Diff</Title>
+                <Text c="dimmed" size="sm">
+                  Track schema lineage, inspect visual field diffs, manage version tags, and switch Git branches.
+                </Text>
+              </div>
+              <Group>
+                <Select
+                  leftSection={<IconGitBranch size={16} />}
+                  value={activeBranch}
+                  onChange={(v) => {
+                    setActiveBranch(v || 'main');
+                    setExecMessage(`Switched active schema branch to ${v}`);
+                  }}
+                  data={schemaBranches.map((b) => ({ value: b, label: `branch: ${b}` }))}
+                />
+                <Button
+                  leftSection={<IconGitCommit size={16} />}
+                  color="blue"
+                  onClick={() => {
+                    const newVer = `v1.${versionHistory.length}.0`;
+                    setVersionHistory([
+                      {
+                        version: newVer,
+                        author: ssoUser?.email || 'developer@techwasti.com',
+                        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                        commitMessage: `Tag new schema version ${newVer}`,
+                        fieldsCount: config.fields.length,
+                      },
+                      ...versionHistory,
+                    ]);
+                    setExecMessage(`Tagged new schema version ${newVer}`);
+                  }}
+                >
+                  Create Version Tag
+                </Button>
+              </Group>
+            </Group>
+
+            {/* Side-by-side Visual Diff Viewer */}
+            <Card withBorder shadow="sm" radius="md">
+              <Title order={4} mb="xs">Visual Schema Diff Inspector</Title>
+              <Text size="xs" c="dimmed" mb="md">
+                Compare field structures, distribution parameters, and data sink types between releases.
+              </Text>
+              <Grid mb="md">
+                <Grid.Col span={6}>
+                  <Select
+                    label="Base Version (Left)"
+                    value={selectedVersionLeft}
+                    onChange={(v) => setSelectedVersionLeft(v || '')}
+                    data={versionHistory.map((h) => ({ value: h.version, label: `${h.version} (${h.commitMessage})` }))}
+                  />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Select
+                    label="Target Version (Right)"
+                    value={selectedVersionRight}
+                    onChange={(v) => setSelectedVersionRight(v || '')}
+                    data={versionHistory.map((h) => ({ value: h.version, label: `${h.version} (${h.commitMessage})` }))}
+                  />
+                </Grid.Col>
+              </Grid>
+
+              <Grid>
+                <Grid.Col span={6}>
+                  <Paper withBorder p="sm" bg="#1A1B1E">
+                    <Badge color="gray" mb="xs">{selectedVersionLeft}</Badge>
+                    <Table striped highlightOnHover>
+                      <Table.Thead>
+                        <Table.Tr>
+                          <Table.Th>Field</Table.Th>
+                          <Table.Th>Type / Generator</Table.Th>
+                          <Table.Th>Status</Table.Th>
+                        </Table.Tr>
+                      </Table.Thead>
+                      <Table.Tbody>
+                        <Table.Tr>
+                          <Table.Td><Text fw={500} size="sm">user_id</Text></Table.Td>
+                          <Table.Td><Badge size="xs" variant="outline">uuid</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="gray">UNCHANGED</Badge></Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                          <Table.Td><Text fw={500} size="sm">risk_score</Text></Table.Td>
+                          <Table.Td><Badge size="xs" variant="outline">normal(50, 10)</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="gray">UNCHANGED</Badge></Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                          <Table.Td><Text fw={500} size="sm">amount</Text></Table.Td>
+                          <Table.Td><Badge size="xs" variant="outline">normal(45000, 12000)</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="gray">UNCHANGED</Badge></Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                          <Table.Td><Text fw={500} size="sm">created_at</Text></Table.Td>
+                          <Table.Td><Badge size="xs" variant="outline">now(RFC3339)</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="gray">UNCHANGED</Badge></Table.Td>
+                        </Table.Tr>
+                      </Table.Tbody>
+                    </Table>
+                  </Paper>
+                </Grid.Col>
+
+                <Grid.Col span={6}>
+                  <Paper withBorder p="sm" bg="#1A1B1E">
+                    <Badge color="green" mb="xs">{selectedVersionRight}</Badge>
+                    <Table striped highlightOnHover>
+                      <Table.Thead>
+                        <Table.Tr>
+                          <Table.Th>Field</Table.Th>
+                          <Table.Th>Type / Generator</Table.Th>
+                          <Table.Th>Status</Table.Th>
+                        </Table.Tr>
+                      </Table.Thead>
+                      <Table.Tbody>
+                        <Table.Tr>
+                          <Table.Td><Text fw={500} size="sm">user_id</Text></Table.Td>
+                          <Table.Td><Badge size="xs" variant="outline">uuid</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="gray">UNCHANGED</Badge></Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                          <Table.Td><Text fw={500} size="sm">risk_score</Text></Table.Td>
+                          <Table.Td><Badge size="xs" variant="outline">normal(50, 10)</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="gray">UNCHANGED</Badge></Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                          <Table.Td><Text fw={500} size="sm">amount</Text></Table.Td>
+                          <Table.Td><Badge size="xs" variant="outline">normal(45000, 12000)</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="gray">UNCHANGED</Badge></Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                          <Table.Td><Text fw={500} size="sm">created_at</Text></Table.Td>
+                          <Table.Td><Badge size="xs" variant="outline">now(RFC3339)</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="gray">UNCHANGED</Badge></Table.Td>
+                        </Table.Tr>
+                        <Table.Tr style={{ backgroundColor: 'rgba(46, 204, 113, 0.15)' }}>
+                          <Table.Td><Text fw={600} size="sm" c="green">+ camera_feed</Text></Table.Td>
+                          <Table.Td><Badge size="xs" color="teal">video_stream(mjpeg)</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="green">ADDED</Badge></Table.Td>
+                        </Table.Tr>
+                        <Table.Tr style={{ backgroundColor: 'rgba(46, 204, 113, 0.15)' }}>
+                          <Table.Td><Text fw={600} size="sm" c="green">+ lakehouse_sync</Text></Table.Td>
+                          <Table.Td><Badge size="xs" color="teal">sink(iceberg_v2)</Badge></Table.Td>
+                          <Table.Td><Badge size="xs" color="green">ADDED</Badge></Table.Td>
+                        </Table.Tr>
+                      </Table.Tbody>
+                    </Table>
+                  </Paper>
+                </Grid.Col>
+              </Grid>
+            </Card>
+
+            {/* Commit History Timeline */}
+            <Card withBorder shadow="sm" radius="md">
+              <Title order={4} mb="sm">Version History &amp; Release Timeline</Title>
+              <Table striped highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Version Tag</Table.Th>
+                    <Table.Th>Commit Message</Table.Th>
+                    <Table.Th>Author</Table.Th>
+                    <Table.Th>Timestamp</Table.Th>
+                    <Table.Th>Fields</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {versionHistory.map((item, idx) => (
+                    <Table.Tr key={idx}>
+                      <Table.Td><Badge color="blue">{item.version}</Badge></Table.Td>
+                      <Table.Td><Text size="sm" fw={500}>{item.commitMessage}</Text></Table.Td>
+                      <Table.Td><Text size="xs" c="dimmed">{item.author}</Text></Table.Td>
+                      <Table.Td><Text size="xs" c="dimmed">{item.timestamp}</Text></Table.Td>
+                      <Table.Td><Badge variant="outline" color="teal">{item.fieldsCount} fields</Badge></Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </Card>
+          </Stack>
+        )}
+
+        {/* TAB 12: REAL-TIME SYNTHETIC VIDEO BROADCASTER */}
+        {activeTab === 'media' && (
+          <Stack gap="md">
+            <div>
+              <Title order={2}>Synthetic Camera &amp; Video Stream Broadcaster</Title>
+              <Text c="dimmed" size="sm">
+                Simulate real-time CCTV, optical sensor, and drone video feeds. Generates continuous MJPEG/H.264 camera frames for computer vision testing.
+              </Text>
+            </div>
+
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 7 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Group justify="space-between" mb="xs">
+                    <Title order={4}>Live Simulated Camera Feed</Title>
+                    <Badge color="red" leftSection={<IconVideo size={14} />}>REC 30 FPS</Badge>
+                  </Group>
+
+                  {/* Simulated Canvas / Frame Player */}
+                  <Paper withBorder radius="md" p="md" bg="#0B0C10" style={{ textAlign: 'center', minHeight: 280, position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: 12, left: 16, color: '#00DC82', fontFamily: 'monospace', fontSize: 13, textAlign: 'left' }}>
+                      CAM-01 [NORTH_GATE] :: {new Date().toLocaleTimeString()}<br />
+                      CODEC: MJPEG | 640x480 | PATTERN: {videoPattern.toUpperCase()}<br />
+                      FRAME_COUNT: {videoFrameCount}
+                    </div>
+
+                    <div style={{ marginTop: 70 }}>
+                      <svg width="240" height="150" viewBox="0 0 240 150" style={{ background: '#141821', borderRadius: 8 }}>
+                        {videoPattern === 'color_bars' ? (
+                          <>
+                            <rect x="0" y="0" width="34" height="150" fill="#C0C0C0" />
+                            <rect x="34" y="0" width="34" height="150" fill="#C0C000" />
+                            <rect x="68" y="0" width="34" height="150" fill="#00C0C0" />
+                            <rect x="102" y="0" width="34" height="150" fill="#00C000" />
+                            <rect x="136" y="0" width="34" height="150" fill="#C000C0" />
+                            <rect x="170" y="0" width="34" height="150" fill="#C00000" />
+                            <rect x="204" y="0" width="36" height="150" fill="#0000C0" />
+                          </>
+                        ) : videoPattern === 'noise' ? (
+                          <rect x="0" y="0" width="240" height="150" fill="#2C3440" opacity="0.8" />
+                        ) : (
+                          <>
+                            <circle cx="120" cy="75" r="22" fill="#00DC82" />
+                            <circle cx="120" cy="75" r="30" fill="none" stroke="#00DC82" strokeWidth="1" strokeDasharray="4 2" />
+                            <text x="120" y="80" textAnchor="middle" fill="#0B0C10" fontSize="10" fontWeight="bold">TARGET</text>
+                          </>
+                        )}
+                      </svg>
+                    </div>
+
+                    <Text size="xs" c="dimmed" mt="md">
+                      Synthetic binary stream producing authentic JPEG SOI 0xFFD8 markers with millisecond timestamp burn-in.
+                    </Text>
+                  </Paper>
+                </Card>
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 5 }}>
+                <Card withBorder shadow="sm" radius="md">
+                  <Title order={4} mb="xs">Camera Stream Parameters</Title>
+                  <Stack gap="sm">
+                    <Select
+                      label="Visual Pattern Mode"
+                      value={videoPattern}
+                      onChange={(v) => setVideoPattern(v || 'bouncing_ball')}
+                      data={[
+                        { value: 'bouncing_ball', label: 'Bouncing Object Tracking' },
+                        { value: 'color_bars', label: 'SMPTE Color Calibration Bars' },
+                        { value: 'noise', label: 'Optical Sensor Static Noise' },
+                      ]}
+                    />
+                    <Grid>
+                      <Grid.Col span={6}>
+                        <NumberInput
+                          label="Frame Rate (FPS)"
+                          value={videoFps}
+                          onChange={(v) => setVideoFps(Number(v) || 30)}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <Select
+                          label="Video Codec"
+                          defaultValue="mjpeg"
+                          data={[
+                            { value: 'mjpeg', label: 'Motion JPEG (MJPEG)' },
+                            { value: 'h264_raw', label: 'Raw H.264 NAL Units' },
+                            { value: 'yuv420p', label: 'Uncompressed YUV420p' },
+                          ]}
+                        />
+                      </Grid.Col>
+                    </Grid>
+                    <Button
+                      color="teal"
+                      leftSection={<IconRefresh size={16} />}
+                      onClick={() => {
+                        setVideoFrameCount((c) => c + 30);
+                        setExecMessage(`Broadcasting test frames: 30 new synthetic frames encoded.`);
+                      }}
+                    >
+                      Broadcast Test Burst
+                    </Button>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+            </Grid>
           </Stack>
         )}
       </AppShell.Main>

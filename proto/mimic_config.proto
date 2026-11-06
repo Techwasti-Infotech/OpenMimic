@@ -211,7 +211,25 @@ message SinkConfig {
     GrpcStreamSink grpc_stream = 9;
     SnowflakeSink snowflake = 10;
     BigQuerySink bigquery = 11;
+    IcebergSink iceberg = 12;
+    DeltaLakeSink delta_lake = 13;
   }
+}
+
+message IcebergSink {
+  string catalog_uri = 1;      // e.g. "http://localhost:8181" (REST catalog) or "thrift://hive:9083"
+  string warehouse = 2;        // e.g. "s3a://lakehouse/warehouse"
+  string database = 3;         // e.g. "mimic_analytics"
+  string table = 4;            // e.g. "orders_stream"
+  string format_version = 5;   // "1" or "2" (default: "2" for row-level deletes/ACID)
+  int32 commit_interval_ms = 6;// Micro-batch commit interval (default: 5000ms)
+}
+
+message DeltaLakeSink {
+  string table_uri = 1;        // S3 / GCS / Local path, e.g. "s3://lakehouse/delta/events"
+  string mode = 2;             // "append", "overwrite"
+  int32 batch_size = 3;        // Batch rollover size (default: 1000)
+  bool generate_delta_log = 4; // Generate JSON transaction logs (_delta_log/*.json)
 }
 
 message SnowflakeSink {
@@ -343,7 +361,7 @@ message LogReplayerConfig {
 
 // FunctionGenerator defines how a field value is generated.
 message FunctionGenerator {
-  reserved 21 to 25; // Reserved slots
+  reserved 22 to 25; // Reserved slots
   oneof func {
     UuidFunction uuid = 1;
     DistributionFunction distribution = 2;
@@ -365,7 +383,18 @@ message FunctionGenerator {
     GeoLocationFunction geo_location = 18;         // Realistic geo coordinates, bounding boxes & country codes
     BinaryMediaFunction binary_media = 19;         // Valid synthesized binary media headers (WAV, JPEG, PNG)
     StreamAggregationFunction aggregation = 20;    // Real-time CEP sliding/tumbling window rollups
+    VideoStreamFunction video_stream = 21;         // Real-time synthetic video frame broadcaster (RTSP / WebRTC / Mock Camera)
   }
+}
+
+// VideoStreamFunction models real-time simulated video frame streams (CCTV, optical sensors, drone feeds)
+message VideoStreamFunction {
+  string codec = 1;          // "mjpeg", "h264_raw", "yuv420p"
+  int32 width = 2;           // Frame width (e.g. 640)
+  int32 height = 3;          // Frame height (e.g. 480)
+  int32 fps = 4;             // Frame rate (e.g. 30 fps)
+  string pattern = 5;        // "bouncing_ball", "color_bars", "timecode_counter", "noise"
+  bool render_timestamp = 6; // Burn OCR readable timestamp in top-left
 }
 
 // BinaryMediaFunction generates actual synthetically valid media byte streams

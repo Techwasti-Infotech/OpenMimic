@@ -208,4 +208,30 @@ Calculates streaming rollups (`sum`, `avg`, `min`, `max`, `count`) over sliding 
 - **`entity_pool`**: Selects foreign keys from a pre-allocated bounded pool of entities (e.g. `cust_00001` through `cust_00500`) to maintain relational referential integrity across topics.
 - **`markov_chain`**: Simulates realistic state progressions (e.g. `CART -> CHECKOUT -> PAYMENT_PENDING -> ORDER_COMPLETED`) according to transition probability matrices.
 
+---
+
+## 11. `video_stream` (Real-Time Synthetic Camera Broadcaster)
+
+Simulates continuous real-time camera video streams (CCTV, drone, traffic cams, and optical sensors) encoded with Motion JPEG (MJPEG) frames.
+
+### Schema
+```json
+{
+  "video_stream": {
+    "codec": "mjpeg",
+    "width": 640,
+    "height": 480,
+    "fps": 30,
+    "pattern": "bouncing_ball",
+    "render_timestamp": true
+  }
+}
+```
+
+### Motion Pattern Options:
+- **`bouncing_ball`**: Smooth sinusoidal harmonic target motion ideal for testing computer vision object detection and tracking algorithms.
+- **`color_bars`**: Standard SMPTE-style 7-color optical calibration bars.
+- **`noise`**: Realistic high-frequency optical sensor static noise.
+
+
 

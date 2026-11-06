@@ -187,6 +187,10 @@ func CreateSink(cfg *pb.SinkConfig, fallbackWriter io.Writer) (Sink, error) {
 		return NewSnowflakeSink(s.Snowflake, nil), nil
 	case *pb.SinkConfig_Bigquery:
 		return NewBigQuerySink(s.Bigquery, nil), nil
+	case *pb.SinkConfig_Iceberg:
+		return NewIcebergStreamingSink(s.Iceberg, nil), nil
+	case *pb.SinkConfig_DeltaLake:
+		return NewDeltaLakeStreamingSink(s.DeltaLake, nil), nil
 	case *pb.SinkConfig_Stdout:
 		pretty := false
 		if s.Stdout != nil {

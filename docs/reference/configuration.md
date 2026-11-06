@@ -171,11 +171,40 @@ The `sink` object accepts one of the following definitions:
 }
 ```
 
-### 6. GraphQL & gRPC Sinks
+### 6. Apache Iceberg Streaming Lakehouse Sink
+```json
+"sink": {
+  "iceberg": {
+    "catalog_uri": "http://localhost:8181",
+    "warehouse": "s3://mimic-lakehouse",
+    "database": "analytics",
+    "table": "user_orders",
+    "format_version": "2",
+    "commit_interval_ms": 5000
+  }
+}
+```
+- **`format_version`**: `"2"` for Iceberg V2 ACID tables supporting row-level commits and snapshots.
+- Emits real-time columnar Parquet data files alongside snapshot metadata (`v1.metadata.json`, `v2.metadata.json`).
+
+### 7. Delta Lake Streaming ACID Sink
+```json
+"sink": {
+  "delta_lake": {
+    "table_uri": "s3://lakehouse/delta/events",
+    "mode": "append",
+    "batch_size": 1000,
+    "generate_delta_log": true
+  }
+}
+```
+- **`generate_delta_log`**: Writes atomic JSON commit manifests directly to `_delta_log/00000000000000000000.json`.
+
+### 8. GraphQL & gRPC Sinks
 - **`graphql`**: Streaming mutations over HTTP/HTTPS with custom operation templates.
 - **`grpc`**: Native protocol buffer streaming directly to gRPC ingest services.
 
-### 7. Enterprise SSO & Identity Provider (`sso_config`)
+### 9. Enterprise SSO & Identity Provider (`sso_config`)
 ```json
 "sso_config": {
   "enabled": true,
