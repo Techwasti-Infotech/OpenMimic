@@ -1,10 +1,10 @@
-title: OpenMimic
+﻿title: OpenMimic
 description: Open-core, declarative, visual-first synthetic data platform.
 theme: jekyll-theme-cayman
 show_downloads: true
 google_analytics:
 github:
   is_project_page: true
-  repository_url: https://github.com/Techwasti/OpenMimic
+  repository_url: https://github.com/Techwasti-Infotech/OpenMimic
 permalink: /:path/
 
