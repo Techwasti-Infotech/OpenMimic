@@ -1,4 +1,4 @@
----
+﻿---
 layout: default
 title: "Mimic Studio"
 ---
@@ -7,12 +7,12 @@ title: "Mimic Studio"
 
 **Mimic Studio** is the visual IDE for OpenMimic, built with React 18, Vite, and Mantine. It enables interactive design of data generation streams, live previews, statistical quality checks, DAG stream topologies, and real-time observability.
 
-![Mimic Studio Visual Interface](../assets/images/mimic-studio-ui.svg)
+![Mimic Studio Live UI Screenshot](../assets/images/mimic-studio-screenshot.png)
 
 
 ---
 
-## 🎨 Studio Navigation & Feature Tabs
+## ðŸŽ¨ Studio Navigation & Feature Tabs
 
 Mimic Studio provides 9 integrated workspaces accessible from the left sidebar:
 
@@ -28,7 +28,7 @@ Mimic Studio provides 9 integrated workspaces accessible from the left sidebar:
 
 ---
 
-## 🛠️ Step-by-Step Workflow
+## ðŸ› ï¸ Step-by-Step Workflow
 
 ### 1. Designing a Generator
 
@@ -123,4 +123,5 @@ Switch to **Synthetic Video Broadcaster**:
 - **Live Frame Player:** Real-time visual preview displaying simulated camera frame streams with burnt-in OCR timestamp timecodes.
 - **Motion Patterns:** Switch between `Bouncing Object Tracking`, `SMPTE Color Calibration Bars`, and `Optical Sensor Noise`.
 - **Codec & FPS Tuning:** Configure real-time frame rates (1 to 60 FPS) and MJPEG container encodings.
+
 

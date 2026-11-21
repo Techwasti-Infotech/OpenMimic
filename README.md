@@ -196,3 +196,4 @@ We welcome community contributions! Please check out [CONTRIBUTING.md](CONTRIBUT
 ## 📄 License
 
 OpenMimic is 100% open-source software licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
+
