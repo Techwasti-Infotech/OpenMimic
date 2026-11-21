@@ -61,7 +61,7 @@ func main() {
 			}
 		}
 
-		fmt.Printf("âœ“ SUCCESS: '%s' is valid with %d fields and %d constraints.\n", *configPath, len(cfg.GetFields()), len(cfg.GetConstraints()))
+		fmt.Printf("[OK] SUCCESS: '%s' is valid with %d fields and %d constraints.\n", *configPath, len(cfg.GetFields()), len(cfg.GetConstraints()))
 		os.Exit(0)
 
 	case "preview":
@@ -203,7 +203,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		fmt.Printf("âœ“ SUCCESS: Distributed %d events across %d cluster workers:\n", *totalEvents, len(plan))
+		fmt.Printf("[OK] SUCCESS: Distributed %d events across %d cluster workers:\n", *totalEvents, len(plan))
 		for _, p := range plan {
 			fmt.Printf("  â€¢ Worker %s: Event Range [%d - %d) -> %d events\n", p.WorkerID, p.StartIndex, p.EndIndex, p.Count)
 		}
@@ -315,3 +315,4 @@ func loadConfig(path string) (*pb.GeneratorConfig, error) {
 	}
 	return &cfg, nil
 }
+

@@ -7,7 +7,7 @@
 
 ---
 
-## ðŸŽ¨ Studio Navigation & Feature Tabs
+## 🎨 Studio Navigation & Feature Tabs
 
 Mimic Studio provides 9 integrated workspaces accessible from the left sidebar:
 
@@ -23,7 +23,7 @@ Mimic Studio provides 9 integrated workspaces accessible from the left sidebar:
 
 ---
 
-## ðŸ› ï¸ Step-by-Step Workflow
+## 🛠️ Step-by-Step Workflow
 
 ### 1. Designing a Generator
 
@@ -118,3 +118,4 @@ Switch to **Synthetic Video Broadcaster**:
 - **Live Frame Player:** Real-time visual preview displaying simulated camera frame streams with burnt-in OCR timestamp timecodes.
 - **Motion Patterns:** Switch between `Bouncing Object Tracking`, `SMPTE Color Calibration Bars`, and `Optical Sensor Noise`.
 - **Codec & FPS Tuning:** Configure real-time frame rates (1 to 60 FPS) and MJPEG container encodings.
+
