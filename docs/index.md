@@ -1,9 +1,4 @@
-﻿---
-layout: default
-title: "OpenMimic Documentation"
----
-
-# OpenMimic Documentation
+﻿# OpenMimic Documentation
 
 Welcome to **OpenMimic**, the 100% free and open-source, visual-first synthetic data and production traffic generation platform.
 
@@ -24,15 +19,15 @@ If OpenMimic helps your engineering workflows:
 
 ## ⚡ Quick Navigation
 
-- [Local Setup & Quickstart Guide](guides/getting-started.html) — Launch with Docker Compose or from source.
-- [Enterprise Single Sign-On (SSO) & RBAC Guide](guides/enterprise-sso.html) — Okta, Microsoft Entra ID, Keycloak, OIDC, and group role mappings.
-- [Model Context Protocol (MCP) Server Guide](guides/mcp-server.html) — Autonomous LLM agent tool integration (Claude, Cursor, Docker).
-- [Traffic Simulation & Load Generation Guide](guides/traffic-simulation.html) — Production traffic shaping, diurnal curves, Poisson arrivals, and Markov funnels.
-- [Functions & Expression Reference](reference/functions.html) — Complete guide to `uuid`, `normalDistribution`, `weightedChoice`, `markovChain`, etc.
-- [Configuration Reference (`mimic.json`)](reference/configuration.html) — Full Protocol Buffers schema guide.
-- [Mimic Studio Manual](guides/mimic-studio.html) — Designing schemas, live previews, and observability dashboards.
-- [Mimic Copilot Manual](guides/mimic-copilot.html) — Natural-language data synthesis.
-- [Architecture & Design Concepts](architecture/) — Engine internals, logical clock, and sinks.
+- [Local Setup & Quickstart Guide]({{ site.baseurl }}/guides/getting-started.html) — Launch with Docker Compose or from source.
+- [Enterprise Single Sign-On (SSO) & RBAC Guide]({{ site.baseurl }}/guides/enterprise-sso.html) — Okta, Microsoft Entra ID, Keycloak, OIDC, and group role mappings.
+- [Model Context Protocol (MCP) Server Guide]({{ site.baseurl }}/guides/mcp-server.html) — Autonomous LLM agent tool integration (Claude, Cursor, Docker).
+- [Traffic Simulation & Load Generation Guide]({{ site.baseurl }}/guides/traffic-simulation.html) — Production traffic shaping, diurnal curves, Poisson arrivals, and Markov funnels.
+- [Functions & Expression Reference]({{ site.baseurl }}/reference/functions.html) — Complete guide to `uuid`, `normalDistribution`, `weightedChoice`, `markovChain`, etc.
+- [Configuration Reference (`mimic.json`)]({{ site.baseurl }}/reference/configuration.html) — Full Protocol Buffers schema guide.
+- [Mimic Studio Manual]({{ site.baseurl }}/guides/mimic-studio.html) — Designing schemas, live previews, and observability dashboards.
+- [Mimic Copilot Manual]({{ site.baseurl }}/guides/mimic-copilot.html) — Natural-language data synthesis.
+- [Architecture & Design Concepts]({{ site.baseurl }}/architecture/) — Engine internals, logical clock, and sinks.
 
 ---
 

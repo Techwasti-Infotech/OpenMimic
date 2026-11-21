@@ -3,7 +3,7 @@ layout: default
 title: "Mcp Server"
 ---
 
-﻿# Model Context Protocol (MCP) Server Integration 🧠
+# Model Context Protocol (MCP) Server Integration 🧠
 
 ![OpenMimic Model Context Protocol Architecture](../assets/images/openmimic-mcp-architecture.svg)
 
