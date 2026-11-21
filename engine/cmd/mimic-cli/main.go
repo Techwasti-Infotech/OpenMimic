@@ -1,4 +1,4 @@
-package main
+﻿package main
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 	"openmimic/engine/internal/importer"
 	"openmimic/engine/internal/profiler"
 	"openmimic/engine/internal/replayer"
+	"openmimic/engine/internal/mcp"
 	pb "openmimic/engine/pkg/proto/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -27,6 +28,7 @@ func printUsage() {
 	fmt.Println("  profile  --table <name> --sample <file>    Reverse-engineer mimic.json from sample JSON records")
 	fmt.Println("  cluster  --workers <count> --total <count> Simulate distributed cluster partitioned stream")
 	fmt.Println("  replay   --file <path> [--format nginx|jsonl] Replay historical log files with current timestamp inflation")
+	fmt.Println("  mcp      [--stdio]                 Launch Model Context Protocol (MCP) server for LLMs")
 }
 
 func main() {
@@ -59,7 +61,7 @@ func main() {
 			}
 		}
 
-		fmt.Printf("✓ SUCCESS: '%s' is valid with %d fields and %d constraints.\n", *configPath, len(cfg.GetFields()), len(cfg.GetConstraints()))
+		fmt.Printf("âœ“ SUCCESS: '%s' is valid with %d fields and %d constraints.\n", *configPath, len(cfg.GetFields()), len(cfg.GetConstraints()))
 		os.Exit(0)
 
 	case "preview":
@@ -201,9 +203,9 @@ func main() {
 			os.Exit(1)
 		}
 
-		fmt.Printf("✓ SUCCESS: Distributed %d events across %d cluster workers:\n", *totalEvents, len(plan))
+		fmt.Printf("âœ“ SUCCESS: Distributed %d events across %d cluster workers:\n", *totalEvents, len(plan))
 		for _, p := range plan {
-			fmt.Printf("  • Worker %s: Event Range [%d - %d) -> %d events\n", p.WorkerID, p.StartIndex, p.EndIndex, p.Count)
+			fmt.Printf("  â€¢ Worker %s: Event Range [%d - %d) -> %d events\n", p.WorkerID, p.StartIndex, p.EndIndex, p.Count)
 		}
 
 	case "profile":
@@ -275,6 +277,19 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Fprintf(os.Stderr, "\nSuccessfully replayed %d records from %s\n", count, *filePath)
+		os.Exit(0)
+
+	case "mcp":
+		mcpCmd := flag.NewFlagSet("mcp", flag.ExitOnError)
+		_ = mcpCmd.Bool("stdio", true, "Run in stdio mode")
+		_ = mcpCmd.Parse(os.Args[2:])
+
+		srv := mcp.NewServer(os.Stdin, os.Stdout)
+		if err := srv.Serve(context.Background()); err != nil && err != context.Canceled {
+			fmt.Fprintf(os.Stderr, "MCP server exited: %v\n", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
 
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n\n", command)

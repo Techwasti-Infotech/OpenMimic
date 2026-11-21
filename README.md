@@ -1,4 +1,4 @@
-# OpenMimic ⚡
+﻿# OpenMimic âš¡
 
 > **The 100% Free & Open-Source, Visual-First Synthetic Data & Traffic Generation Platform.**  
 > Effortlessly generate high-throughput streaming datasets, simulate production traffic patterns, and test distributed architectures across Kafka, PostgreSQL, S3, and standard output.
@@ -11,42 +11,43 @@
 
 ---
 
-## 🌟 Support Open-Source & Buy Us a Coffee
+## ðŸŒŸ Support Open-Source & Buy Us a Coffee
 
 OpenMimic is **100% free, open-source software** released under the **Apache 2.0 license**. Anyone can freely use, modify, distribute, and run OpenMimic for personal, educational, or commercial production workloads with zero licensing fees.
 
 If OpenMimic saves your team time, speeds up your testing, or helps validate your data infrastructure, please consider supporting continued development:
 
-- ☕ **Buy Me a Coffee:** [buymeacoffee.com/techwasti](https://buymeacoffee.com/techwasti)
-- 💖 **GitHub Sponsors:** [github.com/sponsors/Techwasti](https://github.com/sponsors/Techwasti)
-- ⭐ **Star this repo:** A simple GitHub star helps spread the word!
+- â˜• **Buy Me a Coffee:** [buymeacoffee.com/techwasti](https://buymeacoffee.com/techwasti)
+- ðŸ’– **GitHub Sponsors:** [github.com/sponsors/Techwasti](https://github.com/sponsors/Techwasti)
+- â­ **Star this repo:** A simple GitHub star helps spread the word!
 
 ---
 
-## ⚡ Key Features
+## âš¡ Key Features
 
-- **🎯 High-Performance Engine (Go 1.23+):** Multithreaded streaming engine generating tens of thousands of records per second directly to sinks.
-- **🎨 Mimic Studio IDE:** Modern React 18 + Mantine visual interface for designing schemas, viewing live 10-event streaming previews, inspecting statistical fidelity, and tracking real-time metrics.
-- **🤖 Mimic Copilot:** FastAPI + LangChain AI assistant that converts plain-English prompts into validated Protocol Buffers configurations.
-- **⚖️ Predicate Constraints Solver:** Define cross-field business logic (`amount > 50000 && fraud_flag == 1`). Engine samples and evaluates candidate events with bounded retries.
-- **🔬 Statistical Fidelity & Quality Gates:** Built-in two-sample Kolmogorov-Smirnov test (`KolmogorovSmirnovTest`) and Pearson cross-column correlation (`PearsonCorrelation`) to compare synthetic streams against baseline data.
-- **🛡️ Privacy & PII Scanner:** Proactive detector highlighting unmasked sensitive data (`email`, `ssn`, `phone`, `card`) with recommended masking transforms.
-- **💥 Anomaly Injection Playbooks:** Inject real-world edge cases (null field injection, corrupt payload bytes, burst spikes) at configurable rates.
-- **🌊 Realistic Traffic Shaper:**
+- **ðŸŽ¯ High-Performance Engine (Go 1.23+):** Multithreaded streaming engine generating tens of thousands of records per second directly to sinks.
+- **ðŸŽ¨ Mimic Studio IDE:** Modern React 18 + Mantine visual interface for designing schemas, viewing live 10-event streaming previews, inspecting statistical fidelity, and tracking real-time metrics.
+- **ðŸ¤– Mimic Copilot:** FastAPI + LangChain AI assistant that converts plain-English prompts into validated Protocol Buffers configurations.
+- **âš–ï¸ Predicate Constraints Solver:** Define cross-field business logic (`amount > 50000 && fraud_flag == 1`). Engine samples and evaluates candidate events with bounded retries.
+- **ðŸ”¬ Statistical Fidelity & Quality Gates:** Built-in two-sample Kolmogorov-Smirnov test (`KolmogorovSmirnovTest`) and Pearson cross-column correlation (`PearsonCorrelation`) to compare synthetic streams against baseline data.
+- **ðŸ›¡ï¸ Privacy & PII Scanner:** Proactive detector highlighting unmasked sensitive data (`email`, `ssn`, `phone`, `card`) with recommended masking transforms.
+- **ðŸ’¥ Anomaly Injection Playbooks:** Inject real-world edge cases (null field injection, corrupt payload bytes, burst spikes) at configurable rates.
+- **ðŸŒŠ Realistic Traffic Shaper:**
   - **Diurnal (Day/Night) Cycles:** Sine/cosine waves simulating daily traffic curves.
   - **Poisson Arrivals:** Stochastic inter-arrival times ($-\ln(U)/\lambda$).
   - **Burst Spikes:** Periodic surges simulating flash sales or load testing.
-- **🔄 Relational Entity Pools & Markov Chains:**
+- **ðŸ”„ Relational Entity Pools & Markov Chains:**
   - Share customer IDs across multiple topics with bounded entity pools (`EntityPool`).
   - Model multi-step user funnels through probabilistic transition matrices (`MarkovChain`).
-- **📥 SQL DDL Schema Auto-Import:** Paste any `CREATE TABLE` statement to auto-generate a matching generator configuration.
-- **🔌 Universal Sinks:** Apache Kafka (with Confluent Schema Registry `TopicRecordNameStrategy` & EOS Transactions), Apache Iceberg V2 ACID Table Sink, Delta Lake ACID Log Sink, PostgreSQL (`pgx`), Amazon S3 / MinIO (with Snappy/GZIP/ZSTD Columnar Parquet), Snowflake Streaming, Google BigQuery, GraphQL mutations, gRPC streams, Redis, ClickHouse, and NDJSON Stdout.
-- **📦 Enterprise Security & Identity:** Single Sign-On (SSO) with Okta, Microsoft Entra ID (Azure AD), Keycloak, and SAML 2.0; automatic user & group provisioning via RFC 7643/7644 SCIM 2.0.
-- **⚡ Advanced Streaming:** Complex Event Processing (CEP) window rollups (`sum`, `avg`, `min`, `max`, `count`), synthetic camera video broadcaster (real-time MJPEG frames with motion tracking and OCR timecodes), PCM WAV audio synthesizers, visual DAG canvas, and schema version control with visual diff.
+- **ðŸ“¥ SQL DDL Schema Auto-Import:** Paste any `CREATE TABLE` statement to auto-generate a matching generator configuration.
+- **ðŸ”Œ Universal Sinks:** Apache Kafka (with Confluent Schema Registry `TopicRecordNameStrategy` & EOS Transactions), Apache Iceberg V2 ACID Table Sink, Delta Lake ACID Log Sink, PostgreSQL (`pgx`), Amazon S3 / MinIO (with Snappy/GZIP/ZSTD Columnar Parquet), Snowflake Streaming, Google BigQuery, GraphQL mutations, gRPC streams, Redis, ClickHouse, and NDJSON Stdout.
+- **ðŸ“¦ Enterprise Security & Identity:** Single Sign-On (SSO) with Okta, Microsoft Entra ID (Azure AD), Keycloak, and SAML 2.0; automatic user & group provisioning via RFC 7643/7644 SCIM 2.0.
+- **🧠 Model Context Protocol (MCP) Server:** Native Go MCP server (`mimic mcp` / `mimic-mcp`) enabling LLMs (Claude Desktop, Cursor, Antigravity, Copilot) to generate preview events, validate schemas, convert SQL DDL, and profile sample records autonomously via standard JSON-RPC 2.0.
+- **âš¡ Advanced Streaming:** Complex Event Processing (CEP) window rollups (`sum`, `avg`, `min`, `max`, `count`), synthetic camera video broadcaster (real-time MJPEG frames with motion tracking and OCR timecodes), PCM WAV audio synthesizers, visual DAG canvas, and schema version control with visual diff.
 
 ---
 
-## 🖥️ One-Click Local Setup Guide
+## ðŸ–¥ï¸ One-Click Local Setup Guide
 
 We provide one-click scripts for Windows, macOS, and Linux that launch the Engine, Copilot, and Studio UI simultaneously with a single command!
 
@@ -99,7 +100,7 @@ The launcher will verify prerequisites, build the Go binaries, and start:
 
 ---
 
-## 🛠️ Mimic GitOps CLI (`mimic-cli`)
+## ðŸ› ï¸ Mimic GitOps CLI (`mimic-cli`)
 
 OpenMimic includes a full-featured GitOps command-line tool for local testing, automation, and CI/CD pipelines.
 
@@ -133,7 +134,7 @@ go build -o bin/mimic-cli.exe ./cmd/mimic-cli
 
 ---
 
-## 📋 Sample Configuration (`mimic.json`)
+## ðŸ“‹ Sample Configuration (`mimic.json`)
 
 ```json
 {
@@ -183,12 +184,12 @@ go build -o bin/mimic-cli.exe ./cmd/mimic-cli
 
 ---
 
-## 🤝 Contributing
+## ðŸ¤ Contributing
 
 We welcome community contributions! Please check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started with our development guidelines, issue templates, and pull request workflows.
 
 ---
 
-## 📄 License
+## ðŸ“„ License
 
 OpenMimic is 100% open-source software licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
