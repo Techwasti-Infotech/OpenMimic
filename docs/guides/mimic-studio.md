@@ -12,7 +12,7 @@ title: "Mimic Studio"
 
 ---
 
-## ðŸŽ¨ Studio Navigation & Feature Tabs
+## 🎨 Studio Navigation & Feature Tabs
 
 Mimic Studio provides 9 integrated workspaces accessible from the left sidebar:
 
@@ -28,7 +28,7 @@ Mimic Studio provides 9 integrated workspaces accessible from the left sidebar:
 
 ---
 
-## ðŸ› ï¸ Step-by-Step Workflow
+## 🛠️ Step-by-Step Workflow
 
 ### 1. Designing a Generator
 
@@ -59,6 +59,8 @@ Before streaming live events into production message queues or databases, use th
 - Clicking **Preview (10)** triggers an isolated request to the Engine.
 - The engine executes 10 iterations in-memory using the exact logical clock and seed configured.
 - The output displays in real time on the right-hand panel as formatted JSON records.
+
+![Live Mock Data Preview with 10 Generated Records](../assets/images/mimic-studio-preview-mockdata.png)
 
 ---
 
@@ -93,6 +95,8 @@ Switch to **Stream Topology & DAG**:
 ### 6. Observability & Throughput Dashboard
 
 Switch to **Observability Dashboard**:
+
+![Real-Time Observability & Cluster Worker Dashboard](../assets/images/mimic-studio-observability.png)
 - **Live Throughput Gauge (EPS):** Visual velocity gauge monitoring events per second against configured capacity limits.
 - **Network Egress Gauge (MB/s):** Real-time bandwidth tracking with columnar Parquet dictionary and wire codec statistics.
 - **Partition Lag & DLQ Counter:** Real-time consumer lag and dead-letter queue spillover monitoring.
@@ -123,5 +127,6 @@ Switch to **Synthetic Video Broadcaster**:
 - **Live Frame Player:** Real-time visual preview displaying simulated camera frame streams with burnt-in OCR timestamp timecodes.
 - **Motion Patterns:** Switch between `Bouncing Object Tracking`, `SMPTE Color Calibration Bars`, and `Optical Sensor Noise`.
 - **Codec & FPS Tuning:** Configure real-time frame rates (1 to 60 FPS) and MJPEG container encodings.
+
 
 
