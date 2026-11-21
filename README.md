@@ -43,6 +43,9 @@ If OpenMimic saves your team time, speeds up your testing, or helps validate you
 - **ðŸ”Œ Universal Sinks:** Apache Kafka (with Confluent Schema Registry `TopicRecordNameStrategy` & EOS Transactions), Apache Iceberg V2 ACID Table Sink, Delta Lake ACID Log Sink, PostgreSQL (`pgx`), Amazon S3 / MinIO (with Snappy/GZIP/ZSTD Columnar Parquet), Snowflake Streaming, Google BigQuery, GraphQL mutations, gRPC streams, Redis, ClickHouse, and NDJSON Stdout.
 - **ðŸ“¦ Enterprise Security & Identity:** Single Sign-On (SSO) with Okta, Microsoft Entra ID (Azure AD), Keycloak, and SAML 2.0; automatic user & group provisioning via RFC 7643/7644 SCIM 2.0.
 - **🧠 Model Context Protocol (MCP) Server:** Native Go MCP server (`mimic mcp` / `mimic-mcp`) enabling LLMs (Claude Desktop, Cursor, Antigravity, Copilot) to generate preview events, validate schemas, convert SQL DDL, and profile sample records autonomously via standard JSON-RPC 2.0.
+
+![OpenMimic MCP Architecture](docs/assets/images/openmimic-mcp-architecture.svg)
+
 - **âš¡ Advanced Streaming:** Complex Event Processing (CEP) window rollups (`sum`, `avg`, `min`, `max`, `count`), synthetic camera video broadcaster (real-time MJPEG frames with motion tracking and OCR timecodes), PCM WAV audio synthesizers, visual DAG canvas, and schema version control with visual diff.
 
 ---

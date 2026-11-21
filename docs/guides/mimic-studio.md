@@ -1,10 +1,13 @@
-# Mimic Studio User Guide
+﻿# Mimic Studio User Guide
 
 **Mimic Studio** is the visual IDE for OpenMimic, built with React 18, Vite, and Mantine. It enables interactive design of data generation streams, live previews, statistical quality checks, DAG stream topologies, and real-time observability.
 
+![Mimic Studio Visual Interface](../assets/images/mimic-studio-ui.svg)
+
+
 ---
 
-## 🎨 Studio Navigation & Feature Tabs
+## ðŸŽ¨ Studio Navigation & Feature Tabs
 
 Mimic Studio provides 9 integrated workspaces accessible from the left sidebar:
 
@@ -20,7 +23,7 @@ Mimic Studio provides 9 integrated workspaces accessible from the left sidebar:
 
 ---
 
-## 🛠️ Step-by-Step Workflow
+## ðŸ› ï¸ Step-by-Step Workflow
 
 ### 1. Designing a Generator
 

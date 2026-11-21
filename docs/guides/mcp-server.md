@@ -1,5 +1,8 @@
 ﻿# Model Context Protocol (MCP) Server Integration 🧠
 
+![OpenMimic Model Context Protocol Architecture](../assets/images/openmimic-mcp-architecture.svg)
+
+
 OpenMimic provides native, high-performance support for the **Model Context Protocol (MCP)** (specification version `2024-11-05`). 
 
 By connecting OpenMimic's MCP server to your LLM client (such as **Claude Desktop**, **Cursor**, **Copilot**, **Antigravity**, or custom enterprise AI agents), your LLM gains autonomous tools to:
