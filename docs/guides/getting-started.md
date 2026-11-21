@@ -1,10 +1,15 @@
+﻿---
+layout: default
+title: "Local Setup & Quickstart Guide"
+---
+
 # Local Setup & Quickstart Guide
 
 This guide will walk you through setting up and running the complete OpenMimic stack locally on Windows, macOS, or Linux.
 
 ---
 
-## ⚡ Option 1: One-Click Local Launcher (Fastest)
+## âš¡ Option 1: One-Click Local Launcher (Fastest)
 
 OpenMimic provides automated one-click launcher scripts that check your dependencies, compile the Go binaries, and launch **Mimic Studio**, **Engine**, and **Copilot** simultaneously.
 
@@ -24,20 +29,20 @@ chmod +x run-local.sh
 ```
 
 Once launched, the services will be running at:
-- 🎨 **Mimic Studio (Web UI):** [http://localhost:3000](http://localhost:3000)
-- 🔌 **Engine HTTP/REST Bridge:** [http://localhost:8080](http://localhost:8080)
-- ⚡ **Engine gRPC:** `localhost:50051`
-- 🤖 **Mimic Copilot Service:** [http://localhost:8000](http://localhost:8000)
+- ðŸŽ¨ **Mimic Studio (Web UI):** [http://localhost:3000](http://localhost:3000)
+- ðŸ”Œ **Engine HTTP/REST Bridge:** [http://localhost:8080](http://localhost:8080)
+- âš¡ **Engine gRPC:** `localhost:50051`
+- ðŸ¤– **Mimic Copilot Service:** [http://localhost:8000](http://localhost:8000)
 
 ---
 
-## 🐳 Option 2: Docker Compose Setup
+## ðŸ³ Option 2: Docker Compose Setup
 
 OpenMimic provides a preconfigured multi-container stack with the Go Engine, Python Copilot, and an embedded Redpanda/Kafka broker.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Techwasti/OpenMimic.git
+   git clone https://github.com/Techwasti-Infotech/OpenMimic.git
    cd OpenMimic
    ```
 
@@ -64,7 +69,7 @@ OpenMimic provides a preconfigured multi-container stack with the Go Engine, Pyt
 
 ---
 
-## 💻 Option 3: Running Components Individually from Source
+## ðŸ’» Option 3: Running Components Individually from Source
 
 ### 1. Build and Run the OpenMimic Go Engine
 ```powershell
@@ -105,7 +110,7 @@ npm run dev
 
 ---
 
-## 🛠️ Using the GitOps CLI (`mimic-cli`)
+## ðŸ› ï¸ Using the GitOps CLI (`mimic-cli`)
 
 For CI/CD pipelines and headless terminal execution:
 
@@ -132,7 +137,7 @@ For CI/CD pipelines and headless terminal execution:
 
 ---
 
-## 🧪 Testing Your First Pipeline
+## ðŸ§ª Testing Your First Pipeline
 
 1. In **Mimic Studio** (`http://localhost:3000`), navigate to **Generator Designer**.
 2. Click **Preview (10)** to generate the first 10 events directly from the engine in real time.
@@ -144,7 +149,7 @@ For CI/CD pipelines and headless terminal execution:
 
 ---
 
-## ☕ Support Open-Source
+## â˜• Support Open-Source
 
 OpenMimic is 100% free software. If this helps your data engineering workflows, consider supporting the project:
-👉 [Buy Me a Coffee](https://buymeacoffee.com/techwasti) | [GitHub Sponsors](https://github.com/sponsors/Techwasti)
+ðŸ‘‰ [Buy Me a Coffee](https://buymeacoffee.com/techwasti) | [GitHub Sponsors](https://github.com/sponsors/Techwasti)

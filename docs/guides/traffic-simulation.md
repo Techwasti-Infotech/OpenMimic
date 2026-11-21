@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Traffic Simulation & Load Generation Guide"
+---
+
 # Traffic Simulation & Load Generation Guide
 
 This comprehensive guide explains how to configure and execute production-grade traffic simulation, load testing, and streaming synthetic data generation with OpenMimic.

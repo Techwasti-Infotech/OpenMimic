@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Architecture & Design Concepts"
+---
+
 # Architecture & Design Concepts
 
 OpenMimic is designed around a **schema-first, deterministic generation engine** communicating over gRPC with modern visual and AI interfaces.

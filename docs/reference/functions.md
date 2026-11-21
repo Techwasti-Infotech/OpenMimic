@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Functions & Generator Reference"
+---
+
 # Functions & Generator Reference
 
 OpenMimic provides a comprehensive suite of declarative function generators. Each field in `mimic.json` specifies one of the following generator types.

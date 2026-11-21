@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Mimic Copilot Manual"
+---
+
 # Mimic Copilot Manual
 
 **Mimic Copilot** is an AI assistant and translation service designed to convert natural language descriptions of data streams into validated, executable `mimic.json` Protocol Buffers configurations.

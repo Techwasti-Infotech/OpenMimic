@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Configuration Schema Reference (`mimic.json`)"
+---
+
 # Configuration Schema Reference (`mimic.json`)
 
 `mimic.json` is the configuration file for the OpenMimic generation engine. It is strictly typed and governed by `proto/mimic_config.proto`.

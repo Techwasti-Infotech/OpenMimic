@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Enterprise Single Sign-On (SSO) & RBAC Guide"
+---
+
 # Enterprise Single Sign-On (SSO) & RBAC Guide
 
 OpenMimic is engineered for enterprise organizations requiring seamless integration with corporate Identity Providers (IdPs) such as **Okta**, **Microsoft Entra ID (Azure AD)**, **Google Workspace**, **Keycloak**, and **SAML 2.0 / OpenID Connect (OIDC)** federations.
