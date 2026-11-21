@@ -106,3 +106,50 @@ Once configured in your LLM, you can interact naturally:
 > **User:** *"Here is my PostgreSQL orders table: `CREATE TABLE orders (id UUID PRIMARY KEY, customer_id INT, amount NUMERIC(10,2), status VARCHAR(20));`. Convert this to an OpenMimic configuration and validate it."*
 
 > **User:** *"Profile these 3 sample JSON rows from our logs and create an OpenMimic schema for them."*
+
+---
+
+## 🐳 Docker Container & GitHub Packages Usage
+
+OpenMimic automatically packages and publishes Docker container images and downloadable artifacts on every release and build.
+
+### Running via GitHub Container Registry (GHCR)
+```bash
+# Pull the latest OpenMimic MCP Server container
+docker pull ghcr.io/techwasti-infotech/openmimic/mcp:latest
+
+# Run the MCP container interactively over stdio
+docker run -i --rm ghcr.io/techwasti-infotech/openmimic/mcp:latest
+```
+
+### Configuring Claude Desktop with Docker
+
+If you prefer running OpenMimic MCP inside Docker rather than as a local binary, configure your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "openmimic-docker": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "ghcr.io/techwasti-infotech/openmimic/mcp:latest"
+      ]
+    }
+  }
+}
+```
+
+---
+
+## 📥 Downloading Pre-built Artifacts from GitHub Actions
+
+1. Navigate to the [OpenMimic GitHub Actions tab](https://github.com/Techwasti-Infotech/OpenMimic/actions).
+2. Select the latest **Release OpenMimic Binaries & Docker Images** workflow run.
+3. Scroll down to the **Artifacts** section to download:
+   - `openmimic-windows-amd64` (Contains `mimic-mcp.exe`, `mimic-cli.exe`, `mimic.exe`)
+   - `openmimic-linux-amd64` / `openmimic-linux-arm64` (Linux executable binaries)
+   - `openmimic-darwin-amd64` / `openmimic-darwin-arm64` (macOS executable binaries)
+   - `openmimic-mcp-docker-image` (Compressed `.tar.gz` archive containing the Docker image ready for `docker load < openmimic-mcp-docker.tar.gz`)
